@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8"></meta>
-<title>antiSMASH - OOPS :: Home</title>
+<title>antiSMASH - OPS :: Home</title>
 
 <link
 	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
@@ -10,13 +10,9 @@
 	rel="stylesheet" media="screen"
 />
 
-<link th:href="@{/css/dnd.css}" rel="stylesheet" />
-
 <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.3/jquery.min.js"
 	th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"
 ></script>
-
-<script th:src="@{/js/fileUpload.js}"></script>
 
 <link rel="icon" th:href="@{/images/oops.ico}" />
 
@@ -30,26 +26,19 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 
-				<!-- Standard Form -->
-				<h4>Select the file from your computer</h4>
-				<form th:action="@{/saveFile}" action="" method="POST"
-					enctype="multipart/form-data" id="js-upload-form"
-				>
-					<br />
-					<div class="form-inline">
-						<div class="form-group">
-							<input type="file" name="zipFile" id="js-upload-files" />
-						</div>
-						<button type="submit" class="btn btn-sm btn-primary"
-							id="js-upload-submit"
-						>Upload file</button>
+				<!-- Upload Finished -->
+				<div class="js-upload-finished">
+					<h3>Uploaded File</h3>
+					<div class="list-group">
+						<a href="#" class="list-group-item list-group-item-success"><span
+							class="badge alert-success pull-right"
+						>Success</span><span th:text="${fileName}"></span></a>
 					</div>
-				</form>
+				</div>
 				<br />
-				<!-- Drop Zone -->
-				<h4>Or drag and drop a file below</h4>
-				<div class="upload-drop-zone" id="dropzone">Drag and drop a
-					file here</div>
+				<button type="button"
+					class="btn btn-primary btn-lg btn-block"
+				>START ANALYSIS</button>
 			</div>
 		</div>
 

@@ -1,47 +1,45 @@
-$(document).ready(
-		function() {
-			'use strict';
+$(document).ready(function() {
+	'use strict';
 
-			// UPLOAD CLASS DEFINITION
-			// ======================
+	// UPLOAD CLASS DEFINITION
+	// ======================
 
-			var dropZone = document.getElementById('drop-zone');
-			var uploadForm = document.getElementById('js-upload-form');
+	var dropzone = document.getElementById('dropzone');
 
-			var startUpload = function(files) {
-				var uploadForm = document.getElementById('js-upload-form');
-				if (document.getElementById('js-upload-files').files.length == 0)
-					alert("No files for submitting!");
-				uploadForm.submit();
-				//var input = $("<input>").attr("type", "hidden").attr("name",
-				//		"mydata").val("bla");
-				//$('#form1').append($(input));
-				console.log(files);
+	var upload = function(files) {
+		var formData = new FormData(), xhr = new XMLHttpRequest;
+		if (files.length > 1) {
+			alert("Please upload only the output .zip file from antiSMASH!");
+		}
+		formData.append('zipFile', files[0]);
+		
+		
+		
+		xhr.onload = function()
+		{
+			document.open();
+			document.write(this.responseText);
+			document.close();
+		};
+		
+		xhr.open('POST', 'saveFile');
+		xhr.send(formData);
+	}
 
-			}
+	dropzone.ondrop = function(e) {
+		e.preventDefault();
+		this.className = 'upload-drop-zone';
+		upload(e.dataTransfer.files)
+	};
 
-			uploadForm.addEventListener('submit',
-					function(e) {
-						var uploadFiles = document
-								.getElementById('js-upload-files').files;
-						e.preventDefault()
-						startUpload(uploadFiles)
-					})
+	dropzone.ondragover = function() {
+		this.className = 'upload-drop-zone drop';
+		return false;
+	};
 
-			dropZone.ondrop = function(e) {
-				e.preventDefault();
-				this.className = 'upload-drop-zone';
-				startUpload(e.dataTransfer.files)
-			}
+	dropzone.ondragleave = function() {
+		this.className = 'upload-drop-zone';
+		return false;
+	};
 
-			dropZone.ondragover = function() {
-				this.className = 'upload-drop-zone drop';
-				return false;
-			}
-
-			dropZone.ondragleave = function() {
-				this.className = 'upload-drop-zone';
-				return false;
-			}
-
-		});
+});
