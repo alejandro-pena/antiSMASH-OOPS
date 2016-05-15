@@ -12,7 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import uk.ac.mib.antismashops.AntiSmashOpsApplication;
+import uk.ac.mib.antismashoops.AntiSmashOpsApplication;
+import uk.ac.mib.antismashoops.core.utils.FileUploadHandler;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(AntiSmashOpsApplication.class)

@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashops.core.utils;
+package uk.ac.mib.antismashoops.core.utils;
 
 import java.io.File;
 

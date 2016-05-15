@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashops.web.controller;
+package uk.ac.mib.antismashoops.web.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

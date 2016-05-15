@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashops;
+package uk.ac.mib.antismashoops;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashops.web.controller;
+package uk.ac.mib.antismashoops.web.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import uk.ac.mib.antismashops.core.utils.FileUploadHandler;
+import uk.ac.mib.antismashoops.core.utils.FileUploadHandler;
 
 @Controller
 public class FileUploadController

@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashops.core.domain;
+package uk.ac.mib.antismashoops.core.domain;
 
 public class Person
 {
