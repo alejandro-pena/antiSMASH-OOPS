@@ -12,10 +12,8 @@ public class FileUploadHandler
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileUploadHandler.class);
 
-	public static void decompressFile(File compressedFile)
+	public static void decompressFile(File compressedFile, String uploadPath)
 	{
-		String uploadPath = "bin/userupload/";
-
 		String destinationPath = uploadPath
 				+ compressedFile.getName().substring(0, compressedFile.getName().lastIndexOf("."));
 

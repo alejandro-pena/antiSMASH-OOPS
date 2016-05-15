@@ -15,7 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'spring-boot' 
 
 jar {
-	baseName = 'antiSMASH-OPS'
+	baseName = 'antiSMASH-OOPS'
 	version = '0.0.1-SNAPSHOT'
 }
 sourceCompatibility = 1.8
@@ -34,6 +34,10 @@ dependencies {
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	compile('org.springframework.boot:spring-boot-devtools')
 	compile('net.lingala.zip4j:zip4j:1.3.2')
+}
+
+springBoot {
+    mainClass = "uk.ac.mib.antismashoops.AntiSmashOopsApplication"
 }
 
 

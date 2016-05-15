@@ -36,7 +36,7 @@ public class FileUploadController
 		storeLocation.mkdirs();
 		FileCopyUtils.copy(file.getBytes(), compressedFile);
 
-		FileUploadHandler.decompressFile(compressedFile);
+		FileUploadHandler.decompressFile(compressedFile, uploadPath);
 
 		model.addAttribute("fileName", file.getOriginalFilename());
 		return "dashboard";

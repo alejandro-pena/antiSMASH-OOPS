@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import uk.ac.mib.antismashoops.core.domain.Person;
+import uk.ac.mib.antismashoops.core.model.Person;
 
 @Controller
 public class IndexController

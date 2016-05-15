@@ -40,9 +40,10 @@ public class FileUploadHandlerTests
 	public void decompressFileTest()
 	{
 		logger.info("Start of file decompression...");
+		logger.info(uploadPath);
 		logger.info(compressedFile.getAbsolutePath());
 
-		FileUploadHandler.decompressFile(compressedFile);
+		FileUploadHandler.decompressFile(compressedFile, uploadPath);
 
 		logger.info("...finished file decompression.");
 
