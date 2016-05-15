@@ -1,5 +1,7 @@
 package uk.ac.mib.antismashops.web.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +11,8 @@ import uk.ac.mib.antismashops.core.domain.Person;
 @Controller
 public class IndexController
 {
+	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+
 	@RequestMapping("/")
 	public String index()
 	{

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8"></meta>
-<title>antiSMASH - OOPS :: Dashboard</title>
+<title th:inline="text">[[#{app.name}]] :: Dashboard</title>
 
 <link
 	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
@@ -22,7 +22,7 @@
 	<div th:replace="fragments/header :: header"></div>
 
 	<div class="container">
-		<h1 align="center">Welcome to antiSMASH - OOPS</h1>
+		<h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
 		<div class="panel panel-default">
 			<div class="panel-body">
 
