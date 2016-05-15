@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AntiSmashOpsApplication
+public class AntiSmashOopsApplication
 {
 	public static void main(String[] args)
 	{
-		SpringApplication.run(AntiSmashOpsApplication.class, args);
+		SpringApplication.run(AntiSmashOopsApplication.class, args);
 	}
 }
