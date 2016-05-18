@@ -16,6 +16,7 @@ public class IndexController
 	@RequestMapping("/")
 	public String index()
 	{
+		logger.info("Loading main page...");
 		return "index";
 	}
 

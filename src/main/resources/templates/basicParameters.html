@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"></meta>
+<title th:inline="text">[[#{app.name}]] :: Basic</title>
+
+<link
+	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
+	rel="stylesheet" media="screen"
+/>
+
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.3/jquery.min.js"
+	th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"
+></script>
+
+<link rel="icon" th:href="@{/images/oops.ico}" />
+
+</head>
+
+<body>
+	<div th:replace="fragments/header :: header"></div>
+
+	<div class="container">
+		<h1 align="center" th:inline="text">Basic Parameters</h1>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				
+				<br />
+				
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th><a th:href="@{/basicParameters(orderBy=1)}">CLUSTER NAME</a></th>
+							<th><a th:href="@{/basicParameters(orderBy=2)}">NUMBER OF GENES</a></th>
+							<th><a th:href="@{/basicParameters(orderBy=3)}">G / C CONTENT</a></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="cluster, iterStat : ${clusterData}">
+							<th th:text="${iterStat.count}"></th>
+							<td th:text="${cluster.name}"></td>
+							<td th:text="${cluster.numberOfGenes}"></td>
+							<td th:text="${cluster.gcContent}"></td>
+						</tr>
+					</tbody>
+				</table>
+				
+			</div>
+		</div>
+
+	</div>
+
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

@@ -16,20 +16,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
 import uk.ac.mib.antismashoops.core.utils.FileUploadHandler;
 
 @Controller
-public class FileUploadController
+public class UploadController
 {
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
 
-	private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
+	private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
 
 	@RequestMapping("/saveFile")
 	public String saveFile(@RequestParam("zipFile") MultipartFile file, ModelMap model) throws IOException
 	{
-		logger.debug("Saving file: {}", file.getOriginalFilename());
 		logger.info("Saving file: {}", file.getOriginalFilename());
 		File storeLocation = new File(uploadPath);
 		File compressedFile = new File(storeLocation, file.getOriginalFilename());
@@ -39,7 +39,9 @@ public class FileUploadController
 		FileUploadHandler.decompressFile(compressedFile, uploadPath);
 
 		model.addAttribute("fileName", file.getOriginalFilename());
-		return "dashboard";
+		model.addAttribute("clusterData", FileDataAnalyser.populateClusterNames(""));
+
+		return "upload";
 	}
 
 	@ExceptionHandler(Exception.class)

@@ -25,20 +25,37 @@
 		<h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
 		<div class="panel panel-default">
 			<div class="panel-body">
-
-				<!-- Upload Finished -->
 				<div class="js-upload-finished">
-					<h3>Uploaded File</h3>
-					<div class="list-group">
-						<a href="#" class="list-group-item list-group-item-success"><span
-							class="badge alert-success pull-right"
-						>Success</span><span th:text="${fileName}"></span></a>
+					<div class="list-group" align="center">
+						<a href="#" class="list-group-item list-group-item-warning">
+							<b><span th:text="${fileName}"></span></b>
+						</a>
 					</div>
 				</div>
-				<br />
-				<button type="button"
-					class="btn btn-primary btn-lg btn-block"
-				>START ANALYSIS</button>
+			
+				<div class="row" align="center">
+			        <div class="col-lg-12">
+			          <p>
+			            <a th:href="@{/basicParameters}" class="btn btn-lg btn-primary">
+			            	<br />
+			            	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+			            	<img src="/images/list.png" height="170px"></img>
+			            	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+			            	<br /><br/>
+			                BASIC<br />PRIORITISATION
+			            </a>
+			            &nbsp;&nbsp;
+			            <a href="#" class="btn btn-lg btn-success">
+			            	<br />
+			            	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+			            	<img src="/images/gears.png" height="170px"></img>
+			            	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+			            	<br/><br/>
+			            	ADVANCED<br />PRIORITISATION
+			            </a>
+			          </p>
+			        </div>
+				</div>
 			</div>
 		</div>
 

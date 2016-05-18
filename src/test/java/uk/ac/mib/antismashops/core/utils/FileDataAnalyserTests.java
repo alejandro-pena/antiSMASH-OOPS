@@ -1,7 +1,6 @@
 package uk.ac.mib.antismashops.core.utils;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +12,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
-import uk.ac.mib.antismashoops.core.model.Cluster;
 import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,7 +34,7 @@ public class FileDataAnalyserTests
 	@Test
 	public void genericTest()
 	{
-		FileDataAnalyser.populateClusterFiles(new ArrayList<Cluster>(), "");
+		FileDataAnalyser.populateClusterObjects("");
 	}
 
 }

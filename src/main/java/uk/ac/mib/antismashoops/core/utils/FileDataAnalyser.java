@@ -20,33 +20,50 @@ public class FileDataAnalyser
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
 
-	private static List<Cluster> clusters = new ArrayList<>();
+	private static List<Cluster> clusters;
 
-	public static List<Cluster> populateClusterFiles(List<Cluster> clusterList, String path)
+	public static List<Cluster> populateClusterNames(String path)
 	{
-		File folder = new File("/Users/Alex/Desktop/MIBDissertation/testingFiles/outputs/sampleOutput/");
+		logger.info("Cluster population started...");
+
+		clusters = new ArrayList<>();
+
+		File folder = new File(
+				"/Users/Alex/Desktop/SpringProjects/antiSMASH-OOPS/appData/NC_003888.3/2acd7e9e-4872-48d4-bae9-cac30ec52622");
 		File[] files = folder.listFiles();
 
 		for (File f : files)
 		{
 			if (f.getName().matches(REGEX))
 			{
-				clusters.add(new Cluster(new File(f.getAbsolutePath())));
+				clusters.add(new Cluster(f));
 			}
 		}
+		return clusters;
+	}
 
+	public static List<Cluster> populateClusterObjects(String path)
+	{
 		getGeneCount(clusters);
-
-		logger.info(clusters.toString());
-
-		return clusterList;
+		getGcContent(clusters);
+		return clusters;
 	}
 
 	public static List<Cluster> getGeneCount(List<Cluster> clusterList)
 	{
 		for (Cluster c : clusterList)
 		{
-			c.setNumberOfGenes(countWord("gene", c.getName()));
+			c.setNumberOfGenes(countWord("gene", c.getFile()));
+		}
+
+		return clusterList;
+	}
+
+	public static List<Cluster> getGcContent(List<Cluster> clusterList)
+	{
+		for (Cluster c : clusterList)
+		{
+			c.setGcContent(countGC(c.getFile()));
 		}
 
 		return clusterList;
@@ -58,7 +75,6 @@ public class FileDataAnalyser
 		Scanner scanner;
 		try
 		{
-			logger.info("Word count for " + word + " has started...");
 			scanner = new Scanner(file);
 			while (scanner.hasNext())
 			{
@@ -74,6 +90,41 @@ public class FileDataAnalyser
 			e.printStackTrace();
 		}
 
+		return count;
+	}
+
+	public static int countGC(File file)
+	{
+		int count = 0;
+		Scanner scanner;
+		char c = 'c';
+		char g = 'g';
+
+		try
+		{
+			scanner = new Scanner(file);
+			while (scanner.hasNext())
+			{
+				String nextToken = scanner.next();
+				if (nextToken.equalsIgnoreCase("ORIGIN"))
+					break;
+			}
+
+			while (scanner.hasNext())
+			{
+				String nextToken = scanner.next();
+				for (int i = 0; i < nextToken.length(); i++)
+					if (nextToken.charAt(i) == c || nextToken.charAt(i) == g)
+						count++;
+			}
+
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		return count;
 	}
 }
