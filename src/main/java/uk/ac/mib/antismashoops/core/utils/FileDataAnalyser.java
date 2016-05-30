@@ -9,20 +9,23 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import uk.ac.mib.antismashoops.core.model.Cluster;
 
+@Component
 public class FileDataAnalyser
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileDataAnalyser.class);
 	private static final String REGEX = "(.+)(cluster)(.*)(\\.gbk)";
+	private static final String sequenceRegex = "a|g|c|t";
 
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
 
 	private static List<Cluster> clusters;
 
-	public static List<Cluster> populateClusterNames(String path)
+	public List<Cluster> populateClusterNames(String path)
 	{
 		logger.info("Cluster population started...");
 
@@ -42,34 +45,25 @@ public class FileDataAnalyser
 		return clusters;
 	}
 
-	public static List<Cluster> populateClusterObjects(String path)
+	public List<Cluster> populateClusterObjects(String path)
 	{
-		getGeneCount(clusters);
-		getGcContent(clusters);
+		populateClusterData(clusters);
 		return clusters;
 	}
 
-	public static List<Cluster> getGeneCount(List<Cluster> clusterList)
+	public List<Cluster> populateClusterData(List<Cluster> clusterList)
 	{
 		for (Cluster c : clusterList)
 		{
 			c.setNumberOfGenes(countWord("gene", c.getFile()));
-		}
-
-		return clusterList;
-	}
-
-	public static List<Cluster> getGcContent(List<Cluster> clusterList)
-	{
-		for (Cluster c : clusterList)
-		{
 			c.setGcContent(countGC(c.getFile()));
+			c.setSequence(getClusterSequence(c.getFile()));
+			c.setBasePairs(c.getSequence().length());
 		}
-
 		return clusterList;
 	}
 
-	public static int countWord(String word, File file)
+	public int countWord(String word, File file)
 	{
 		int count = 0;
 		Scanner scanner;
@@ -93,7 +87,7 @@ public class FileDataAnalyser
 		return count;
 	}
 
-	public static int countGC(File file)
+	public int countGC(File file)
 	{
 		int count = 0;
 		Scanner scanner;
@@ -126,5 +120,41 @@ public class FileDataAnalyser
 			e.printStackTrace();
 		}
 		return count;
+	}
+
+	public String getClusterSequence(File file)
+	{
+		Scanner scanner;
+		StringBuilder sb = new StringBuilder();
+
+		try
+		{
+			scanner = new Scanner(file);
+
+			while (scanner.hasNext())
+			{
+				String nextToken = scanner.next();
+				if (nextToken.equalsIgnoreCase("ORIGIN"))
+					break;
+			}
+
+			scanner.useDelimiter("");
+
+			while (scanner.hasNext())
+			{
+				String nextToken = scanner.next();
+				if (nextToken.matches(sequenceRegex))
+					sb.append(nextToken);
+			}
+
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return sb.toString();
 	}
 }

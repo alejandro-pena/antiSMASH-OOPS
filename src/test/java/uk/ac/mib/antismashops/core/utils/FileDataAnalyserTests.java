@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,18 +24,29 @@ public class FileDataAnalyserTests
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
 
+	@Autowired
+	private FileDataAnalyser fda;
+
 	@Test
-	public void wordCount()
+	public void countWordTest()
 	{
 		logger.info("Word count started...");
 		File file = new File(uploadPath, "NC_003888.3.cluster002.gbk");
-		Assert.assertEquals(24, FileDataAnalyser.countWord("gene", file));
+		Assert.assertEquals(24, fda.countWord("gene", file));
 	}
 
 	@Test
 	public void genericTest()
 	{
-		FileDataAnalyser.populateClusterObjects("");
+		// FileDataAnalyser.populateClusterObjects("");
 	}
 
+	@Test
+	public void populateClusterSequenceTest()
+	{
+		logger.info("Sequence retrieval started...");
+		File file = new File(uploadPath, "NC_003888.3.cluster002.gbk");
+		String sequence = fda.getClusterSequence(file);
+		Assert.assertEquals(25538, sequence.length());
+	}
 }

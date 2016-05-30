@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -25,6 +26,9 @@ public class UploadController
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
 
+	@Autowired
+	private FileDataAnalyser fda;
+
 	private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
 
 	@RequestMapping("/saveFile")
@@ -39,7 +43,7 @@ public class UploadController
 		FileUploadHandler.decompressFile(compressedFile, uploadPath);
 
 		model.addAttribute("fileName", file.getOriginalFilename());
-		model.addAttribute("clusterData", FileDataAnalyser.populateClusterNames(""));
+		model.addAttribute("clusterData", fda.populateClusterNames(""));
 
 		return "upload";
 	}

@@ -24,6 +24,7 @@
 	<div class="container">
 		<h1 align="center" th:inline="text">Basic Parameters</h1>
 		<div class="panel panel-default">
+		<a href="appData/NC_003888.3/2acd7e9e-4872-48d4-bae9-cac30ec52622/index.html">Go to source</a>
 			<div class="panel-body">
 				
 				<br />
@@ -35,6 +36,7 @@
 							<th><a th:href="@{/basicParameters(orderBy=1)}">CLUSTER NAME</a></th>
 							<th><a th:href="@{/basicParameters(orderBy=2)}">NUMBER OF GENES</a></th>
 							<th><a th:href="@{/basicParameters(orderBy=3)}">G / C CONTENT</a></th>
+							<th><a th:href="@{/basicParameters(orderBy=4)}">SEQUENCE LENGTH</a></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -43,6 +45,7 @@
 							<td th:text="${cluster.name}"></td>
 							<td th:text="${cluster.numberOfGenes}"></td>
 							<td th:text="${cluster.gcContent}"></td>
+							<td th:text="${cluster.basePairs}"></td>
 						</tr>
 					</tbody>
 				</table>

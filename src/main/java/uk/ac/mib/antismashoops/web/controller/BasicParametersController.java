@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,13 +21,16 @@ public class BasicParametersController
 {
 	private static final Logger logger = LoggerFactory.getLogger(BasicParametersController.class);
 
+	@Autowired
+	private FileDataAnalyser fda;
+
 	@RequestMapping("/basicParameters")
 	public String showResults(@RequestParam(value = "orderBy", required = false) String orderBy, ModelMap model)
 			throws IOException
 	{
 		logger.info("Loading Basic Parameters View");
 
-		List<Cluster> clusterData = FileDataAnalyser.populateClusterObjects("");
+		List<Cluster> clusterData = fda.populateClusterObjects("");
 
 		if (orderBy != null && !orderBy.equalsIgnoreCase(""))
 		{

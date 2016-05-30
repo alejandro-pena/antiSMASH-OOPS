@@ -2,13 +2,20 @@ package uk.ac.mib.antismashoops.core.model;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 {
 	private String name;
 	private File file;
+	private int basePairs;
+	private List<Gene> genes;
 	private int numberOfGenes;
 	private int gcContent;
+	private String sequence;
 
 	public Cluster()
 	{
@@ -23,20 +30,9 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 
 	public Cluster(File file, int numberOfGenes)
 	{
-		super();
 		this.file = file;
 		this.numberOfGenes = numberOfGenes;
 		this.name = file.getName();
-	}
-
-	public File getFile()
-	{
-		return file;
-	}
-
-	public void setFile(File file)
-	{
-		this.file = file;
 	}
 
 	public String getName()
@@ -49,6 +45,36 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 		this.name = name;
 	}
 
+	public File getFile()
+	{
+		return file;
+	}
+
+	public void setFile(File file)
+	{
+		this.file = file;
+	}
+
+	public int getBasePairs()
+	{
+		return basePairs;
+	}
+
+	public void setBasePairs(int basePairs)
+	{
+		this.basePairs = basePairs;
+	}
+
+	public List<Gene> getGenes()
+	{
+		return genes;
+	}
+
+	public void setGenes(List<Gene> genes)
+	{
+		this.genes = genes;
+	}
+
 	public int getNumberOfGenes()
 	{
 		return numberOfGenes;
@@ -59,12 +85,6 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 		this.numberOfGenes = numberOfGenes;
 	}
 
-	@Override
-	public String toString()
-	{
-		return "Cluster [file=" + file + ", numberOfGenes=" + numberOfGenes + "]";
-	}
-
 	public int getGcContent()
 	{
 		return gcContent;
@@ -73,6 +93,16 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 	public void setGcContent(int gcContent)
 	{
 		this.gcContent = gcContent;
+	}
+
+	public String getSequence()
+	{
+		return sequence;
+	}
+
+	public void setSequence(String sequence)
+	{
+		this.sequence = sequence;
 	}
 
 	@Override
@@ -87,4 +117,9 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 		return o1.gcContent < o2.gcContent ? 1 : -1;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "Cluster [file=" + file + ", numberOfGenes=" + numberOfGenes + "]";
+	}
 }
