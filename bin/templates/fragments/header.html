@@ -9,19 +9,35 @@
 		<nav class="navbar navbar-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<img th:src="@{/images/antismash.png}" alt="antiSMASH Logo"
-						width="60" height="55"
-					/> <img th:src="@{/images/oops.png}" alt="OPS Logo" width="60" />
-					&nbsp;&nbsp;<a href="/"><font size="4" color="lightgrey"><b>antiSMASH:
-								Output Ordering and Prioritisation System</b></font></a>&nbsp;
+					<img th:src="@{/images/antismash.png}" alt="antiSMASH Logo" width="60" height="55" />
+					<img th:src="@{/images/oops.png}" alt="OPS Logo" width="60" />
+					&nbsp;&nbsp;
+					<a href="/">
+						<font size="4" color="lightgrey">
+							<b>antiSMASH: Output Ordering and Prioritisation System</b>
+						</font>
+					</a>
+					&nbsp;
 				</div>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="http://antismash.secondarymetabolites.org"><span
-							class="glyphicon glyphicon-home"
-						></span> antiSmash Home</a></li>
-					<li><a th:href="@{/help}"><span
-							class="glyphicon glyphicon-question-sign"
-						></span> Help</a></li>
+					<li>
+						<a th:href="@{/codonUsage}">
+							<span class="glyphicon glyphicon-stats"></span>
+							Codon Usage
+						</a>
+					</li>
+					<li>
+						<a href="http://antismash.secondarymetabolites.org">
+							<span class="glyphicon glyphicon-home"></span>
+							antiSmash Home
+						</a>
+					</li>
+					<li>
+						<a th:href="@{/help}">
+							<span class="glyphicon glyphicon-question-sign"></span>
+							Help
+						</a>
+					</li>
 				</ul>
 			</div>
 		</nav>

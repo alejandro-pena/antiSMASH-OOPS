@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+</head>
+
+<body>
+	<div th:fragment="clusterData" id="results-block">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>CLUSTER</th>
+					<th>NUMBER OF GENES</th>
+					<th>G / C CONTENT</th>
+					<th>SEQUENCE LENGTH</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="cluster, iterStat : ${clusterData}">
+					<th th:text="${iterStat.count}"></th>
+					<td th:inline="text">
+						<a th:href="@{|/local/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] - Cluster
+							[[${cluster.clusterNumber}]]</a>
+					</td>
+					<td th:text="${cluster.numberOfGenes}"></td>
+					<td th:text="${#numbers.formatDecimal(cluster.gcContent, 1, 4)}"></td>
+					<td th:text="${cluster.basePairs}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

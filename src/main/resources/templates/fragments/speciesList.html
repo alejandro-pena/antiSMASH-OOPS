@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+</head>
+
+<body>
+	<div th:fragment="speciesList" id="results-block">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Species Name</th>
+					<th>Species Id</th>
+					<th align="center">External Link to Kazusa</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="species, iterStat : ${speciesList}">
+					<th th:text="${iterStat.count}"></th>
+					<td th:text="${species.speciesName}"></td>
+					<td th:text="${species.speciesId}"></td>
+					<td align="center">
+						<a th:href="${species.url}">
+							<img th:src="@{/images/kazusa.png}" alt="Kazusa Logo" height="25" />
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

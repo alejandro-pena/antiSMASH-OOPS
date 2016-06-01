@@ -4,15 +4,11 @@
 <meta charset="UTF-8"></meta>
 <title th:inline="text">[[#{app.name}]] :: Dashboard</title>
 
-<link
-	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
-	th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
-	rel="stylesheet" media="screen"
+<link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}" rel="stylesheet" media="screen"
 />
 
-<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.3/jquery.min.js"
-	th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"
-></script>
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.3/jquery.min.js" th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"></script>
 
 <link rel="icon" th:href="@{/images/oops.ico}" />
 
@@ -25,36 +21,35 @@
 		<h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<div class="js-upload-finished">
-					<div class="list-group" align="center">
-						<a href="#" class="list-group-item list-group-item-warning">
-							<b><span th:text="${fileName}"></span></b>
-						</a>
-					</div>
-				</div>
-			
+
 				<div class="row" align="center">
-			        <div class="col-lg-12">
-			          <p>
-			            <a th:href="@{/basicParameters}" class="btn btn-lg btn-primary">
-			            	<br />
-			            	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-			            	<img src="/images/list.png" height="170px"></img>
-			            	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-			            	<br /><br/>
-			                BASIC<br />PRIORITISATION
-			            </a>
-			            &nbsp;&nbsp;
-			            <a href="#" class="btn btn-lg btn-success">
-			            	<br />
-			            	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-			            	<img src="/images/gears.png" height="170px"></img>
-			            	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-			            	<br/><br/>
-			            	ADVANCED<br />PRIORITISATION
-			            </a>
-			          </p>
-			        </div>
+					<div class="col-lg-12">
+						<p>
+							<a th:href="@{/basicParameters}" class="btn btn-lg btn-primary">
+								<br />
+								<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+								<img src="/images/list.png" height="170px"></img>
+								<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+								<br />
+								<br />
+								BASIC
+								<br />
+								PRIORITISATION
+							</a>
+							&nbsp;&nbsp;
+							<a href="#" class="btn btn-lg btn-success">
+								<br />
+								<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+								<img src="/images/gears.png" height="170px"></img>
+								<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+								<br />
+								<br />
+								ADVANCED
+								<br />
+								PRIORITISATION
+							</a>
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>

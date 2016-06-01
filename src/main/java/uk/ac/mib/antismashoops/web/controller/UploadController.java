@@ -2,6 +2,7 @@ package uk.ac.mib.antismashoops.web.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import uk.ac.mib.antismashoops.core.model.Cluster;
 import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
 import uk.ac.mib.antismashoops.core.utils.FileUploadHandler;
 
@@ -43,7 +45,8 @@ public class UploadController
 		FileUploadHandler.decompressFile(compressedFile, uploadPath);
 
 		model.addAttribute("fileName", file.getOriginalFilename());
-		model.addAttribute("clusterData", fda.populateClusterNames(""));
+		List<Cluster> clusterList = fda.populateClusterNames("");
+		model.addAttribute("clusterCount", clusterList.size());
 
 		return "upload";
 	}

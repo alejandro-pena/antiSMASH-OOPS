@@ -56,9 +56,9 @@ public class FileDataAnalyser
 		for (Cluster c : clusterList)
 		{
 			c.setNumberOfGenes(countWord("gene", c.getFile()));
-			c.setGcContent(countGC(c.getFile()));
-			c.setSequence(getClusterSequence(c.getFile()));
-			c.setBasePairs(c.getSequence().length());
+			c.setClusterSequence(getClusterSequence(c.getFile()));
+			c.setBasePairs(c.getClusterSequence().length());
+			c.setGcContent((double) countGC(c.getFile()) / (double) c.getClusterSequence().length());
 		}
 		return clusterList;
 	}

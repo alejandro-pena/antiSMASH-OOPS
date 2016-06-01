@@ -9,13 +9,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 {
-	private String name;
 	private File file;
+	private String name;
+	private String recordName;
+	private String clusterNumber;
 	private int basePairs;
 	private List<Gene> genes;
 	private int numberOfGenes;
-	private int gcContent;
-	private String sequence;
+	private double gcContent;
+	private String clusterSequence;
 
 	public Cluster()
 	{
@@ -25,14 +27,21 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 	public Cluster(File file)
 	{
 		this.file = file;
-		this.name = file.getName();
+		this.name = removeExtension(file.getName());
+		String[] qualifiedName = this.name.split(".c");
+		this.recordName = qualifiedName[0];
+		Integer clusterNo = Integer.parseInt(qualifiedName[1].replaceAll("\\D+", ""));
+		this.clusterNumber = clusterNo.toString();
 	}
 
-	public Cluster(File file, int numberOfGenes)
+	public File getFile()
+	{
+		return file;
+	}
+
+	public void setFile(File file)
 	{
 		this.file = file;
-		this.numberOfGenes = numberOfGenes;
-		this.name = file.getName();
 	}
 
 	public String getName()
@@ -45,14 +54,24 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 		this.name = name;
 	}
 
-	public File getFile()
+	public String getRecordName()
 	{
-		return file;
+		return recordName;
 	}
 
-	public void setFile(File file)
+	public void setRecordName(String recordName)
 	{
-		this.file = file;
+		this.recordName = recordName;
+	}
+
+	public String getClusterNumber()
+	{
+		return clusterNumber;
+	}
+
+	public void setClusterNumber(String clusterNumber)
+	{
+		this.clusterNumber = clusterNumber;
 	}
 
 	public int getBasePairs()
@@ -85,24 +104,24 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 		this.numberOfGenes = numberOfGenes;
 	}
 
-	public int getGcContent()
+	public double getGcContent()
 	{
 		return gcContent;
 	}
 
-	public void setGcContent(int gcContent)
+	public void setGcContent(double gcContent)
 	{
 		this.gcContent = gcContent;
 	}
 
-	public String getSequence()
+	public String getClusterSequence()
 	{
-		return sequence;
+		return clusterSequence;
 	}
 
-	public void setSequence(String sequence)
+	public void setClusterSequence(String clusterSequence)
 	{
-		this.sequence = sequence;
+		this.clusterSequence = clusterSequence;
 	}
 
 	@Override
@@ -122,4 +141,10 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 	{
 		return "Cluster [file=" + file + ", numberOfGenes=" + numberOfGenes + "]";
 	}
+
+	private static String removeExtension(String name)
+	{
+		return name.substring(0, name.lastIndexOf('.'));
+	}
+
 }
