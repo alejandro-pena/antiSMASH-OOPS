@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,9 @@ public class FileDataAnalyser
 
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
+
+	@Autowired
+	private ClusterDataParser cdp;
 
 	private static List<Cluster> clusters;
 
@@ -55,8 +59,9 @@ public class FileDataAnalyser
 	{
 		for (Cluster c : clusterList)
 		{
-			c.setNumberOfGenes(countWord("gene", c.getFile()));
+			c.setGenes(cdp.getGenesData(c.getFile()));
 			c.setClusterSequence(getClusterSequence(c.getFile()));
+			c.setNumberOfGenes(c.getGenes().size());
 			c.setBasePairs(c.getClusterSequence().length());
 			c.setGcContent((double) countGC(c.getFile()) / (double) c.getClusterSequence().length());
 		}

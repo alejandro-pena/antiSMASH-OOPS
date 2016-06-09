@@ -6,15 +6,20 @@ public class Gene
 	private String synonym;
 	private int startBase;
 	private int stopBase;
-	private String sequence;
+	private boolean complement;
 
-	public Gene(String geneId, String synonym, int startBase, int stopBase, String sequence)
+	public Gene()
+	{
+
+	}
+
+	public Gene(String geneId, String synonym, int startBase, int stopBase, boolean complement)
 	{
 		this.geneId = geneId;
 		this.synonym = synonym;
 		this.startBase = startBase;
 		this.stopBase = stopBase;
-		this.sequence = sequence;
+		this.complement = complement;
 	}
 
 	public String getGeneId()
@@ -57,13 +62,21 @@ public class Gene
 		this.stopBase = stopBase;
 	}
 
-	public String getSequence()
+	public boolean isComplement()
 	{
-		return sequence;
+		return complement;
 	}
 
-	public void setSequence(String sequence)
+	public void setComplement(boolean complement)
 	{
-		this.sequence = sequence;
+		this.complement = complement;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "Gene [geneId=" + geneId + ", synonym=" + synonym + ", startBase=" + startBase + ", stopBase=" + stopBase
+				+ ", complement=" + complement + "]";
+	}
+
 }

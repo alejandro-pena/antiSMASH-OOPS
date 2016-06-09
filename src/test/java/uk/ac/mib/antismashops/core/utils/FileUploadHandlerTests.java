@@ -11,12 +11,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
+import uk.ac.mib.antismashoops.MvcConfiguration;
 import uk.ac.mib.antismashoops.core.utils.FileUploadHandler;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(AntiSmashOopsApplication.class)
+@SpringApplicationConfiguration(classes = { AntiSmashOopsApplication.class, MvcConfiguration.class })
+@WebAppConfiguration
 public class FileUploadHandlerTests
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileUploadHandlerTests.class);

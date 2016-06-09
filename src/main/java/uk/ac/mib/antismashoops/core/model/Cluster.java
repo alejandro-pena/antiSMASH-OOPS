@@ -18,6 +18,7 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 	private int numberOfGenes;
 	private double gcContent;
 	private String clusterSequence;
+	private CodonUsage codonUsage;
 
 	public Cluster()
 	{
@@ -145,6 +146,16 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 	private static String removeExtension(String name)
 	{
 		return name.substring(0, name.lastIndexOf('.'));
+	}
+
+	public CodonUsage getCodonUsage()
+	{
+		return codonUsage;
+	}
+
+	public void setCodonUsage(CodonUsage codonUsage)
+	{
+		this.codonUsage = codonUsage;
 	}
 
 }
