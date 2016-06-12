@@ -50,6 +50,7 @@ public class FileDataAnalyserTests
 		logger.info("Sequence retrieval started...");
 		File file = new File(uploadPath, "NC_003888.3.cluster002.gbk");
 		String sequence = fda.getClusterSequence(file);
+		logger.info("Hola mundo".substring(0, 10));
 		Assert.assertEquals(25538, sequence.length());
 	}
 }

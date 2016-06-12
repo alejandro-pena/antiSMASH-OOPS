@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.ac.mib.antismashoops.core.model.Cluster;
+import uk.ac.mib.antismashoops.core.model.Gene;
 
 @Component
 public class FileDataAnalyser
@@ -28,6 +29,11 @@ public class FileDataAnalyser
 	private ClusterDataParser cdp;
 
 	private static List<Cluster> clusters;
+
+	public static List<Cluster> getClusterList()
+	{
+		return clusters;
+	}
 
 	public List<Cluster> populateClusterNames(String path)
 	{
@@ -63,7 +69,15 @@ public class FileDataAnalyser
 			c.setClusterSequence(getClusterSequence(c.getFile()));
 			c.setNumberOfGenes(c.getGenes().size());
 			c.setBasePairs(c.getClusterSequence().length());
-			c.setGcContent((double) countGC(c.getFile()) / (double) c.getClusterSequence().length());
+			c.setGcContent(getGcContent(c));
+			c.computeCodonUsage();
+
+			/*
+			 * for (Gene g : c.getGenes()) { logger.info("Gene: " +
+			 * g.isComplement() + " -- " +
+			 * c.getClusterSequence().substring(g.getStartBase() - 1,
+			 * g.getStopBase())); }
+			 */
 		}
 		return clusterList;
 	}
@@ -92,39 +106,23 @@ public class FileDataAnalyser
 		return count;
 	}
 
-	public int countGC(File file)
+	public double getGcContent(Cluster cluster)
 	{
 		int count = 0;
-		Scanner scanner;
-		char c = 'c';
-		char g = 'g';
+		int total = 0;
 
-		try
+		for (Gene g : cluster.getGenes())
 		{
-			scanner = new Scanner(file);
-			while (scanner.hasNext())
+			String cds = cluster.getClusterSequence().substring(g.getStartBase() - 1, g.getStopBase());
+			for (int i = 0; i < cds.length(); i++)
 			{
-				String nextToken = scanner.next();
-				if (nextToken.equalsIgnoreCase("ORIGIN"))
-					break;
+				if (cds.charAt(i) == 'C' || cds.charAt(i) == 'G')
+					count++;
 			}
-
-			while (scanner.hasNext())
-			{
-				String nextToken = scanner.next();
-				for (int i = 0; i < nextToken.length(); i++)
-					if (nextToken.charAt(i) == c || nextToken.charAt(i) == g)
-						count++;
-			}
-
-		} catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		} catch (Exception e)
-		{
-			e.printStackTrace();
+			total += cds.length();
 		}
-		return count;
+
+		return count * 1.0 / total;
 	}
 
 	public String getClusterSequence(File file)
@@ -160,6 +158,6 @@ public class FileDataAnalyser
 			e.printStackTrace();
 		}
 
-		return sb.toString();
+		return sb.toString().toUpperCase();
 	}
 }

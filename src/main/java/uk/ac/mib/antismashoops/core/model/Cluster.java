@@ -1,13 +1,14 @@
 package uk.ac.mib.antismashoops.core.model;
 
 import java.io.File;
-import java.util.Comparator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
+public class Cluster
 {
 	private File file;
 	private String name;
@@ -19,6 +20,9 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 	private double gcContent;
 	private String clusterSequence;
 	private CodonUsage codonUsage;
+	private double score;
+
+	private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
 
 	public Cluster()
 	{
@@ -126,18 +130,6 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 	}
 
 	@Override
-	public int compareTo(Cluster o)
-	{
-		return this.numberOfGenes < o.numberOfGenes ? 1 : -1;
-	}
-
-	@Override
-	public int compare(Cluster o1, Cluster o2)
-	{
-		return o1.gcContent < o2.gcContent ? 1 : -1;
-	}
-
-	@Override
 	public String toString()
 	{
 		return "Cluster [file=" + file + ", numberOfGenes=" + numberOfGenes + "]";
@@ -156,6 +148,95 @@ public class Cluster implements Comparable<Cluster>, Comparator<Cluster>
 	public void setCodonUsage(CodonUsage codonUsage)
 	{
 		this.codonUsage = codonUsage;
+	}
+
+	public void computeCodonUsage()
+	{
+		String sequence;
+		int codonTotal;
+		CodonUsage cu = new CodonUsage();
+
+		for (Gene g : genes)
+		{
+			sequence = clusterSequence.substring(g.getStartBase() - 1, g.getStopBase());
+			if (g.isComplement())
+				sequence = getComplementSequence(sequence);
+
+			codonTotal = sequence.length() / 3;
+
+			for (int i = 1; i < codonTotal; i++)
+			{
+				CodonUsage.Detail d = cu.getUsage().get(sequence.substring(i * 3 - 3, i * 3));
+				d.setCodonNumber(d.getCodonNumber() + 1);
+			}
+		}
+
+		this.setCodonUsage(cu);
+
+		logger.info(cu.toString());
+
+	}
+
+	public String getComplementSequence(String sequence)
+	{
+		StringBuilder sb = new StringBuilder();
+		String reversedSequence = new StringBuilder(sequence).reverse().toString();
+
+		for (int i = 0; i < reversedSequence.length(); i++)
+		{
+			switch (reversedSequence.charAt(i))
+			{
+			case 'A':
+				sb.append("T");
+				break;
+			case 'C':
+				sb.append("G");
+				break;
+			case 'G':
+				sb.append("C");
+				break;
+			case 'T':
+				sb.append("A");
+				break;
+			}
+		}
+
+		return sb.toString();
+	}
+
+	public double getScore()
+	{
+		return score;
+	}
+
+	public void setScore(double score)
+	{
+		this.score = score;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Cluster other = (Cluster) obj;
+		if (clusterNumber == null)
+		{
+			if (other.clusterNumber != null)
+				return false;
+		} else if (!clusterNumber.equals(other.clusterNumber))
+			return false;
+		if (recordName == null)
+		{
+			if (other.recordName != null)
+				return false;
+		} else if (!recordName.equals(other.recordName))
+			return false;
+		return true;
 	}
 
 }

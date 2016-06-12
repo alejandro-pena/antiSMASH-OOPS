@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class CodonUsage
 {
 	private String species;
-	private HashMap<String, Detail> usage;
+	private HashMap<String, Detail> usage = new HashMap<>();
 
 	public CodonUsage()
 	{
@@ -119,7 +119,7 @@ public class CodonUsage
 		this.usage = usage;
 	}
 
-	class Detail
+	public class Detail
 	{
 		private String aminoacid;
 		private String abbr;
@@ -197,5 +197,18 @@ public class CodonUsage
 		{
 			this.codonNumber = codonNumber;
 		}
+
+		@Override
+		public String toString()
+		{
+			return "Detail [aminoacid=" + aminoacid + ", abbr=" + abbr + ", letterAbbr=" + letterAbbr + ", codonNumber="
+					+ codonNumber + ", frequency=" + frequency + "]";
+		}
+	}
+
+	@Override
+	public String toString()
+	{
+		return "CodonUsage [species=" + species + ", usage=" + usage + "]";
 	}
 }

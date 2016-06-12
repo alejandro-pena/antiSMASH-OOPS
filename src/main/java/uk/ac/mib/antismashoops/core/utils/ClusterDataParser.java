@@ -46,7 +46,6 @@ public class ClusterDataParser
 		{
 			logger.error(e.getMessage());
 		}
-		int geneCounter = 0;
 
 		while (scanner.hasNextLine())
 		{
@@ -79,6 +78,7 @@ public class ClusterDataParser
 				}
 
 				geneList.add(new Gene(geneId, geneSynonym, startBase, stopBase, complement));
+
 			}
 
 		}

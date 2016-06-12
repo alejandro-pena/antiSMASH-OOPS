@@ -1,0 +1,59 @@
+package uk.ac.mib.antismashoops.web.controller;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import uk.ac.mib.antismashoops.core.model.Cluster;
+import uk.ac.mib.antismashoops.core.model.CodonUsage;
+import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
+
+@Controller
+public class CodonTablesController
+{
+	private static final Logger logger = LoggerFactory.getLogger(CodonTablesController.class);
+
+	@RequestMapping(value = "/codonTable/{cluster}", method = RequestMethod.GET)
+	public String getCodonUsageInfo(Model model, @PathVariable("cluster") String cluster) throws IOException
+	{
+		List<Cluster> clusterData = FileDataAnalyser.getClusterList();
+
+		Cluster requested = null;
+		for (Cluster c : clusterData)
+		{
+			if (c.getClusterNumber().equalsIgnoreCase(cluster))
+			{
+
+				requested = c;
+				break;
+			}
+		}
+
+		requested.computeCodonUsage();
+
+		HashMap<String, CodonUsage.Detail> table = requested.getCodonUsage().getUsage();
+
+		model.addAttribute("table", table);
+
+		return "clusterCodonTable";
+	}
+
+	@ExceptionHandler(Exception.class)
+	public String exceptionHandler(HttpServletRequest req, Exception exception)
+	{
+		exception.printStackTrace();
+		req.setAttribute("message", exception.getMessage());
+		return "error";
+	}
+}

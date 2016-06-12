@@ -2,7 +2,7 @@ function toggleRangeDisabling(itemId, valueOutput) {
 	var element = document.getElementById(itemId);
 	if (element.disabled == true) {
 		element.disabled = false;
-		element.value = 50;
+		element.value = 10;
 
 	} else {
 		element.disabled = true;
@@ -15,8 +15,15 @@ function updateRangeValue(rangeElement, itemId) {
 	document.getElementById(itemId).value = rangeElement.value;
 };
 
-function distributePrioritisationParameters() {
+function prioritise() {
+	
+	var numberOfGenes = $('#numberOfGenes').val();
+	var gcContent = $('#gcContent').val();
+	var codonBias = $('#codonBias').val();
 
+	url = '/basicParametersUpdate?geneCount='+numberOfGenes+'&gcContent='+gcContent+'&codonBias='+codonBias;
+	$("#outputData").html("<center><br /><h3>Prioritising... Please wait...</h3><br /></center>");
+	$("#outputData").load(url);
 }
 
 function getSpecies() {

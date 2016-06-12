@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8"></meta>
-<title th:inline="text">[[#{app.name}]] :: Basic</title>
+<title th:inline="text">[[#{app.name}]] :: Dashboard</title>
 
 <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
 	th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}" rel="stylesheet" media="screen"
@@ -21,7 +21,7 @@
 	<div th:replace="fragments/header :: header"></div>
 
 	<div class="container">
-		<h1 align="center" th:inline="text">Basic Parameters</h1>
+		<h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
 		<div class="panel panel-default">
 			<div class="panel-body">
 
@@ -33,8 +33,8 @@
 					<form class="form-inline">
 						<div class="form-group div-ctr">
 							<label for="numberOfGenes">Number of Genes</label>
-							<input type="range" min="0" max="100" step="10" id="numberOfGenes" onInput="updateRangeValue(this, 'nogValue')" />
-							<output id="nogValue">50</output>
+							<input type="range" value="10" min="0" max="10" step="1" id="numberOfGenes" onInput="updateRangeValue(this, 'nogValue')" />
+							<output id="nogValue">10</output>
 							<br />
 							<label>
 								<input type="checkbox" id="ignoreNOG" onClick="toggleRangeDisabling('numberOfGenes', 'nogValue');" />
@@ -46,8 +46,8 @@
 
 						<div class="form-group div-ctr">
 							<label for="gcContent">G/C Content</label>
-							<input type="range" min="0" max="100" step="10" id="gcContent" onInput="updateRangeValue(this, 'gccValue')" />
-							<output id="gccValue">50</output>
+							<input type="range" value="10" min="0" max="10" step="1" id="gcContent" onInput="updateRangeValue(this, 'gccValue')" />
+							<output id="gccValue">10</output>
 							<br />
 							<label>
 								<input type="checkbox" id="ignoreGCC" onClick="toggleRangeDisabling('gcContent', 'gccValue');" />
@@ -59,8 +59,8 @@
 
 						<div class="form-group div-ctr">
 							<label for="codonBias">Codon Bias</label>
-							<input type="range" min="0" max="100" step="10" id="codonBias" onInput="updateRangeValue(this, 'cbValue')" />
-							<output id="cbValue">50</output>
+							<input type="range" value="10" min="0" max="10" step="1" id="codonBias" onInput="updateRangeValue(this, 'cbValue')" />
+							<output id="cbValue">10</output>
 							<br />
 							<label>
 								<input type="checkbox" id="ignoreCB" onClick="toggleRangeDisabling('codonBias', 'cbValue');" />
@@ -69,7 +69,7 @@
 						</div>
 
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<button type="submit" class="btn btn-primary btn-lg">GO</button>
+						<button type="button" class="btn btn-primary btn-lg" onclick="prioritise()">GO</button>
 					</form>
 
 				</div>
@@ -85,6 +85,7 @@
 								<th>CLUSTER</th>
 								<th>NUMBER OF GENES</th>
 								<th>G / C CONTENT</th>
+								<th>CODON USAGE</th>
 								<th>SEQUENCE LENGTH</th>
 							</tr>
 						</thead>
@@ -97,6 +98,7 @@
 								</td>
 								<td th:text="${cluster.numberOfGenes}"></td>
 								<td th:text="${#numbers.formatDecimal(cluster.gcContent, 1, 4)}"></td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a th:href="@{|/codonTable/${cluster.clusterNumber}|}" target="_blank">Open</a></td>
 								<td th:text="${cluster.basePairs}"></td>
 							</tr>
 						</tbody>
