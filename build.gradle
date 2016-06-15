@@ -38,6 +38,10 @@ dependencies {
 	compile group: 'org.webjars', name: 'font-awesome', version: '3.0.0'
 	// jsoup HTML parser library @ http://jsoup.org/
 	compile 'org.jsoup:jsoup:1.9.2'
+	
+	compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.13'
+	compile group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: '1.9.13'
+	
 
 }
 

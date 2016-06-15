@@ -1,11 +1,11 @@
 package uk.ac.mib.antismashoops.core.model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class CodonUsage
 {
 	private String species;
-	private HashMap<String, Detail> usage = new HashMap<>();
+	private LinkedHashMap<String, Detail> usage = new LinkedHashMap<>();
 
 	public CodonUsage()
 	{
@@ -109,12 +109,12 @@ public class CodonUsage
 		this.species = species;
 	}
 
-	public HashMap<String, Detail> getUsage()
+	public LinkedHashMap<String, Detail> getUsage()
 	{
 		return usage;
 	}
 
-	public void setUsage(HashMap<String, Detail> usage)
+	public void setUsage(LinkedHashMap<String, Detail> usage)
 	{
 		this.usage = usage;
 	}

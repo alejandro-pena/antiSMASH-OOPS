@@ -1,7 +1,6 @@
 package uk.ac.mib.antismashoops.web.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.ac.mib.antismashoops.core.model.Cluster;
-import uk.ac.mib.antismashoops.core.model.CodonUsage;
 import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
 
 @Controller
@@ -42,9 +40,8 @@ public class CodonTablesController
 
 		requested.computeCodonUsage();
 
-		HashMap<String, CodonUsage.Detail> table = requested.getCodonUsage().getUsage();
-
-		model.addAttribute("table", table);
+		model.addAttribute("name", requested.getRecordName() + " - Cluster" + requested.getClusterNumber());
+		model.addAttribute("table", requested.getCodonUsage().getUsage());
 
 		return "clusterCodonTable";
 	}

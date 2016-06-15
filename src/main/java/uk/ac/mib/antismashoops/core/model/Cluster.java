@@ -172,9 +172,6 @@ public class Cluster
 		}
 
 		this.setCodonUsage(cu);
-
-		logger.info(cu.toString());
-
 	}
 
 	public String getComplementSequence(String sequence)

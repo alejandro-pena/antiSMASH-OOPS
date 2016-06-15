@@ -12,7 +12,7 @@
 					<th>#</th>
 					<th>Species Name</th>
 					<th>Species Id</th>
-					<th align="center">External Link to Kazusa</th>
+					<th class="t-ctr">View Table</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -20,9 +20,9 @@
 					<th th:text="${iterStat.count}"></th>
 					<td th:text="${species.speciesName}"></td>
 					<td th:text="${species.speciesId}"></td>
-					<td align="center">
+					<td class="t-ctr">
 						<a th:href="${species.url}">
-							<img th:src="@{/images/kazusa.png}" alt="Kazusa Logo" height="25" />
+							<span class="glyphicon glyphicon-list"></span>
 						</a>
 					</td>
 				</tr>

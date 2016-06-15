@@ -26,6 +26,16 @@
 	text-align: center !important;
 }
 
+.div-left
+{
+	text-align: left !important;
+}
+
+.t-ctr
+{
+	text-align: center !important;
+}
+
 .div-border
 {
 	border-radius: 25px;

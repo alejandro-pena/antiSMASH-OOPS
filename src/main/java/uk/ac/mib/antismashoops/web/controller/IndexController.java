@@ -3,10 +3,7 @@ package uk.ac.mib.antismashoops.web.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import uk.ac.mib.antismashoops.core.model.Person;
 
 @Controller
 public class IndexController
@@ -20,14 +17,10 @@ public class IndexController
 		return "index";
 	}
 
-	@RequestMapping("/person")
-	public String person(Model model)
+	@RequestMapping("/index2")
+	public String index2()
 	{
-		Person p = new Person();
-		p.setFirstName("Alex");
-		p.setLastName("Pena");
-		p.setAge(25);
-		model.addAttribute("person", p);
-		return "personView";
+		logger.info("Loading main page...");
+		return "index2";
 	}
 }

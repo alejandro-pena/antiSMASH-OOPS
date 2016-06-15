@@ -21,13 +21,35 @@
 	<div th:replace="fragments/header :: header"></div>
 
 	<div class="container">
-		<h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
+		<h3 align="center">Codon Usage Table for:</h3>
+		<h1 align="center">
+			<i th:text="${name}"></i>
+		</h1>
 		<div class="panel panel-default">
 			<div class="panel-body">
 
-				<p th:each="entry: ${table}">
-					<span th:text="${entry.key} + ', Number of codons: ' + ${entry.value.codonNumber}"></span>
-				</p>
+				<div id="usageData">
+
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>AMINO ACID</th>
+								<th>CODON</th>
+								<th>AMOUNT</th>
+								<th>FREQUENCY</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="entry: ${table}">
+								<td th:text="${entry.value.aminoacid}"></td>
+								<td th:text="${entry.key}"></td>
+								<td th:text="${entry.value.codonNumber}"></td>
+								<td th:text="${entry.value.frequency}"></td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
 
 			</div>
 		</div>

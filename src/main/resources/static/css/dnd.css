@@ -13,6 +13,12 @@
   line-height: 200px;
   text-align: center
 }
+
+.upload-drop-zone.hover {
+  color: #222;
+  border-color: #222;
+}
+
 .upload-drop-zone.drop {
   color: #222;
   border-color: #222;

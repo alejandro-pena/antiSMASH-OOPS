@@ -16,13 +16,16 @@ function updateRangeValue(rangeElement, itemId) {
 };
 
 function prioritise() {
-	
+
 	var numberOfGenes = $('#numberOfGenes').val();
 	var gcContent = $('#gcContent').val();
 	var codonBias = $('#codonBias').val();
 
-	url = '/basicParametersUpdate?geneCount='+numberOfGenes+'&gcContent='+gcContent+'&codonBias='+codonBias;
-	$("#outputData").html("<center><br /><h3>Prioritising... Please wait...</h3><br /></center>");
+	url = '/dashboardUpdate?geneCount=' + numberOfGenes + '&gcContent='
+			+ gcContent + '&codonBias=' + codonBias;
+	$("#outputData")
+			.html(
+					"<center><br /><h3>Prioritising... Please wait...</h3><br /></center>");
 	$("#outputData").load(url);
 }
 
@@ -39,6 +42,15 @@ function getSpecies() {
 	keyword = keyword.replace(/\s+/g, '+');
 
 	url = '/codonUsage/' + keyword;
-	$("#resultsBlock").html("<center><br /><h3>Loading species list...</h3><br /></center>");
+	$("#resultsBlock").html(
+			"<center><br /><h3>Loading species list...</h3><br /></center>");
 	$("#resultsBlock").load(url);
+}
+
+function submitEnter(e) {
+	if (e.keyCode == 13) {
+		e.preventDefault();
+		$("#speciesInput").blur();
+		getSpecies();
+	}
 }
