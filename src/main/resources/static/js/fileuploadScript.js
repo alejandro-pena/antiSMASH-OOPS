@@ -20,7 +20,7 @@ $(function () {
         progressall: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
             $('#progress').css('width',progress + '%');
-            $('#percentage').html('<b>' + progress + '% Completed</b>');
+            $('#progress').html('<b>' + progress + '% Completed</b>');
             console.log(progress);
         },
  

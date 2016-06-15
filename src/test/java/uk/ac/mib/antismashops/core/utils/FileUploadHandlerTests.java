@@ -15,7 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
 import uk.ac.mib.antismashoops.MvcConfiguration;
-import uk.ac.mib.antismashoops.core.utils.FileUploadHandler;
+import uk.ac.mib.antismashoops.core.utils.ZipFileHandler;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { AntiSmashOopsApplication.class, MvcConfiguration.class })
@@ -46,7 +46,7 @@ public class FileUploadHandlerTests
 		logger.info(uploadPath);
 		logger.info(compressedFile.getAbsolutePath());
 
-		FileUploadHandler.decompressFile(compressedFile, uploadPath);
+		ZipFileHandler.decompressFile(compressedFile, uploadPath);
 
 		logger.info("...finished file decompression.");
 

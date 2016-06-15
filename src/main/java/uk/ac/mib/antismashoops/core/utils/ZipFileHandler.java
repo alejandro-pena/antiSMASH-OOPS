@@ -8,15 +8,12 @@ import org.slf4j.LoggerFactory;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
-public class FileUploadHandler
+public class ZipFileHandler
 {
-	private static final Logger logger = LoggerFactory.getLogger(FileUploadHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(ZipFileHandler.class);
 
 	public static void decompressFile(File compressedFile, String uploadPath)
 	{
-		String destinationPath = uploadPath
-				+ compressedFile.getName().substring(0, compressedFile.getName().lastIndexOf("."));
-
 		try
 		{
 			ZipFile zipFile = new ZipFile(compressedFile);
@@ -25,7 +22,7 @@ public class FileUploadHandler
 				logger.info("The file is password protected... Unable to decompress.");
 			}
 
-			zipFile.extractAll(destinationPath);
+			zipFile.extractAll(uploadPath);
 
 		} catch (ZipException e)
 		{

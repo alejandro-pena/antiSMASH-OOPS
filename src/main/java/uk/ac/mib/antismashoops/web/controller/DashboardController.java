@@ -30,7 +30,7 @@ public class DashboardController
 	{
 		logger.info("Loading Basic Parameters View");
 
-		List<Cluster> clusterData = fda.populateClusterObjects("");
+		List<Cluster> clusterData = fda.populateClusterNames("");
 		model.addAttribute("clusterData", clusterData);
 
 		return "dashboard";

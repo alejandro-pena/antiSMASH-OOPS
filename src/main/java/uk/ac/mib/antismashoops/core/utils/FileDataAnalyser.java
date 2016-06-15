@@ -20,6 +20,7 @@ public class FileDataAnalyser
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileDataAnalyser.class);
 	private static final String REGEX = "(.+)(cluster)(.*)(\\.gbk)";
+	private static final String ZIP_REGEX = "(.+)(\\.zip)";
 	private static final String sequenceRegex = "a|g|c|t";
 
 	@Value("${app.files.uploadpath}")
@@ -39,19 +40,40 @@ public class FileDataAnalyser
 	{
 		logger.info("Cluster population started...");
 
-		clusters = new ArrayList<>();
-
-		File folder = new File(
-				"/Users/Alex/Desktop/SpringProjects/antiSMASH-OOPS/appData/NC_003888.3/2acd7e9e-4872-48d4-bae9-cac30ec52622");
-		File[] files = folder.listFiles();
-
-		for (File f : files)
+		for (File parent : new File(uploadPath).listFiles())
 		{
-			if (f.getName().matches(REGEX))
+			if (parent.isFile() && parent.getName().matches(ZIP_REGEX))
 			{
-				clusters.add(new Cluster(f));
+				ZipFileHandler.decompressFile(parent, uploadPath);
 			}
 		}
+
+		File __MACOSX = new File(uploadPath, "__MACOSX");
+		if (__MACOSX.exists())
+			delete(__MACOSX);
+
+		clusters = new ArrayList<>();
+
+		for (File parent : new File(uploadPath).listFiles())
+		{
+			if (parent.isDirectory())
+			{
+
+				File folder = new File(uploadPath, parent.getName());
+				File[] files = folder.listFiles();
+
+				for (File f : files)
+				{
+					if (f.getName().matches(REGEX))
+					{
+						clusters.add(new Cluster(f));
+					}
+				}
+			}
+		}
+
+		populateClusterData(clusters);
+
 		return clusters;
 	}
 
@@ -71,13 +93,6 @@ public class FileDataAnalyser
 			c.setBasePairs(c.getClusterSequence().length());
 			c.setGcContent(getGcContent(c));
 			c.computeCodonUsage();
-
-			/*
-			 * for (Gene g : c.getGenes()) { logger.info("Gene: " +
-			 * g.isComplement() + " -- " +
-			 * c.getClusterSequence().substring(g.getStartBase() - 1,
-			 * g.getStopBase())); }
-			 */
 		}
 		return clusterList;
 	}
@@ -159,5 +174,28 @@ public class FileDataAnalyser
 		}
 
 		return sb.toString().toUpperCase();
+	}
+
+	public static void delete(File file)
+	{
+		if (file.isDirectory())
+		{
+			if (file.list().length == 0)
+				file.delete();
+			else
+			{
+				String files[] = file.list();
+				for (String temp : files)
+				{
+					File fileDelete = new File(file, temp);
+					delete(fileDelete);
+				}
+
+				if (file.list().length == 0)
+					file.delete();
+			}
+
+		} else
+			file.delete();
 	}
 }

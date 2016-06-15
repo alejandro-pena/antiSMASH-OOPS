@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +26,10 @@ import uk.ac.mib.antismashoops.core.model.FileMetadata;
 public class FileController
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileController.class);
-	// List<FileMetadata> files = Collections.synchronizedList(new
-	// LinkedList<FileMetadata>());
+
+	@Value("${app.files.uploadpath}")
+	private String uploadPath;
+
 	List<FileMetadata> files = new ArrayList<>();
 	List<FileMetadata> filesFull = new ArrayList<>();
 
@@ -71,9 +74,7 @@ public class FileController
 			try
 			{
 				fileMeta2.setBytes(mpf.getBytes());
-				// copy file to local disk (make sure the path "e.g.
-				// D:/temp/files" exists)
-				FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream("/tmp/files/" + mpf.getOriginalFilename()));
+				FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(uploadPath + mpf.getOriginalFilename()));
 
 			} catch (IOException e)
 			{
@@ -82,7 +83,7 @@ public class FileController
 			}
 			// 2.4 add to files
 			files.add(0, fileMeta);
-			filesFull.add(fileMeta2);
+			filesFull.add(0, fileMeta2);
 
 			System.out.println(mpf.getOriginalFilename() + " uploaded!");
 		}
