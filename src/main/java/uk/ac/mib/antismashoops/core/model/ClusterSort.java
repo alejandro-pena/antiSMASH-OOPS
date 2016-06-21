@@ -21,6 +21,7 @@ public enum ClusterSort implements Comparator<Cluster>
 			return c1.getGcContent() > c2.getGcContent() ? 1 : -1;
 		}
 	},
+
 	SCORESORT
 	{
 		@Override

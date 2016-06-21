@@ -1,10 +1,8 @@
 package uk.ac.mib.antismashoops.core.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.ac.mib.antismashoops.core.model.Cluster;
-import uk.ac.mib.antismashoops.core.model.Gene;
 
 @Component
 public class FileDataAnalyser
@@ -21,7 +18,6 @@ public class FileDataAnalyser
 	private static final Logger logger = LoggerFactory.getLogger(FileDataAnalyser.class);
 	private static final String REGEX = "(.+)(cluster)(.*)(\\.gbk)";
 	private static final String ZIP_REGEX = "(.+)(\\.zip)";
-	private static final String sequenceRegex = "a|g|c|t";
 
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
@@ -36,7 +32,7 @@ public class FileDataAnalyser
 		return clusters;
 	}
 
-	public List<Cluster> populateClusterNames(String path)
+	public List<Cluster> createClusterObjects()
 	{
 		logger.info("Cluster population started...");
 
@@ -72,108 +68,23 @@ public class FileDataAnalyser
 			}
 		}
 
-		populateClusterData(clusters);
+		populateClusterData();
 
 		return clusters;
 	}
 
-	public List<Cluster> populateClusterObjects(String path)
+	public List<Cluster> populateClusterData()
 	{
-		populateClusterData(clusters);
-		return clusters;
-	}
-
-	public List<Cluster> populateClusterData(List<Cluster> clusterList)
-	{
-		for (Cluster c : clusterList)
+		for (Cluster c : clusters)
 		{
 			c.setGenes(cdp.getGenesData(c.getFile()));
-			c.setClusterSequence(getClusterSequence(c.getFile()));
+			c.setClusterSequence(cdp.getClusterSequence(c.getFile()));
 			c.setNumberOfGenes(c.getGenes().size());
 			c.setBasePairs(c.getClusterSequence().length());
-			c.setGcContent(getGcContent(c));
-			c.computeCodonUsage();
+			c.setGcContent(cdp.getGcContent(c));
+			// c.computeCodonUsage();
 		}
-		return clusterList;
-	}
-
-	public int countWord(String word, File file)
-	{
-		int count = 0;
-		Scanner scanner;
-		try
-		{
-			scanner = new Scanner(file);
-			while (scanner.hasNext())
-			{
-				String nextToken = scanner.next();
-				if (nextToken.equalsIgnoreCase(word))
-					count++;
-			}
-		} catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		return count;
-	}
-
-	public double getGcContent(Cluster cluster)
-	{
-		int count = 0;
-		int total = 0;
-
-		for (Gene g : cluster.getGenes())
-		{
-			String cds = cluster.getClusterSequence().substring(g.getStartBase() - 1, g.getStopBase());
-			for (int i = 0; i < cds.length(); i++)
-			{
-				if (cds.charAt(i) == 'C' || cds.charAt(i) == 'G')
-					count++;
-			}
-			total += cds.length();
-		}
-
-		return count * 1.0 / total;
-	}
-
-	public String getClusterSequence(File file)
-	{
-		Scanner scanner;
-		StringBuilder sb = new StringBuilder();
-
-		try
-		{
-			scanner = new Scanner(file);
-
-			while (scanner.hasNext())
-			{
-				String nextToken = scanner.next();
-				if (nextToken.equalsIgnoreCase("ORIGIN"))
-					break;
-			}
-
-			scanner.useDelimiter("");
-
-			while (scanner.hasNext())
-			{
-				String nextToken = scanner.next();
-				if (nextToken.matches(sequenceRegex))
-					sb.append(nextToken);
-			}
-
-		} catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		return sb.toString().toUpperCase();
+		return clusters;
 	}
 
 	public static void delete(File file)

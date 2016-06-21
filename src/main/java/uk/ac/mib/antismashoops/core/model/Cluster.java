@@ -154,7 +154,12 @@ public class Cluster
 	{
 		String sequence;
 		int codonTotal;
-		CodonUsage cu = new CodonUsage();
+		CodonUsage cu = this.codonUsage;
+
+		if (cu == null)
+		{
+			cu = new CodonUsage();
+		}
 
 		for (Gene g : genes)
 		{

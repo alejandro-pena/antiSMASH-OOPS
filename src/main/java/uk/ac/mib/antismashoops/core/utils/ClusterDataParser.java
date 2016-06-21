@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import uk.ac.mib.antismashoops.core.model.Cluster;
 import uk.ac.mib.antismashoops.core.model.Gene;
 
 @Component
@@ -24,6 +25,7 @@ public class ClusterDataParser
 	private static final String GENE_REGEXP = "(.+)gene(.+)(\\d+\\.\\.\\d+|complement\\(\\d+\\.\\.\\d+\\))";
 	private static final String GENEID_REGEXP = "(.+)\\/db_xref=\"GeneID:\\d+\"";
 	private static final String GENESYN_REGEXP = "(.+)\\/gene_synonym=\"(.+)\"";
+	private static final String SEQUENCE_REGEXP = "a|g|c|t";
 
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
@@ -85,6 +87,61 @@ public class ClusterDataParser
 
 		scanner.close();
 		return geneList;
+	}
+
+	public String getClusterSequence(File file)
+	{
+		Scanner scanner;
+		StringBuilder sb = new StringBuilder();
+
+		try
+		{
+			scanner = new Scanner(file);
+
+			while (scanner.hasNext())
+			{
+				String nextToken = scanner.next();
+				if (nextToken.equalsIgnoreCase("ORIGIN"))
+					break;
+			}
+
+			scanner.useDelimiter("");
+
+			while (scanner.hasNext())
+			{
+				String nextToken = scanner.next();
+				if (nextToken.matches(SEQUENCE_REGEXP))
+					sb.append(nextToken);
+			}
+
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return sb.toString().toUpperCase();
+	}
+
+	public double getGcContent(Cluster cluster)
+	{
+		int count = 0;
+		int total = 0;
+
+		for (Gene g : cluster.getGenes())
+		{
+			String cds = cluster.getClusterSequence().substring(g.getStartBase() - 1, g.getStopBase());
+			for (int i = 0; i < cds.length(); i++)
+			{
+				if (cds.charAt(i) == 'C' || cds.charAt(i) == 'G')
+					count++;
+			}
+			total += cds.length();
+		}
+
+		return count * 1.0 / total;
 	}
 
 	@ExceptionHandler(Exception.class)

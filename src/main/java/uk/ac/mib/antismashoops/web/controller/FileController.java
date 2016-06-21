@@ -33,15 +33,6 @@ public class FileController
 	List<FileMetadata> files = new ArrayList<>();
 	List<FileMetadata> filesFull = new ArrayList<>();
 
-	/***************************************************
-	 * URL: /rest/controller/upload upload(): receives files
-	 * 
-	 * @param request
-	 *            : MultipartHttpServletRequest auto passed
-	 * @param response
-	 *            : HttpServletResponse auto passed
-	 * @return LinkedList<FileMeta> as json format
-	 ****************************************************/
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public @ResponseBody List<FileMetadata> upload(MultipartHttpServletRequest request, HttpServletResponse response)
 	{
@@ -94,15 +85,6 @@ public class FileController
 
 	}
 
-	/***************************************************
-	 * URL: /rest/controller/get/{value} get(): get file as an attachment
-	 * 
-	 * @param response
-	 *            : passed by the server
-	 * @param value
-	 *            : value from the URL
-	 * @return void
-	 ****************************************************/
 	@RequestMapping(value = "/get/{value}", method = RequestMethod.GET)
 	public void get(HttpServletResponse response, @PathVariable String value)
 	{
@@ -114,7 +96,6 @@ public class FileController
 			FileCopyUtils.copy(getFile.getBytes(), response.getOutputStream());
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

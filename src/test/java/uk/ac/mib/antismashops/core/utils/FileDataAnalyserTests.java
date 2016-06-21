@@ -15,7 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
 import uk.ac.mib.antismashoops.MvcConfiguration;
-import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
+import uk.ac.mib.antismashoops.core.utils.ClusterDataParser;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { AntiSmashOopsApplication.class, MvcConfiguration.class })
@@ -28,14 +28,13 @@ public class FileDataAnalyserTests
 	private String uploadPath;
 
 	@Autowired
-	private FileDataAnalyser fda;
+	private ClusterDataParser cdp;
 
 	@Test
 	public void countWordTest()
 	{
 		logger.info("Word count started...");
 		File file = new File(uploadPath, "NC_003888.3.cluster002.gbk");
-		Assert.assertEquals(24, fda.countWord("gene", file));
 	}
 
 	@Test
@@ -49,7 +48,7 @@ public class FileDataAnalyserTests
 	{
 		logger.info("Sequence retrieval started...");
 		File file = new File(uploadPath, "NC_003888.3.cluster002.gbk");
-		String sequence = fda.getClusterSequence(file);
+		String sequence = cdp.getClusterSequence(file);
 		logger.info("Hola mundo".substring(0, 10));
 		Assert.assertEquals(25538, sequence.length());
 	}

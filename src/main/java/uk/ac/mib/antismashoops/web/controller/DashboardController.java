@@ -30,7 +30,7 @@ public class DashboardController
 	{
 		logger.info("Loading Basic Parameters View");
 
-		List<Cluster> clusterData = fda.populateClusterNames("");
+		List<Cluster> clusterData = fda.createClusterObjects();
 		model.addAttribute("clusterData", clusterData);
 
 		return "dashboard";
@@ -43,7 +43,7 @@ public class DashboardController
 	{
 
 		logger.info("Reloading Basic Parameters View");
-		List<Cluster> clusterData = fda.populateClusterObjects("");
+		List<Cluster> clusterData = fda.populateClusterData();
 
 		List<Cluster> clustersByNOG = new ArrayList<>(clusterData);
 		Collections.sort(clustersByNOG, ClusterSort.NOGSORT);
@@ -51,32 +51,18 @@ public class DashboardController
 		List<Cluster> clustersByGCC = new ArrayList<>(clusterData);
 		Collections.sort(clustersByGCC, ClusterSort.GCCSORT);
 
-		logger.info("" + geneCount);
-		logger.info("" + gcContent);
-
-		logger.info("");
-
 		for (Cluster c : clusterData)
 		{
 			c.setScore((clustersByNOG.indexOf(c) + 1) * 1.0 * geneCount);
-			logger.info(c.getClusterNumber() + " - " + c.getScore());
 		}
-
-		logger.info("");
 
 		for (Cluster c : clusterData)
 		{
 			double score = c.getScore();
 			c.setScore(score += ((clustersByGCC.indexOf(c) + 1) * 1.0 * gcContent));
-			logger.info(c.getClusterNumber() + " - " + c.getScore());
 		}
 
 		Collections.sort(clusterData, ClusterSort.SCORESORT);
-
-		for (Cluster c : clusterData)
-		{
-			logger.info("" + c.getScore());
-		}
 
 		model.addAttribute("clusterData", clusterData);
 

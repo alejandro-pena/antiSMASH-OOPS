@@ -16,11 +16,4 @@ public class IndexController
 		logger.info("Loading main page...");
 		return "index";
 	}
-
-	@RequestMapping("/index2")
-	public String index2()
-	{
-		logger.info("Loading main page...");
-		return "index2";
-	}
 }

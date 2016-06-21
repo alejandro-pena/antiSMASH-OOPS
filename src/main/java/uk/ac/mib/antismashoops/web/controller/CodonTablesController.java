@@ -38,6 +38,7 @@ public class CodonTablesController
 			}
 		}
 
+		logger.info("Computing codon usage for Cluster: " + requested.getName());
 		requested.computeCodonUsage();
 
 		model.addAttribute("name", requested.getRecordName() + " - Cluster" + requested.getClusterNumber());
