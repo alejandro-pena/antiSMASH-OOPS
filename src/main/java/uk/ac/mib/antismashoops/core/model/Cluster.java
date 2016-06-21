@@ -206,6 +206,19 @@ public class Cluster
 		return sb.toString();
 	}
 
+	public int getCodingSequenceLength()
+	{
+		int count = 0;
+
+		for (Gene g : this.genes)
+		{
+			count += g.getStopBase() - g.getStartBase();
+			count++;
+		}
+
+		return count;
+	}
+
 	public double getScore()
 	{
 		return score;

@@ -80,7 +80,7 @@ public class FileDataAnalyser
 			c.setGenes(cdp.getGenesData(c.getFile()));
 			c.setClusterSequence(cdp.getClusterSequence(c.getFile()));
 			c.setNumberOfGenes(c.getGenes().size());
-			c.setBasePairs(c.getClusterSequence().length());
+			c.setBasePairs(c.getCodingSequenceLength());
 			c.setGcContent(cdp.getGcContent(c));
 			// c.computeCodonUsage();
 		}

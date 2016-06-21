@@ -38,6 +38,7 @@ public class DashboardController
 
 	@RequestMapping("/dashboardUpdate")
 	public String updateResults(@RequestParam(value = "geneCount", required = false) int geneCount,
+			@RequestParam(value = "sequenceLength", required = false) int sequenceLength,
 			@RequestParam(value = "gcContent", required = false) int gcContent,
 			@RequestParam(value = "codonBias", required = false) int codonBias, ModelMap model) throws IOException
 	{
@@ -48,12 +49,21 @@ public class DashboardController
 		List<Cluster> clustersByNOG = new ArrayList<>(clusterData);
 		Collections.sort(clustersByNOG, ClusterSort.NOGSORT);
 
+		List<Cluster> clustersBySL = new ArrayList<>(clusterData);
+		Collections.sort(clustersBySL, ClusterSort.SLSORT);
+
 		List<Cluster> clustersByGCC = new ArrayList<>(clusterData);
 		Collections.sort(clustersByGCC, ClusterSort.GCCSORT);
 
 		for (Cluster c : clusterData)
 		{
 			c.setScore((clustersByNOG.indexOf(c) + 1) * 1.0 * geneCount);
+		}
+
+		for (Cluster c : clusterData)
+		{
+			double score = c.getScore();
+			c.setScore(score += ((clustersBySL.indexOf(c) + 1) * 1.0 * sequenceLength));
 		}
 
 		for (Cluster c : clusterData)

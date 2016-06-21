@@ -13,6 +13,15 @@ public enum ClusterSort implements Comparator<Cluster>
 		}
 	},
 
+	SLSORT
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getCodingSequenceLength() > c2.getCodingSequenceLength() ? 1 : -1;
+		}
+	},
+
 	GCCSORT
 	{
 		@Override

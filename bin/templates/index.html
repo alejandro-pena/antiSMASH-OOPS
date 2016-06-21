@@ -43,13 +43,6 @@
 				<h4>Or drag and drop the ZIP files below</h4>
 				<div class="upload-drop-zone" id="dropzone">Drag and drop here</div>
 
-				<form th:action="@{/dashboard}" action="" method="POST">
-					<input type="hidden" th:value="${fileName}" name="fileName" />
-					<button type="submit" class="btn btn-primary btn-lg btn-block">GO TO PRIORITISATION DASHBOARD</button>
-				</form>
-				<br />
-				<br />
-
 				<div class="progress progress-striped">
 					<div id="progress" class="progress-bar" style="width: 0%;"></div>
 				</div>
@@ -63,6 +56,13 @@
 						<th>Download</th>
 					</tr>
 				</table>
+
+				<br />
+				<form th:action="@{/dashboard}" action="" method="POST">
+					<input type="hidden" th:value="${fileName}" name="fileName" />
+					<button type="submit" class="btn btn-primary btn-lg btn-block">GO TO PRIORITISATION DASHBOARD</button>
+				</form>
+
 
 			</div>
 		</div>

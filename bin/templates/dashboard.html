@@ -12,6 +12,7 @@
 
 <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.3/jquery.min.js" th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"></script>
 <script th:src="@{/js/script.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
 
 <link rel="icon" th:href="@{/images/oops.ico}" />
 
@@ -21,6 +22,17 @@
 	<div th:replace="fragments/header :: header"></div>
 
 	<div class="container">
+
+		<div th:if="${#lists.isEmpty(clusterData)}" class="alert alert-warning alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			<strong>Warning!</strong>
+			There are no antiSMASH Zip Files uploaded in this session. Click
+			<a th:href="@{/}" class="alert-link">here</a>
+			to upload your files...
+		</div>
+
 		<h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
 		<div class="panel panel-default">
 			<div class="panel-body">
@@ -38,6 +50,19 @@
 							<br />
 							<label>
 								<input type="checkbox" id="ignoreNOG" onClick="toggleRangeDisabling('numberOfGenes', 'nogValue');" />
+								Ignore
+							</label>
+						</div>
+
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+						<div class="form-group div-ctr">
+							<label for="sequenceLength">Sequence Length</label>
+							<input type="range" value="10" min="0" max="10" step="1" id="sequenceLength" onInput="updateRangeValue(this, 'slValue')" />
+							<output id="slValue">10</output>
+							<br />
+							<label>
+								<input type="checkbox" id="ignoreSL" onClick="toggleRangeDisabling('sequenceLength', 'slValue');" />
 								Ignore
 							</label>
 						</div>
@@ -92,8 +117,8 @@
 							</select>
 						</div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<button type="button" class="btn btn-primary btn-lg" onclick="prioritise()">GO</button>
+						<br /><br />
+						<button type="button" class="btn btn-primary btn-lg btn-block" onclick="prioritise()">PRIORITISE</button>
 					</form>
 
 				</div>
@@ -108,9 +133,9 @@
 								<th>#</th>
 								<th>CLUSTER</th>
 								<th>NUMBER OF GENES</th>
+								<th>CDS LENGTH</th>
 								<th>G / C CONTENT</th>
 								<th>CODON USAGE</th>
-								<th>SEQUENCE LENGTH</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -121,12 +146,12 @@
 										Cluster [[${cluster.clusterNumber}]]</a>
 								</td>
 								<td th:text="${cluster.numberOfGenes}"></td>
+								<td th:inline="text">[[${cluster.basePairs}]] bp</td>
 								<td th:text="${#numbers.formatDecimal(cluster.gcContent, 1, 4)}"></td>
 								<td>
 									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 									<a th:href="@{|/codonTable/${cluster.clusterNumber}|}" target="_blank">Open</a>
 								</td>
-								<td th:text="${cluster.basePairs}"></td>
 							</tr>
 						</tbody>
 					</table>

@@ -18,11 +18,12 @@ function updateRangeValue(rangeElement, itemId) {
 function prioritise() {
 
 	var numberOfGenes = $('#numberOfGenes').val();
+	var sequenceLength = $('#sequenceLength').val();
 	var gcContent = $('#gcContent').val();
 	var codonBias = $('#codonBias').val();
 
-	url = '/dashboardUpdate?geneCount=' + numberOfGenes + '&gcContent='
-			+ gcContent + '&codonBias=' + codonBias;
+	url = '/dashboardUpdate?geneCount=' + numberOfGenes + '&sequenceLength='
+			+ sequenceLength + '&gcContent=' + gcContent + '&codonBias=' + codonBias;
 	$("#outputData")
 			.html(
 					"<center><br /><h3>Prioritising... Please wait...</h3><br /></center>");
