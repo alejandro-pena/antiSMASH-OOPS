@@ -21,13 +21,30 @@ function prioritise() {
 	var sequenceLength = $('#sequenceLength').val();
 	var gcContent = $('#gcContent').val();
 	var codonBias = $('#codonBias').val();
+	var refSpecies = $('#selectSpecies').val();
 
 	url = '/dashboardUpdate?geneCount=' + numberOfGenes + '&sequenceLength='
-			+ sequenceLength + '&gcContent=' + gcContent + '&codonBias=' + codonBias;
+			+ sequenceLength + '&gcContent=' + gcContent + '&codonBias=' + codonBias + '&refSpecies=' + refSpecies;
 	$("#outputData")
 			.html(
 					"<center><br /><h3>Prioritising... Please wait...</h3><br /></center>");
 	$("#outputData").load(url);
+}
+
+function loadSpecies() {
+
+	var keyword = $('#speciesName').val();
+
+	if (keyword == '') {
+		alert("The species name cannot be empty!")
+		return;
+	}
+
+	keyword = keyword.trim();
+	keyword = keyword.replace(/\s+/g, '+');
+
+	url = '/species/' + keyword;
+	$("#speciesDD").load(url);
 }
 
 function getSpecies() {

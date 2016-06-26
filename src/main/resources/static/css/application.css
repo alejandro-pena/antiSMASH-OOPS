@@ -61,6 +61,11 @@
 	text-align: center !important;
 }
 
+.t-mid
+{
+	vertical-align: middle !important;
+}
+
 .div-border
 {
 	border-radius: 25px;

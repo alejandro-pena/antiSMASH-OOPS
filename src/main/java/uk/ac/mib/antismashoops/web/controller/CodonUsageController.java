@@ -30,7 +30,7 @@ public class CodonUsageController
 	private static final Logger logger = LoggerFactory.getLogger(CodonUsageController.class);
 
 	@RequestMapping("/codonUsage")
-	public String help()
+	public String getSpecies()
 	{
 		return "codonUsage";
 	}

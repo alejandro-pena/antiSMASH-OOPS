@@ -141,7 +141,7 @@ public class ClusterDataParser
 			total += cds.length();
 		}
 
-		return count * 1.0 / total;
+		return count * 100.0 / total;
 	}
 
 	@ExceptionHandler(Exception.class)

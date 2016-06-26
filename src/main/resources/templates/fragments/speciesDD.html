@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+	<div th:fragment="speciesDD" id="results-block">
+		<label for="selectSpecies">Select&nbsp;&nbsp;</label>
+		<select class="form-control input-sm" id="selectSpecies" th:field="*{species}">
+			<option th:each="species : ${speciesList}" 
+					th:value="${species.speciesId}"
+					th:text="${species.speciesName}"></option>
+		</select>
+	</div>
+</body>
+</html>

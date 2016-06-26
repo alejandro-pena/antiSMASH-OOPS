@@ -2,6 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
+
+<link rel="stylesheet" th:href="@{/css/application.css}" />
+
 </head>
 
 <body>
@@ -9,12 +12,17 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>#</th>
-					<th>CLUSTER</th>
-					<th>NUMBER OF GENES</th>
-					<th>CDS LENGTH</th>
-					<th>G / C CONTENT</th>
-					<th>CODON USAGE</th>
+					<th class="t-mid">#</th>
+					<th class="t-mid">CLUSTER</th>
+					<th class="t-mid">GENE NUMBER</th>
+					<th class="t-mid">CDS LENGTH</th>
+					<th class="t-mid" th:if="${clusterData[0].gcContentDiff != -1}">
+						&Delta; GC REF
+						<br />
+						SPECIES
+					</th>
+					<th class="t-mid" th:if="${clusterData[0].gcContentDiff == -1}">CODING GC</th>
+					<th class="t-mid">CODON USAGE</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -26,7 +34,8 @@
 					</td>
 					<td th:text="${cluster.numberOfGenes}"></td>
 					<td th:inline="text">[[${cluster.basePairs}]] bp</td>
-					<td th:text="${#numbers.formatDecimal(cluster.gcContent, 1, 4)}"></td>
+					<td th:if="${cluster.gcContentDiff != -1}" th:inline="text">[[${#numbers.formatDecimal(cluster.gcContentDiff, 1, 2)}]]%</td>
+					<td th:if="${cluster.gcContentDiff == -1}" th:inline="text">[[${#numbers.formatDecimal(cluster.gcContent, 1, 2)}]]%</td>
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a th:href="@{|/codonTable/${cluster.clusterNumber}|}" target="_blank">Open</a>

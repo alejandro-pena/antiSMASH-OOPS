@@ -2,10 +2,13 @@ package uk.ac.mib.antismashoops.core.model;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import uk.ac.mib.antismashoops.core.model.CodonUsage.Detail;
 
 @Component
 public class Cluster
@@ -18,9 +21,11 @@ public class Cluster
 	private List<Gene> genes;
 	private int numberOfGenes;
 	private double gcContent;
+	private double gcContentDiff = -1;
 	private String clusterSequence;
 	private CodonUsage codonUsage;
-	private double score;
+	private double cuScoreRef = -1;
+	private double score = 0;
 
 	private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
 
@@ -154,12 +159,8 @@ public class Cluster
 	{
 		String sequence;
 		int codonTotal;
-		CodonUsage cu = this.codonUsage;
-
-		if (cu == null)
-		{
-			cu = new CodonUsage();
-		}
+		CodonUsage cu = new CodonUsage();
+		int cdsLength = this.getCodingSequenceLength();
 
 		for (Gene g : genes)
 		{
@@ -169,11 +170,21 @@ public class Cluster
 
 			codonTotal = sequence.length() / 3;
 
+			// SETS NUMBER OF CODONS FOR CODON TABLE
+
 			for (int i = 1; i < codonTotal; i++)
 			{
 				CodonUsage.Detail d = cu.getUsage().get(sequence.substring(i * 3 - 3, i * 3));
 				d.setCodonNumber(d.getCodonNumber() + 1);
 			}
+		}
+
+		// SETS /1000 FOR CODON TABLE
+
+		for (Entry<String, Detail> codon : cu.getUsage().entrySet())
+		{
+			Detail d = codon.getValue();
+			codon.getValue().setFrequency((d.getCodonNumber() * 1000.0) / cdsLength);
 		}
 
 		this.setCodonUsage(cu);
@@ -227,6 +238,36 @@ public class Cluster
 	public void setScore(double score)
 	{
 		this.score = score;
+	}
+
+	public double getGcContentDiff()
+	{
+		return gcContentDiff;
+	}
+
+	public void setGcContentDiff(double gcContentRef)
+	{
+		this.gcContentDiff = Math.abs(this.gcContent - gcContentRef);
+	}
+
+	public double getCuScoreRef()
+	{
+		return cuScoreRef;
+	}
+
+	public void setCuScoreRef(CodonUsage cuRef)
+	{
+		double score = 0.0;
+		this.computeCodonUsage();
+
+		for (Entry<String, Detail> cdn : codonUsage.getUsage().entrySet())
+		{
+			Detail dCluster = cdn.getValue();
+			Detail dRef = cuRef.getUsage().get(cdn.getKey());
+			score += Math.abs(dCluster.getFrequency() - dRef.getFrequency());
+		}
+
+		this.cuScoreRef = score;
 	}
 
 	@Override

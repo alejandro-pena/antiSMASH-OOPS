@@ -124,8 +124,9 @@ public class CodonUsage
 		private String aminoacid;
 		private String abbr;
 		private String letterAbbr;
-		private int codonNumber;
-		private double frequency;
+		private int codonNumber = 0;
+		private double frequency = 0.0;
+		private double codingGC = 0.0;
 
 		public Detail()
 		{
@@ -196,6 +197,16 @@ public class CodonUsage
 		public void setCodonNumber(int codonNumber)
 		{
 			this.codonNumber = codonNumber;
+		}
+
+		public double getCodingGC()
+		{
+			return codingGC;
+		}
+
+		public void setCodingGC(double codingGC)
+		{
+			this.codingGC = codingGC;
 		}
 
 		@Override

@@ -31,6 +31,24 @@ public enum ClusterSort implements Comparator<Cluster>
 		}
 	},
 
+	GCCREFSORT
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getGcContentDiff() < c2.getGcContentDiff() ? 1 : -1;
+		}
+	},
+
+	CBSORT
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getCuScoreRef() < c2.getCuScoreRef() ? 1 : -1;
+		}
+	},
+
 	SCORESORT
 	{
 		@Override

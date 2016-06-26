@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.ac.mib.antismashoops.core.model.Cluster;
+import uk.ac.mib.antismashoops.core.model.CodonUsage;
 
 @Component
 public class FileDataAnalyser
@@ -82,7 +83,21 @@ public class FileDataAnalyser
 			c.setNumberOfGenes(c.getGenes().size());
 			c.setBasePairs(c.getCodingSequenceLength());
 			c.setGcContent(cdp.getGcContent(c));
-			// c.computeCodonUsage();
+		}
+		return clusters;
+	}
+
+	public List<Cluster> populateClusterData(double gcContentRef, CodonUsage cuRef)
+	{
+		for (Cluster c : clusters)
+		{
+			c.setGenes(cdp.getGenesData(c.getFile()));
+			c.setClusterSequence(cdp.getClusterSequence(c.getFile()));
+			c.setNumberOfGenes(c.getGenes().size());
+			c.setBasePairs(c.getCodingSequenceLength());
+			c.setGcContent(cdp.getGcContent(c));
+			c.setGcContentDiff(gcContentRef);
+			c.setCuScoreRef(cuRef);
 		}
 		return clusters;
 	}
