@@ -1,6 +1,9 @@
 package uk.ac.mib.antismashoops.core.model;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class CodonUsage
 {
@@ -9,89 +12,111 @@ public class CodonUsage
 
 	public CodonUsage()
 	{
-		// G BASED TRIPLETS
-		usage.put("GGG", new Detail("Glycine", "Gly", "G"));
-		usage.put("GGA", new Detail("Glycine", "Gly", "G"));
-		usage.put("GGT", new Detail("Glycine", "Gly", "G"));
-		usage.put("GGC", new Detail("Glycine", "Gly", "G"));
-
-		usage.put("GAG", new Detail("Glutamic Acid", "Glu", "E"));
-		usage.put("GAA", new Detail("Glutamic Acid", "Glu", "E"));
-		usage.put("GAT", new Detail("Aspartic Acid", "Asp", "D"));
-		usage.put("GAC", new Detail("Aspartic Acid", "Asp", "D"));
-
-		usage.put("GTG", new Detail("Valine", "Val", "V"));
-		usage.put("GTA", new Detail("Valine", "Val", "V"));
-		usage.put("GTT", new Detail("Valine", "Val", "V"));
-		usage.put("GTC", new Detail("Valine", "Val", "V"));
-
+		// ALANINE
 		usage.put("GCG", new Detail("Alanine", "Ala", "A"));
 		usage.put("GCA", new Detail("Alanine", "Ala", "A"));
 		usage.put("GCT", new Detail("Alanine", "Ala", "A"));
 		usage.put("GCC", new Detail("Alanine", "Ala", "A"));
 
-		// A BASED TRIPLETS
+		// ARGININE
 		usage.put("AGG", new Detail("Arginine", "Arg", "R"));
 		usage.put("AGA", new Detail("Arginine", "Arg", "R"));
-		usage.put("AGT", new Detail("Serine", "Ser", "S"));
-		usage.put("AGC", new Detail("Serine", "Ser", "S"));
-
-		usage.put("AAG", new Detail("Lysine", "Lys", "K"));
-		usage.put("AAA", new Detail("Lysine", "Lys", "K"));
-		usage.put("AAT", new Detail("Asparagine", "Asn", "N"));
-		usage.put("AAC", new Detail("Asparagine", "Asn", "N"));
-
-		usage.put("ATG", new Detail("Methionine", "Met", "M"));
-		usage.put("ATA", new Detail("Isoleucine", "Ile", "I"));
-		usage.put("ATT", new Detail("Isoleucine", "Ile", "I"));
-		usage.put("ATC", new Detail("Isoleucine", "Ile", "I"));
-
-		usage.put("ACG", new Detail("Threonine", "Thr", "T"));
-		usage.put("ACA", new Detail("Threonine", "Thr", "T"));
-		usage.put("ACT", new Detail("Threonine", "Thr", "T"));
-		usage.put("ACC", new Detail("Threonine", "Thr", "T"));
-
-		// T BASED TRIPLETS
-		usage.put("TGG", new Detail("Tryptophan", "Trp", "W"));
-		usage.put("TGA", new Detail("Stop", "Stp", "*"));
-		usage.put("TGT", new Detail("Cysteine", "Cys", "C"));
-		usage.put("TGC", new Detail("Cysteine", "Cys", "C"));
-
-		usage.put("TAG", new Detail("Stop", "Stp", "*"));
-		usage.put("TAA", new Detail("Stop", "Stp", "*"));
-		usage.put("TAT", new Detail("Tyrosine", "Tyr", "Y"));
-		usage.put("TAC", new Detail("Tyrosine", "Tyr", "Y"));
-
-		usage.put("TTG", new Detail("Leucine", "Leu", "L"));
-		usage.put("TTA", new Detail("Leucine", "Leu", "L"));
-		usage.put("TTT", new Detail("Phenylalanine", "Phe", "F"));
-		usage.put("TTC", new Detail("Phenylalanine", "Phe", "F"));
-
-		usage.put("TCG", new Detail("Serine", "Ser", "S"));
-		usage.put("TCA", new Detail("Serine", "Ser", "S"));
-		usage.put("TCT", new Detail("Serine", "Ser", "S"));
-		usage.put("TCC", new Detail("Serine", "Ser", "S"));
-
-		// C BASED TRIPLETS
 		usage.put("CGG", new Detail("Arginine", "Arg", "R"));
 		usage.put("CGA", new Detail("Arginine", "Arg", "R"));
 		usage.put("CGT", new Detail("Arginine", "Arg", "R"));
 		usage.put("CGC", new Detail("Arginine", "Arg", "R"));
 
+		// ASPARAGINE
+		usage.put("AAT", new Detail("Asparagine", "Asn", "N"));
+		usage.put("AAC", new Detail("Asparagine", "Asn", "N"));
+
+		// ASPARTIC ACID
+		usage.put("GAT", new Detail("Aspartic Acid", "Asp", "D"));
+		usage.put("GAC", new Detail("Aspartic Acid", "Asp", "D"));
+
+		// CYSTEINE
+		usage.put("TGT", new Detail("Cysteine", "Cys", "C"));
+		usage.put("TGC", new Detail("Cysteine", "Cys", "C"));
+
+		// GLUTAMIC ACID
+		usage.put("GAG", new Detail("Glutamic Acid", "Glu", "E"));
+		usage.put("GAA", new Detail("Glutamic Acid", "Glu", "E"));
+
+		// GLUTAMINE
 		usage.put("CAG", new Detail("Glutamine", "Gln", "Q"));
 		usage.put("CAA", new Detail("Glutamine", "Gln", "Q"));
+
+		// GLYCINE
+		usage.put("GGG", new Detail("Glycine", "Gly", "G"));
+		usage.put("GGA", new Detail("Glycine", "Gly", "G"));
+		usage.put("GGT", new Detail("Glycine", "Gly", "G"));
+		usage.put("GGC", new Detail("Glycine", "Gly", "G"));
+
+		// HISTIDINE
 		usage.put("CAT", new Detail("Histidine", "His", "H"));
 		usage.put("CAC", new Detail("Histidine", "His", "H"));
 
+		// ISOLEUCINE
+		usage.put("ATA", new Detail("Isoleucine", "Ile", "I"));
+		usage.put("ATT", new Detail("Isoleucine", "Ile", "I"));
+		usage.put("ATC", new Detail("Isoleucine", "Ile", "I"));
+
+		// LEUCINE
 		usage.put("CTG", new Detail("Leucine", "Leu", "L"));
 		usage.put("CTA", new Detail("Leucine", "Leu", "L"));
 		usage.put("CTT", new Detail("Leucine", "Leu", "L"));
 		usage.put("CTC", new Detail("Leucine", "Leu", "L"));
+		usage.put("TTG", new Detail("Leucine", "Leu", "L"));
+		usage.put("TTA", new Detail("Leucine", "Leu", "L"));
 
+		// LYSINE
+		usage.put("AAG", new Detail("Lysine", "Lys", "K"));
+		usage.put("AAA", new Detail("Lysine", "Lys", "K"));
+
+		// METHIONINE
+		usage.put("ATG", new Detail("Methionine", "Met", "M"));
+
+		// PHENYLALANINE
+		usage.put("TTT", new Detail("Phenylalanine", "Phe", "F"));
+		usage.put("TTC", new Detail("Phenylalanine", "Phe", "F"));
+
+		// PROLINE
 		usage.put("CCG", new Detail("Proline", "Pro", "P"));
 		usage.put("CCA", new Detail("Proline", "Pro", "P"));
 		usage.put("CCT", new Detail("Proline", "Pro", "P"));
 		usage.put("CCC", new Detail("Proline", "Pro", "P"));
+
+		// SERINE
+		usage.put("AGT", new Detail("Serine", "Ser", "S"));
+		usage.put("AGC", new Detail("Serine", "Ser", "S"));
+		usage.put("TCG", new Detail("Serine", "Ser", "S"));
+		usage.put("TCA", new Detail("Serine", "Ser", "S"));
+		usage.put("TCT", new Detail("Serine", "Ser", "S"));
+		usage.put("TCC", new Detail("Serine", "Ser", "S"));
+
+		// STOP
+		usage.put("TGA", new Detail("Stop", "Stp", "*"));
+		usage.put("TAG", new Detail("Stop", "Stp", "*"));
+		usage.put("TAA", new Detail("Stop", "Stp", "*"));
+
+		// THREONINE
+		usage.put("ACG", new Detail("Threonine", "Thr", "T"));
+		usage.put("ACA", new Detail("Threonine", "Thr", "T"));
+		usage.put("ACT", new Detail("Threonine", "Thr", "T"));
+		usage.put("ACC", new Detail("Threonine", "Thr", "T"));
+
+		// TRYPTOPHAN
+		usage.put("TGG", new Detail("Tryptophan", "Trp", "W"));
+
+		// TYROSINE
+		usage.put("TAT", new Detail("Tyrosine", "Tyr", "Y"));
+		usage.put("TAC", new Detail("Tyrosine", "Tyr", "Y"));
+
+		// VALINE
+		usage.put("GTG", new Detail("Valine", "Val", "V"));
+		usage.put("GTA", new Detail("Valine", "Val", "V"));
+		usage.put("GTT", new Detail("Valine", "Val", "V"));
+		usage.put("GTC", new Detail("Valine", "Val", "V"));
 	}
 
 	public CodonUsage(String species)
@@ -119,13 +144,14 @@ public class CodonUsage
 		this.usage = usage;
 	}
 
-	public class Detail
+	public class Detail implements Comparable<Detail>
 	{
 		private String aminoacid;
 		private String abbr;
 		private String letterAbbr;
 		private int codonNumber = 0;
 		private double frequency = 0.0;
+		private double scorePerAminoacid = 0.0;
 		private double codingGC = 0.0;
 
 		public Detail()
@@ -209,12 +235,71 @@ public class CodonUsage
 			this.codingGC = codingGC;
 		}
 
+		public double getScorePerAminoacid()
+		{
+			return scorePerAminoacid;
+		}
+
+		public void setScorePerAminoacid(double scorePerAminoacid)
+		{
+			if (Double.isNaN(scorePerAminoacid))
+				this.scorePerAminoacid = 0.0;
+			else
+				this.scorePerAminoacid = scorePerAminoacid;
+		}
+
 		@Override
 		public String toString()
 		{
 			return "Detail [aminoacid=" + aminoacid + ", abbr=" + abbr + ", letterAbbr=" + letterAbbr + ", codonNumber="
 					+ codonNumber + ", frequency=" + frequency + "]";
 		}
+
+		@Override
+		public int compareTo(Detail d)
+		{
+			if (d == null)
+				return 0;
+			if (d == this)
+				return 0;
+
+			return this.aminoacid.compareTo(d.getAminoacid());
+		}
+	}
+
+	public static Map<String, Integer> getAminoacidMap(LinkedHashMap<String, Detail> detail)
+	{
+		Map<String, Integer> map = new HashMap<>();
+
+		map.put("Alanine", 0);
+		map.put("Arginine", 0);
+		map.put("Asparagine", 0);
+		map.put("Aspartic Acid", 0);
+		map.put("Cysteine", 0);
+		map.put("Glutamic Acid", 0);
+		map.put("Glutamine", 0);
+		map.put("Glycine", 0);
+		map.put("Histidine", 0);
+		map.put("Isoleucine", 0);
+		map.put("Leucine", 0);
+		map.put("Lysine", 0);
+		map.put("Methionine", 0);
+		map.put("Phenylalanine", 0);
+		map.put("Proline", 0);
+		map.put("Serine", 0);
+		map.put("Stop", 0);
+		map.put("Threonine", 0);
+		map.put("Tryptophan", 0);
+		map.put("Tyrosine", 0);
+		map.put("Valine", 0);
+
+		for (Entry<String, Detail> codon : detail.entrySet())
+		{
+			Detail d = codon.getValue();
+			map.put(d.getAminoacid(), map.get(d.getAminoacid()) + d.getCodonNumber());
+		}
+
+		return map;
 	}
 
 	@Override

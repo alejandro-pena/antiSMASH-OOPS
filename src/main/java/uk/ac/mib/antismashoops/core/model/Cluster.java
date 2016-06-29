@@ -2,6 +2,7 @@ package uk.ac.mib.antismashoops.core.model;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -155,6 +156,46 @@ public class Cluster
 		this.codonUsage = codonUsage;
 	}
 
+	public double getScore()
+	{
+		return score;
+	}
+
+	public void setScore(double score)
+	{
+		this.score = score;
+	}
+
+	public double getGcContentDiff()
+	{
+		return gcContentDiff;
+	}
+
+	public void setGcContentDiff(double gcContentRef)
+	{
+		this.gcContentDiff = Math.abs(this.gcContent - gcContentRef);
+	}
+
+	public double getCuScoreRef()
+	{
+		return cuScoreRef;
+	}
+
+	public void setCuScoreRef(CodonUsage cuRef)
+	{
+		double score = 0.0;
+		this.computeCodonUsage();
+
+		for (Entry<String, Detail> cdn : codonUsage.getUsage().entrySet())
+		{
+			Detail dCluster = cdn.getValue();
+			Detail dRef = cuRef.getUsage().get(cdn.getKey());
+			score += Math.abs(dCluster.getScorePerAminoacid() - dRef.getScorePerAminoacid());
+		}
+
+		this.cuScoreRef = score;
+	}
+
 	public void computeCodonUsage()
 	{
 		String sequence;
@@ -180,11 +221,14 @@ public class Cluster
 		}
 
 		// SETS /1000 FOR CODON TABLE
+		// SETS SCORE PER AMINOACID
+		Map<String, Integer> aMap = CodonUsage.getAminoacidMap(cu.getUsage());
 
 		for (Entry<String, Detail> codon : cu.getUsage().entrySet())
 		{
 			Detail d = codon.getValue();
-			codon.getValue().setFrequency((d.getCodonNumber() * 1000.0) / cdsLength);
+			d.setFrequency((d.getCodonNumber() * 1000.0) / cdsLength);
+			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMap.get(d.getAminoacid()));
 		}
 
 		this.setCodonUsage(cu);
@@ -228,46 +272,6 @@ public class Cluster
 		}
 
 		return count;
-	}
-
-	public double getScore()
-	{
-		return score;
-	}
-
-	public void setScore(double score)
-	{
-		this.score = score;
-	}
-
-	public double getGcContentDiff()
-	{
-		return gcContentDiff;
-	}
-
-	public void setGcContentDiff(double gcContentRef)
-	{
-		this.gcContentDiff = Math.abs(this.gcContent - gcContentRef);
-	}
-
-	public double getCuScoreRef()
-	{
-		return cuScoreRef;
-	}
-
-	public void setCuScoreRef(CodonUsage cuRef)
-	{
-		double score = 0.0;
-		this.computeCodonUsage();
-
-		for (Entry<String, Detail> cdn : codonUsage.getUsage().entrySet())
-		{
-			Detail dCluster = cdn.getValue();
-			Detail dRef = cuRef.getUsage().get(cdn.getKey());
-			score += Math.abs(dCluster.getFrequency() - dRef.getFrequency());
-		}
-
-		this.cuScoreRef = score;
 	}
 
 	@Override

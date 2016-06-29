@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -90,6 +92,14 @@ public class CodonUsageController
 				d.setCodonNumber((int) Double.parseDouble(tmp[2]));
 				d.setFrequency(Double.parseDouble(tmp[3]));
 			}
+		}
+
+		Map<String, Integer> aMap = CodonUsage.getAminoacidMap(cu.getUsage());
+
+		for (Entry<String, Detail> codon : cu.getUsage().entrySet())
+		{
+			Detail d = codon.getValue();
+			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMap.get(d.getAminoacid()));
 		}
 
 		model.addAttribute("name", speciesName.html());

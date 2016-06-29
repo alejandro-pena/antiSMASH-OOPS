@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,68 +59,40 @@ public class DashboardController
 		Double gcContentRef = 0.0;
 		CodonUsage cuRef;
 		List<Cluster> clusterData;
-		List<Cluster> clustersByNOG;
-		List<Cluster> clustersBySL;
-		List<Cluster> clustersByGCC;
-		List<Cluster> clustersByCB;
 
-		// SORTING DEPENDENT OF SPECIES
+		// SORT BY ONLY THE BASIC THREE PARAMETERS WITHOUT A REFERENCE SPECIES
 
-		if (refSpecies != null && !refSpecies.equalsIgnoreCase("undefined"))
+		if (refSpecies == null || refSpecies.equalsIgnoreCase("undefined"))
+		{
+			clusterData = fda.populateClusterData();
+			initialiseScore(clusterData);
+			if (geneCount > 0)
+				assignScoreForParameter(clusterData, ClusterSort.NOGSORT, geneCount);
+			if (sequenceLength > 0)
+				assignScoreForParameter(clusterData, ClusterSort.SLSORT, sequenceLength);
+			if (gcContent > 0)
+				assignScoreForParameter(clusterData, ClusterSort.GCCSORT, gcContent);
+		}
+
+		// SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
+		else
 		{
 			gcContentRef = getGcContentBySpecies(refSpecies);
 			cuRef = getSpeciesUsageTable(refSpecies);
 			clusterData = fda.populateClusterData(gcContentRef, cuRef);
 			initialiseScore(clusterData);
 
-			clustersByGCC = new ArrayList<>(clusterData);
-			clustersByCB = new ArrayList<>(clusterData);
-
-			Collections.sort(clustersByGCC, ClusterSort.GCCREFSORT);
-			Collections.sort(clustersByCB, ClusterSort.CBSORT);
-
-			for (Cluster c : clusterData)
-			{
-				double score = c.getScore();
-				c.setScore(score += ((clustersByCB.indexOf(c) + 1) * 1.0 * codonBias));
-			}
-
-		} else
-		{
-			clusterData = fda.populateClusterData();
-			initialiseScore(clusterData);
-
-			clustersByGCC = new ArrayList<>(clusterData);
-			Collections.sort(clustersByGCC, ClusterSort.GCCSORT);
+			if (geneCount > 0)
+				assignScoreForParameter(clusterData, ClusterSort.NOGSORT, geneCount);
+			if (sequenceLength > 0)
+				assignScoreForParameter(clusterData, ClusterSort.SLSORT, sequenceLength);
+			if (gcContent > 0)
+				assignScoreForParameter(clusterData, ClusterSort.GCCREFSORT, gcContent);
+			if (codonBias > 0)
+				assignScoreForParameter(clusterData, ClusterSort.CBSORT, codonBias);
 		}
 
-		// SORTING INDEPENDENT OF SPECIES
-
-		clustersByNOG = new ArrayList<>(clusterData);
-		clustersBySL = new ArrayList<>(clusterData);
-
-		Collections.sort(clustersByNOG, ClusterSort.NOGSORT);
-		Collections.sort(clustersBySL, ClusterSort.SLSORT);
-
-		// ASSIGN SCORE TO SORTED INDIVIDUAL PARAMETERS BASED ON USER INTEREST
-
-		for (Cluster c : clusterData)
-		{
-			double score = c.getScore();
-			c.setScore(score += ((clustersByNOG.indexOf(c) + 1) * 1.0 * geneCount));
-		}
-
-		for (Cluster c : clusterData)
-		{
-			double score = c.getScore();
-			c.setScore(score += ((clustersBySL.indexOf(c) + 1) * 1.0 * sequenceLength));
-		}
-
-		for (Cluster c : clusterData)
-		{
-			double score = c.getScore();
-			c.setScore(score += ((clustersByGCC.indexOf(c) + 1) * 1.0 * gcContent));
-		}
+		// SORT THE FINAL SCORE RESULT
 
 		Collections.sort(clusterData, ClusterSort.SCORESORT);
 
@@ -132,6 +106,27 @@ public class DashboardController
 		for (Cluster c : clusterData)
 		{
 			c.setScore(0.0);
+		}
+	}
+
+	private void assignScoreForParameter(List<Cluster> clusterData, ClusterSort comparator, int parameterWeight)
+	{
+		List<Cluster> sortedData = new ArrayList<>(clusterData);
+		Collections.sort(sortedData, comparator);
+
+		for (Cluster c : clusterData)
+		{
+			double score = c.getScore();
+			c.setScore(score += ((sortedData.indexOf(c) + 1) * 1.0 * parameterWeight));
+		}
+	}
+
+	private void printScores(List<Cluster> clusterData)
+	{
+		for (Cluster c : clusterData)
+		{
+			System.out.println("Cluster: " + c.getClusterNumber() + " Score: " + c.getScore() + " Other score: "
+					+ c.getCuScoreRef() + " GC Content: " + c.getGcContentDiff());
 		}
 	}
 
@@ -175,6 +170,14 @@ public class DashboardController
 				d.setCodonNumber((int) Double.parseDouble(tmp[2]));
 				d.setFrequency(Double.parseDouble(tmp[3]));
 			}
+		}
+
+		Map<String, Integer> aMap = CodonUsage.getAminoacidMap(cu.getUsage());
+
+		for (Entry<String, Detail> codon : cu.getUsage().entrySet())
+		{
+			Detail d = codon.getValue();
+			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMap.get(d.getAminoacid()));
 		}
 
 		return cu;

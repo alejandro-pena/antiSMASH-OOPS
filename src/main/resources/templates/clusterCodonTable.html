@@ -37,6 +37,7 @@
 								<th>CODON</th>
 								<th>AMOUNT</th>
 								<th>/1000</th>
+								<th>% PER AA</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -45,6 +46,7 @@
 								<td th:text="${entry.key}"></td>
 								<td th:text="${entry.value.codonNumber}"></td>
 								<td th:text="${#numbers.formatDecimal(entry.value.frequency, 1, 3)}"></td>
+								<td th:inline="text">[[${#numbers.formatDecimal(entry.value.scorePerAminoacid, 1, 2)}]]%</td>
 							</tr>
 						</tbody>
 					</table>

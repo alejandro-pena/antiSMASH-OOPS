@@ -32,7 +32,6 @@ public class CodonTablesController
 		{
 			if (c.getClusterNumber().equalsIgnoreCase(cluster))
 			{
-
 				requested = c;
 				break;
 			}

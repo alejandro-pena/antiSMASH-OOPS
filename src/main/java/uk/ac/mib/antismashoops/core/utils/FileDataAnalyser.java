@@ -96,6 +96,7 @@ public class FileDataAnalyser
 			c.setNumberOfGenes(c.getGenes().size());
 			c.setBasePairs(c.getCodingSequenceLength());
 			c.setGcContent(cdp.getGcContent(c));
+
 			c.setGcContentDiff(gcContentRef);
 			c.setCuScoreRef(cuRef);
 		}
