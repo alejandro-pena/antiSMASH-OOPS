@@ -11,6 +11,18 @@ function toggleRangeDisabling(itemId, valueOutput) {
 	document.getElementById(valueOutput).value = element.value;
 };
 
+function toggleParameterOrdering(iconId) {
+	var icon = document.getElementById(iconId);
+	var orderValue = document.getElementById(iconId + "Value");
+	if (icon.className == 'glyphicon glyphicon-sort-by-attributes-alt') {
+		icon.className = 'glyphicon glyphicon-sort-by-attributes';
+		orderValue.value = 'a';
+	} else {
+		icon.className = 'glyphicon glyphicon-sort-by-attributes-alt'
+		orderValue.value = 'd';
+	}
+};
+
 function updateRangeValue(rangeElement, itemId) {
 	document.getElementById(itemId).value = rangeElement.value;
 };
@@ -21,10 +33,19 @@ function prioritise() {
 	var sequenceLength = $('#sequenceLength').val();
 	var gcContent = $('#gcContent').val();
 	var codonBias = $('#codonBias').val();
+
+	var nogOrderValue = $('#nogOrderValue').val();
+	var slOrderValue = $('#slOrderValue').val();
+	var gccOrderValue = $('#gccOrderValue').val();
+	var cbOrderValue = $('#cbOrderValue').val();
+
 	var refSpecies = $('#selectSpecies').val();
 
 	url = '/dashboardUpdate?geneCount=' + numberOfGenes + '&sequenceLength='
-			+ sequenceLength + '&gcContent=' + gcContent + '&codonBias=' + codonBias + '&refSpecies=' + refSpecies;
+			+ sequenceLength + '&gcContent=' + gcContent + '&codonBias='
+			+ codonBias + '&nogOrderValue=' + nogOrderValue + '&slOrderValue='
+			+ slOrderValue + '&gccOrderValue=' + gccOrderValue
+			+ '&cbOrderValue=' + cbOrderValue + '&refSpecies=' + refSpecies;
 	$("#outputData")
 			.html(
 					"<center><br /><h3>Prioritising... Please wait...</h3><br /></center>");

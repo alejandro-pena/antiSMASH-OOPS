@@ -60,7 +60,7 @@ public class ClusterDataParser
 				else
 					complement = false;
 
-				token = token.replaceAll("[A-Za-z]|\\(|\\)", "");
+				token = token.replaceAll("[A-Za-z]|\\(|\\)|<|>", "");
 				String[] tokens = token.split("\\.\\.");
 				startBase = Integer.parseInt(tokens[0].trim());
 				stopBase = Integer.parseInt(tokens[1].trim());

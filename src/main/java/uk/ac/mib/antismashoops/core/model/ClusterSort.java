@@ -49,6 +49,51 @@ public enum ClusterSort implements Comparator<Cluster>
 		}
 	},
 
+	NOGSORTREV
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getNumberOfGenes() < c2.getNumberOfGenes() ? 1 : -1;
+		}
+	},
+
+	SLSORTREV
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getCodingSequenceLength() < c2.getCodingSequenceLength() ? 1 : -1;
+		}
+	},
+
+	GCCSORTREV
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getGcContent() < c2.getGcContent() ? 1 : -1;
+		}
+	},
+
+	GCCREFSORTREV
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getGcContentDiff() > c2.getGcContentDiff() ? 1 : -1;
+		}
+	},
+
+	CBSORTREV
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getCuScoreRef() > c2.getCuScoreRef() ? 1 : -1;
+		}
+	},
+
 	SCORESORT
 	{
 		@Override

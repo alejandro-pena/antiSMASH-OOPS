@@ -49,9 +49,13 @@ public class DashboardController
 
 	@RequestMapping("/dashboardUpdate")
 	public String updateResults(@RequestParam(value = "geneCount", required = false) int geneCount,
+			@RequestParam(value = "nogOrderValue", required = false) String nogOrder,
 			@RequestParam(value = "sequenceLength", required = false) int sequenceLength,
+			@RequestParam(value = "slOrderValue", required = false) String slOrder,
 			@RequestParam(value = "gcContent", required = false) int gcContent,
+			@RequestParam(value = "gccOrderValue", required = false) String gccOrder,
 			@RequestParam(value = "codonBias", required = false) int codonBias,
+			@RequestParam(value = "cbOrderValue", required = false) String cbOrder,
 			@RequestParam(value = "refSpecies", required = false) String refSpecies, ModelMap model) throws IOException
 	{
 
@@ -67,11 +71,14 @@ public class DashboardController
 			clusterData = fda.populateClusterData();
 			initialiseScore(clusterData);
 			if (geneCount > 0)
-				assignScoreForParameter(clusterData, ClusterSort.NOGSORT, geneCount);
+				assignScoreForParameter(clusterData,
+						nogOrder.equalsIgnoreCase("d") ? ClusterSort.NOGSORT : ClusterSort.NOGSORTREV, geneCount);
 			if (sequenceLength > 0)
-				assignScoreForParameter(clusterData, ClusterSort.SLSORT, sequenceLength);
+				assignScoreForParameter(clusterData,
+						slOrder.equalsIgnoreCase("d") ? ClusterSort.SLSORT : ClusterSort.SLSORTREV, sequenceLength);
 			if (gcContent > 0)
-				assignScoreForParameter(clusterData, ClusterSort.GCCSORT, gcContent);
+				assignScoreForParameter(clusterData,
+						gccOrder.equalsIgnoreCase("d") ? ClusterSort.GCCSORT : ClusterSort.GCCSORTREV, gcContent);
 		}
 
 		// SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
@@ -83,13 +90,17 @@ public class DashboardController
 			initialiseScore(clusterData);
 
 			if (geneCount > 0)
-				assignScoreForParameter(clusterData, ClusterSort.NOGSORT, geneCount);
+				assignScoreForParameter(clusterData,
+						nogOrder.equalsIgnoreCase("d") ? ClusterSort.NOGSORT : ClusterSort.NOGSORTREV, geneCount);
 			if (sequenceLength > 0)
-				assignScoreForParameter(clusterData, ClusterSort.SLSORT, sequenceLength);
+				assignScoreForParameter(clusterData,
+						slOrder.equalsIgnoreCase("d") ? ClusterSort.SLSORT : ClusterSort.SLSORTREV, sequenceLength);
 			if (gcContent > 0)
-				assignScoreForParameter(clusterData, ClusterSort.GCCREFSORT, gcContent);
+				assignScoreForParameter(clusterData,
+						gccOrder.equalsIgnoreCase("d") ? ClusterSort.GCCREFSORTREV : ClusterSort.GCCREFSORT, gcContent);
 			if (codonBias > 0)
-				assignScoreForParameter(clusterData, ClusterSort.CBSORT, codonBias);
+				assignScoreForParameter(clusterData,
+						cbOrder.equalsIgnoreCase("a") ? ClusterSort.CBSORT : ClusterSort.CBSORTREV, codonBias);
 		}
 
 		// SORT THE FINAL SCORE RESULT

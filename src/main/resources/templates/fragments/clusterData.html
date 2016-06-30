@@ -16,17 +16,17 @@
 					<th class="t-mid">CLUSTER</th>
 					<th class="t-mid">GENE NUMBER</th>
 					<th class="t-mid">CDS LENGTH</th>
-					<th class="t-mid" th:if="${clusterData[0].gcContentDiff != -1}">
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${clusterData[0].gcContentDiff != -1}">
 						&Delta; GC REF
 						<br />
 						SPECIES
 					</th>
-					<th class="t-mid" th:if="${clusterData[0].gcContentDiff == -1}">CODING GC</th>
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${clusterData[0].gcContentDiff == -1}">CODING GC</th>
 					<th class="t-mid">CODON USAGE</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="cluster, iterStat : ${clusterData}">
+				<tr th:if="${not #lists.isEmpty(clusterData)}" th:each="cluster, iterStat : ${clusterData}">
 					<th th:text="${iterStat.count}"></th>
 					<td th:inline="text">
 						<a th:href="@{|/local/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] - Cluster

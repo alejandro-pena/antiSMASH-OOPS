@@ -216,7 +216,7 @@ public class Cluster
 
 			// SETS NUMBER OF CODONS FOR CODON TABLE
 
-			for (int i = 1; i < codonTotal; i++)
+			for (int i = 1; i <= codonTotal; i++)
 			{
 				CodonUsage.Detail d = cu.getUsage().get(sequence.substring(i * 3 - 3, i * 3));
 				d.setCodonNumber(d.getCodonNumber() + 1);
