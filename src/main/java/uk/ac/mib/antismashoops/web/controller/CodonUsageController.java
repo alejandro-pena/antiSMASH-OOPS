@@ -110,8 +110,10 @@ public class CodonUsageController
 	@ExceptionHandler(Exception.class)
 	public String exceptionHandler(HttpServletRequest req, Exception exception)
 	{
+		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
+		logger.error("Exception thrown: " + exception.getClass());
+		logger.error("Exception message: " + exception.getMessage());
 		exception.printStackTrace();
-		req.setAttribute("message", exception.getMessage());
 		return "error";
 	}
 }

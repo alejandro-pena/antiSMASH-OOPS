@@ -5,8 +5,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
 public class CodonUsage
 {
+	private static final Logger logger = LoggerFactory.getLogger(CodonUsage.class);
+
 	private String species;
 	private LinkedHashMap<String, Detail> usage = new LinkedHashMap<>();
 
@@ -306,5 +314,15 @@ public class CodonUsage
 	public String toString()
 	{
 		return "CodonUsage [species=" + species + ", usage=" + usage + "]";
+	}
+
+	@ExceptionHandler(Exception.class)
+	public String exceptionHandler(HttpServletRequest req, Exception exception)
+	{
+		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
+		logger.error("Exception thrown: " + exception.getClass());
+		logger.error("Exception message: " + exception.getMessage());
+		exception.printStackTrace();
+		return "error";
 	}
 }

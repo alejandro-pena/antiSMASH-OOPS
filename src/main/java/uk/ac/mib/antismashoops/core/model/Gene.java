@@ -1,7 +1,15 @@
 package uk.ac.mib.antismashoops.core.model;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
 public class Gene
 {
+	private static final Logger logger = LoggerFactory.getLogger(Gene.class);
+
 	private String geneId;
 	private String synonym;
 	private int startBase;
@@ -79,4 +87,13 @@ public class Gene
 				+ ", complement=" + complement + "]";
 	}
 
+	@ExceptionHandler(Exception.class)
+	public String exceptionHandler(HttpServletRequest req, Exception exception)
+	{
+		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
+		logger.error("Exception thrown: " + exception.getClass());
+		logger.error("Exception message: " + exception.getMessage());
+		exception.printStackTrace();
+		return "error";
+	}
 }

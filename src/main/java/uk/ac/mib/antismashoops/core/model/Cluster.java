@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import uk.ac.mib.antismashoops.core.model.CodonUsage.Detail;
 
@@ -299,4 +302,13 @@ public class Cluster
 		return true;
 	}
 
+	@ExceptionHandler(Exception.class)
+	public String exceptionHandler(HttpServletRequest req, Exception exception)
+	{
+		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
+		logger.error("Exception thrown: " + exception.getClass());
+		logger.error("Exception message: " + exception.getMessage());
+		exception.printStackTrace();
+		return "error";
+	}
 }

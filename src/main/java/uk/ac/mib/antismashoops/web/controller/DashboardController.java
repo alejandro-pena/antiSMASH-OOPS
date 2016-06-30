@@ -186,8 +186,10 @@ public class DashboardController
 	@ExceptionHandler(Exception.class)
 	public String exceptionHandler(HttpServletRequest req, Exception exception)
 	{
-		req.setAttribute("message", exception.getMessage());
-		System.out.println(exception.getStackTrace());
+		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
+		logger.error("Exception thrown: " + exception.getClass());
+		logger.error("Exception message: " + exception.getMessage());
+		exception.printStackTrace();
 		return "error";
 	}
 }
