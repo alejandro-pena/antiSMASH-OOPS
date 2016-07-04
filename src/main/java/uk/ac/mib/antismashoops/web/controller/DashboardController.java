@@ -68,6 +68,7 @@ public class DashboardController
 
 		if (refSpecies == null || refSpecies.equalsIgnoreCase("undefined"))
 		{
+			refSpecies = null;
 			clusterData = fda.populateClusterData();
 			initialiseScore(clusterData);
 			if (geneCount > 0)
@@ -108,6 +109,7 @@ public class DashboardController
 		Collections.sort(clusterData, ClusterSort.SCORESORT);
 
 		model.addAttribute("clusterData", clusterData);
+		model.addAttribute("refSpecies", refSpecies);
 
 		return "fragments/clusterData :: clusterData";
 	}

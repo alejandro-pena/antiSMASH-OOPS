@@ -22,7 +22,7 @@ public class CodonTablesController
 {
 	private static final Logger logger = LoggerFactory.getLogger(CodonTablesController.class);
 
-	@RequestMapping(value = "/codonTable/{cluster}", method = RequestMethod.GET)
+	@RequestMapping(value = "/codonTable/{cluster:.+}", method = RequestMethod.GET)
 	public String getCodonUsageInfo(Model model, @PathVariable("cluster") String cluster) throws IOException
 	{
 		List<Cluster> clusterData = FileDataAnalyser.getClusterList();
@@ -30,7 +30,7 @@ public class CodonTablesController
 		Cluster requested = null;
 		for (Cluster c : clusterData)
 		{
-			if (c.getClusterNumber().equalsIgnoreCase(cluster))
+			if (c.getName().equalsIgnoreCase(cluster))
 			{
 				requested = c;
 				break;
