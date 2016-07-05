@@ -90,7 +90,7 @@ public class ClusterDataParser
 					}
 				}
 
-				geneList.add(new Gene(geneId, geneSynonym, startBase, stopBase, complement));
+				geneList.add(new Gene(geneId, geneSynonym, startBase, stopBase, complement, ""));
 			}
 
 		}

@@ -15,19 +15,21 @@ public class Gene
 	private int startBase;
 	private int stopBase;
 	private boolean complement;
+	private String annotation;
 
 	public Gene()
 	{
 
 	}
 
-	public Gene(String geneId, String synonym, int startBase, int stopBase, boolean complement)
+	public Gene(String geneId, String synonym, int startBase, int stopBase, boolean complement, String annotation)
 	{
 		this.geneId = geneId;
 		this.synonym = synonym;
 		this.startBase = startBase;
 		this.stopBase = stopBase;
 		this.complement = complement;
+		this.annotation = annotation;
 	}
 
 	public String getGeneId()
@@ -78,6 +80,16 @@ public class Gene
 	public void setComplement(boolean complement)
 	{
 		this.complement = complement;
+	}
+
+	public String getAnnotation()
+	{
+		return annotation;
+	}
+
+	public void setAnnotation(String annotation)
+	{
+		this.annotation = annotation;
 	}
 
 	@Override

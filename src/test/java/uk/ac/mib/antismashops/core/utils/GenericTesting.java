@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -16,13 +17,18 @@ import org.springframework.util.StringUtils;
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
 import uk.ac.mib.antismashoops.MvcConfiguration;
 import uk.ac.mib.antismashoops.core.model.CodonUsage;
+import uk.ac.mib.antismashoops.core.utils.ExternalDataParser;
+import uk.ac.mib.antismashoops.core.utils.KnownClusterData;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { AntiSmashOopsApplication.class, MvcConfiguration.class })
 @WebAppConfiguration
 public class GenericTesting
 {
-	@Test
+	@Autowired
+	private ExternalDataParser edp;
+
+	// @Test
 	public void test()
 	{
 		String sequence = "atggcggacatggacgcgttccgggacgagatcgcccgctgggcggcgggcggcgccggggacacggcggcggagctggcggcaggcctcggactgcggacggcggtgctgctggagggccccagcgacctcgccgccgtccaggccctggccgcccgcgaggaccgcgacctggccgccgagggcgtggccgtggtgtccatgggcggcgcgatgagcgtcggccgctacgccggcctgctcggcccgcccggcctcggcctgcgcctgaccggcctctgcgacgcccgggaggagcccttctacgtccgcggctggcagcgggcgggcgccgcgcgcgacttccacgtctgcgtcgccgacctggaggacgagatgatccgggcgctgggcccggcgcgggtcgaggaggtcatacggtccgaggacgaactccgcccctggcagaccttcctggcccagcccgcccagcacggccgcccccgggaacagcagctgcgccgcttcctcagcacgaagaagggccgcaagatccgctacggcagcctcctggtggaagccctcgacggcggacggccaccggccccgctggcggatctcctcgcggggttgtga";
@@ -94,6 +100,11 @@ public class GenericTesting
 		{
 			System.out.println("Key: " + entry.getKey() + " Value: " + entry.getValue().getAminoacid());
 		}
+	}
 
+	@Test
+	public void test2()
+	{
+		edp.setKnownClusterData(KnownClusterData.getClusterList());
 	}
 }

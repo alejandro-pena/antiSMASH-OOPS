@@ -116,6 +116,7 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 						<div class="form-group div-left">
+							<div class="div-ctr"><b>Reference Species</b></div><br />
 							<label for="speciesName">Search&nbsp;</label>
 							<input class="form-control input-sm" type="text" size="42" id="speciesName" placeholder="Reference species name..." />
 							&nbsp;
@@ -129,6 +130,67 @@
 
 						<br />
 						<br />
+						<br />
+
+						<div class="form-group div-ctr">
+							<label for="knownClustersSimilarity">Known Clusters Similarity</label>
+							<input type="range" value="10" min="0" max="10" step="1" id="knownClustersSimilarity"
+								onInput="updateRangeValue(this, 'kcsValue')"
+							/>
+							<output id="kcsValue">10</output>
+							<br />
+							<label>
+								<input type="checkbox" id="ignoreKCS" onClick="toggleRangeDisabling('knownClustersSimilarity', 'kcsValue');" />
+								Ignore
+							</label>
+							&nbsp;
+							<a href="#" onclick="toggleParameterOrdering('kcsOrder');">
+								<span id="kcsOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
+							</a>
+							<input type="hidden" id="kcsOrderValue" value="a" />
+						</div>
+
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+						<div class="form-group div-ctr">
+							<label for="homologyToItself">BGC homology to Itself</label>
+							<input type="range" value="10" min="0" max="10" step="1" id="homologyToItself" onInput="updateRangeValue(this, 'htiValue')" />
+							<output id="htiValue">10</output>
+							<br />
+							<label>
+								<input type="checkbox" id="ignoreHTI" onClick="toggleRangeDisabling('homologyToItself', 'htiValue');" />
+								Ignore
+							</label>
+							&nbsp;
+							<a href="#" onclick="toggleParameterOrdering('htiOrder');">
+								<span id="htiOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+							</a>
+							<input type="hidden" id="htiOrderValue" value="d" />
+						</div>
+
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+						<div class="form-group div-ctr">
+							<label for="phylogeneticDiversity">Phylogenetic Diversity</label>
+							<input type="range" value="10" min="0" max="10" step="1" id="phylogeneticDiversity"
+								onInput="updateRangeValue(this, 'pdValue')"
+							/>
+							<output id="pdValue">10</output>
+							<br />
+							<label>
+								<input type="checkbox" id="ignorePD" onClick="toggleRangeDisabling('phylogeneticDiversity', 'pdValue');" />
+								Ignore
+							</label>
+							&nbsp;
+							<a href="#" onclick="toggleParameterOrdering('pdOrder');">
+								<span id="pdOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+							</a>
+							<input type="hidden" id="pdOrderValue" value="d" />
+						</div>
+
+						<br />
+						<br />
+
 						<button type="button" class="btn btn-primary btn-lg btn-block" onclick="prioritise()">PRIORITISE</button>
 					</form>
 
