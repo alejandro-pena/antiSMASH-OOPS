@@ -33,19 +33,32 @@ function prioritise() {
 	var sequenceLength = $('#sequenceLength').val();
 	var gcContent = $('#gcContent').val();
 	var codonBias = $('#codonBias').val();
+	var kcs = $('#knownClustersSimilarity').val();
+	var hti = $('#homologyToItself').val();
+	var pd = $('#phylogeneticDiversity').val();
+	
+	var pSim = $('#similarityPercentage').val();
+	var minM = $('#minimumMatch').val();
 
 	var nogOrderValue = $('#nogOrderValue').val();
 	var slOrderValue = $('#slOrderValue').val();
 	var gccOrderValue = $('#gccOrderValue').val();
 	var cbOrderValue = $('#cbOrderValue').val();
+	var kcsOrderValue = $('#kcsOrderValue').val();
+	var htiOrderValue = $('#htiOrderValue').val();
+	var pdOrderValue = $('#pdOrderValue').val();
 
 	var refSpecies = $('#selectSpecies').val();
 
 	url = '/dashboardUpdate?geneCount=' + numberOfGenes + '&sequenceLength='
 			+ sequenceLength + '&gcContent=' + gcContent + '&codonBias='
-			+ codonBias + '&nogOrderValue=' + nogOrderValue + '&slOrderValue='
+			+ codonBias + '&kcs=' + kcs + '&hti=' + hti + '&pd=' + pd 
+			+ '&nogOrderValue=' + nogOrderValue + '&slOrderValue='
 			+ slOrderValue + '&gccOrderValue=' + gccOrderValue
-			+ '&cbOrderValue=' + cbOrderValue + '&refSpecies=' + refSpecies;
+			+ '&cbOrderValue=' + cbOrderValue + '&kcsOrderValue=' + kcsOrderValue 
+			+ '&htiOrderValue=' + htiOrderValue + '&pdOrderValue=' + pdOrderValue
+			+ '&pSim=' + pSim + '&minM=' + minM	+ '&refSpecies=' + refSpecies;
+	
 	$("#outputData")
 			.html(
 					"<center><br /><h3>Prioritising... Please wait...</h3><br /></center>");

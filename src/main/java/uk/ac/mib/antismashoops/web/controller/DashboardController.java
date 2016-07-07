@@ -26,7 +26,9 @@ import uk.ac.mib.antismashoops.core.model.Cluster;
 import uk.ac.mib.antismashoops.core.model.ClusterSort;
 import uk.ac.mib.antismashoops.core.model.CodonUsage;
 import uk.ac.mib.antismashoops.core.model.CodonUsage.Detail;
+import uk.ac.mib.antismashoops.core.model.KnownClusterEntry;
 import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
+import uk.ac.mib.antismashoops.core.utils.KnownClusterData;
 
 @Controller
 public class DashboardController
@@ -35,6 +37,9 @@ public class DashboardController
 
 	@Autowired
 	private FileDataAnalyser fda;
+
+	@Autowired
+	private KnownClusterData kcd;
 
 	@RequestMapping("/dashboard")
 	public String showResults(ModelMap model) throws IOException
@@ -56,15 +61,34 @@ public class DashboardController
 			@RequestParam(value = "gccOrderValue", required = false) String gccOrder,
 			@RequestParam(value = "codonBias", required = false) int codonBias,
 			@RequestParam(value = "cbOrderValue", required = false) String cbOrder,
-			@RequestParam(value = "refSpecies", required = false) String refSpecies, ModelMap model) throws IOException
+			@RequestParam(value = "refSpecies", required = false) String refSpecies,
+			@RequestParam(value = "kcs", required = false) int knownCluster,
+			@RequestParam(value = "kcsOrderValue", required = false) String kcsOrder,
+			@RequestParam(value = "pSim", required = false) double preferredSimilarity,
+			@RequestParam(value = "hti", required = false) int homologyToItself,
+			@RequestParam(value = "htiOrderValue", required = false) String htiOrder,
+			@RequestParam(value = "minM", required = false) String minimumMatch,
+			@RequestParam(value = "pd", required = false) int pDiversity,
+			@RequestParam(value = "pdOrderValue", required = false) String pdOrder, ModelMap model) throws IOException
 	{
 
 		logger.info("Reloading Basic Parameters View");
+
 		Double gcContentRef = 0.0;
 		CodonUsage cuRef;
 		List<Cluster> clusterData;
 
-		// SORT BY ONLY THE BASIC THREE PARAMETERS WITHOUT A REFERENCE SPECIES
+		// SET THE KNOWN CLUSTER DATA
+
+		List<KnownClusterEntry> kcl = kcd.getKnownClusterData();
+		for (KnownClusterEntry kce : kcl)
+		{
+			Cluster bgc = getCluster(kce.getRecordName(), kce.getClusterNumber());
+			bgc.setKcScore(kce.getBestMatchScore(preferredSimilarity));
+			logger.info(kce.getRecordName() + " " + kce.getClusterNumber() + " - " + bgc.getKcScore());
+		}
+
+		// SORT BY ONLY THE BASIC FOUR PARAMETERS WITHOUT A REFERENCE SPECIES
 
 		if (refSpecies == null || refSpecies.equalsIgnoreCase("undefined"))
 		{
@@ -80,6 +104,9 @@ public class DashboardController
 			if (gcContent > 0)
 				assignScoreForParameter(clusterData,
 						gccOrder.equalsIgnoreCase("d") ? ClusterSort.GCCSORT : ClusterSort.GCCSORTREV, gcContent);
+			if (knownCluster > 0)
+				assignScoreForParameter(clusterData,
+						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
 		}
 
 		// SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
@@ -102,6 +129,9 @@ public class DashboardController
 			if (codonBias > 0)
 				assignScoreForParameter(clusterData,
 						cbOrder.equalsIgnoreCase("a") ? ClusterSort.CBSORT : ClusterSort.CBSORTREV, codonBias);
+			if (knownCluster > 0)
+				assignScoreForParameter(clusterData,
+						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
 		}
 
 		// SORT THE FINAL SCORE RESULT
@@ -120,6 +150,16 @@ public class DashboardController
 		{
 			c.setScore(0.0);
 		}
+	}
+
+	private Cluster getCluster(String family, int number)
+	{
+		for (Cluster c : FileDataAnalyser.getClusterList())
+		{
+			if (Integer.parseInt(c.getClusterNumber()) == number && c.getRecordName().equalsIgnoreCase(family))
+				return c;
+		}
+		return null;
 	}
 
 	private void assignScoreForParameter(List<Cluster> clusterData, ClusterSort comparator, int parameterWeight)

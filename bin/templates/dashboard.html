@@ -45,7 +45,7 @@
 					<form class="form-inline">
 						<div class="form-group div-ctr">
 							<label for="numberOfGenes">Number of Genes</label>
-							<input type="range" value="10" min="0" max="10" step="1" id="numberOfGenes" onInput="updateRangeValue(this, 'nogValue')" />
+							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="numberOfGenes" onInput="updateRangeValue(this, 'nogValue')" />
 							<output id="nogValue">10</output>
 							<br />
 							<label>
@@ -63,7 +63,7 @@
 
 						<div class="form-group div-ctr">
 							<label for="sequenceLength">CDS Length</label>
-							<input type="range" value="10" min="0" max="10" step="1" id="sequenceLength" onInput="updateRangeValue(this, 'slValue')" />
+							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="sequenceLength" onInput="updateRangeValue(this, 'slValue')" />
 							<output id="slValue">10</output>
 							<br />
 							<label>
@@ -81,7 +81,7 @@
 
 						<div class="form-group div-ctr">
 							<label for="gcContent">Coding GC</label>
-							<input type="range" value="10" min="0" max="10" step="1" id="gcContent" onInput="updateRangeValue(this, 'gccValue')" />
+							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="gcContent" onInput="updateRangeValue(this, 'gccValue')" />
 							<output id="gccValue">10</output>
 							<br />
 							<label>
@@ -99,7 +99,7 @@
 
 						<div class="form-group div-ctr">
 							<label for="codonBias">Codon Bias</label>
-							<input type="range" value="10" min="0" max="10" step="1" id="codonBias" onInput="updateRangeValue(this, 'cbValue')" />
+							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="codonBias" onInput="updateRangeValue(this, 'cbValue')" />
 							<output id="cbValue">10</output>
 							<br />
 							<label>
@@ -116,7 +116,10 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 						<div class="form-group div-left">
-							<div class="div-ctr"><b>Reference Species</b></div><br />
+							<div class="div-ctr">
+								<b>Reference Species</b>
+							</div>
+							<br />
 							<label for="speciesName">Search&nbsp;</label>
 							<input class="form-control input-sm" type="text" size="42" id="speciesName" placeholder="Reference species name..." />
 							&nbsp;
@@ -132,12 +135,29 @@
 						<br />
 						<br />
 
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<div class="form-group div-ctr">
 							<label for="knownClustersSimilarity">Known Clusters Similarity</label>
-							<input type="range" value="10" min="0" max="10" step="1" id="knownClustersSimilarity"
+							<input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="knownClustersSimilarity"
 								onInput="updateRangeValue(this, 'kcsValue')"
 							/>
 							<output id="kcsValue">10</output>
+							<br />
+							<label for="similarityPercentage">Preferred Similarity&nbsp;</label>
+							<select class="form-control input-sm" id="similarityPercentage">
+								<option value="0">0%</option>
+								<option value="10">10%</option>
+								<option value="20">20%</option>
+								<option value="30">30%</option>
+								<option value="40">40%</option>
+								<option value="50">50%</option>
+								<option value="60">60%</option>
+								<option value="70">70%</option>
+								<option value="80">80%</option>
+								<option value="90">90%</option>
+								<option selected="true" value="100">100%</option>
+							</select>
+							<br />
 							<br />
 							<label>
 								<input type="checkbox" id="ignoreKCS" onClick="toggleRangeDisabling('knownClustersSimilarity', 'kcsValue');" />
@@ -150,12 +170,23 @@
 							<input type="hidden" id="kcsOrderValue" value="a" />
 						</div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 						<div class="form-group div-ctr">
 							<label for="homologyToItself">BGC homology to Itself</label>
-							<input type="range" value="10" min="0" max="10" step="1" id="homologyToItself" onInput="updateRangeValue(this, 'htiValue')" />
+							<input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="homologyToItself" onInput="updateRangeValue(this, 'htiValue')" />
 							<output id="htiValue">10</output>
+							<br class="half" />
+							<label for="minimumMatch">Minimum Match&nbsp;</label>
+							<select class="form-control input-sm" id="minimumMatch">
+								<option value="6">6</option>
+								<option value="9">9</option>
+								<option value="12">12</option>
+								<option value="15">15</option>
+								<option value="18">18</option>
+								<option value="21">21</option>
+							</select>
+							<br />
 							<br />
 							<label>
 								<input type="checkbox" id="ignoreHTI" onClick="toggleRangeDisabling('homologyToItself', 'htiValue');" />
@@ -168,11 +199,11 @@
 							<input type="hidden" id="htiOrderValue" value="d" />
 						</div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<div class="form-group div-ctr">
+						<div class="form-group div-ctr" style="margin-bottom: 10px;">
 							<label for="phylogeneticDiversity">Phylogenetic Diversity</label>
-							<input type="range" value="10" min="0" max="10" step="1" id="phylogeneticDiversity"
+							<input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="phylogeneticDiversity"
 								onInput="updateRangeValue(this, 'pdValue')"
 							/>
 							<output id="pdValue">10</output>
@@ -186,6 +217,9 @@
 								<span id="pdOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
 							</a>
 							<input type="hidden" id="pdOrderValue" value="d" />
+							<br />
+							<br />
+							&nbsp;
 						</div>
 
 						<br />
@@ -205,7 +239,7 @@
 							<tr>
 								<th>#</th>
 								<th>CLUSTER</th>
-								<th>GENE NUMBER</th>
+								<th>GENE #</th>
 								<th>CDS LENGTH</th>
 								<th>CODING GC</th>
 								<th>CODON USAGE</th>

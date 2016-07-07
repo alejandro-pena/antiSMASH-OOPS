@@ -105,6 +105,6 @@ public class GenericTesting
 	@Test
 	public void test2()
 	{
-		edp.setKnownClusterData(KnownClusterData.getClusterList());
+		edp.setKnownClusterData(KnownClusterData.getKnownClusterList());
 	}
 }

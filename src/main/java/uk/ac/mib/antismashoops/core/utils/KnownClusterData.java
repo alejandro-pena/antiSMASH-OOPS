@@ -23,7 +23,11 @@ public class KnownClusterData
 
 	private static List<KnownClusterEntry> knownClusters = new ArrayList<>();
 
-	public static List<KnownClusterEntry> getClusterList()
+	public KnownClusterData()
+	{
+	}
+
+	public static List<KnownClusterEntry> getKnownClusterList()
 	{
 		return knownClusters;
 	}

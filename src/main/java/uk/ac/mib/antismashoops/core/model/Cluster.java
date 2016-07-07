@@ -25,11 +25,12 @@ public class Cluster
 	private List<Gene> genes;
 	private int numberOfGenes;
 	private double gcContent;
-	private double gcContentDiff = -1;
+	private double gcContentDiff = -1.0;
 	private String clusterSequence;
 	private CodonUsage codonUsage;
-	private double cuScoreRef = -1;
-	private double score = 0;
+	private double cuScoreRef = -1.0;
+	private double kcScore = 0.0;
+	private double score = 0.0;
 
 	private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
 
@@ -197,6 +198,16 @@ public class Cluster
 		}
 
 		this.cuScoreRef = score;
+	}
+
+	public double getKcScore()
+	{
+		return kcScore;
+	}
+
+	public void setKcScore(double kcScore)
+	{
+		this.kcScore = kcScore;
 	}
 
 	public void computeCodonUsage()

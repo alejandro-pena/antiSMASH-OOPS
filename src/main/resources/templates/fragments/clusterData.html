@@ -14,15 +14,27 @@
 				<tr>
 					<th class="t-mid">#</th>
 					<th class="t-mid">CLUSTER</th>
-					<th class="t-mid">GENE NUMBER</th>
+					<th class="t-mid">GENE #</th>
 					<th class="t-mid">CDS LENGTH</th>
-					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${clusterData[0].gcContentDiff != -1}">
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${refSpecies != null}">
 						&Delta; GC REF
 						<br />
 						SPECIES
 					</th>
-					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${clusterData[0].gcContentDiff == -1}">CODING GC</th>
-					<th class="t-mid">CODON USAGE</th>
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${refSpecies == null}">CODING GC</th>
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${refSpecies == null}">
+						CODON USAGE
+						<br />
+						TABLE
+					</th>
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${refSpecies != null}">
+						CODON USAGE
+						<br />
+						HEAT MAP
+					</th>
+					<th class="t-mid">
+						&Delta; TO KC
+					</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -34,13 +46,14 @@
 					</td>
 					<td th:text="${cluster.numberOfGenes}"></td>
 					<td th:inline="text">[[${cluster.basePairs}]] bp</td>
-					<td th:if="${cluster.gcContentDiff != -1}" th:inline="text">[[${#numbers.formatDecimal(cluster.gcContentDiff, 1, 2)}]]%</td>
-					<td th:if="${cluster.gcContentDiff == -1}" th:inline="text">[[${#numbers.formatDecimal(cluster.gcContent, 1, 2)}]]%</td>
+					<td th:if="${refSpecies != null}" th:inline="text">[[${#numbers.formatDecimal(cluster.gcContentDiff, 1, 2)}]]%</td>
+					<td th:if="${refSpecies == null}" th:inline="text">[[${#numbers.formatDecimal(cluster.gcContent, 1, 2)}]]%</td>
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a th:if="${refSpecies == null}" th:href="@{|/codonTable/${cluster.name}|}" target="_blank">Open</a>
 						<a th:if="${refSpecies != null}" th:href="@{|/codonUsageMap/${cluster.name}/${refSpecies}|}" target="_blank">Open</a>
 					</td>
+					<td th:inline="text">[[${#numbers.formatDecimal(cluster.kcScore, 1, 2)}]]%</td>
 				</tr>
 			</tbody>
 		</table>

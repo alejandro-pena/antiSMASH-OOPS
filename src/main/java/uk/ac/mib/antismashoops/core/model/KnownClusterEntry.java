@@ -29,6 +29,29 @@ public class KnownClusterEntry
 		this.setClusterNumber(clusterNumber);
 	}
 
+	public double getBestMatchScore(double preferredSimilarity)
+	{
+		if (this.getClusterHits().size() == 0)
+			return 100.0;
+
+		ClusterFw mostSimilar = getClusterHits().get(0);
+		double score = Math
+				.abs(preferredSimilarity - ((mostSimilar.getBlastHits().size() * 100 / getClusterGenes().size())
+						* mostSimilar.getBlastHitScore() / 100));
+
+		for (ClusterFw c : getClusterHits())
+		{
+			double newScore = Math.abs(preferredSimilarity
+					- ((c.getBlastHits().size() * 100 / getClusterGenes().size()) * c.getBlastHitScore() / 100));
+			if (newScore < score)
+			{
+				mostSimilar = c;
+				score = newScore;
+			}
+		}
+		return score;
+	}
+
 	public File getFile()
 	{
 		return file;

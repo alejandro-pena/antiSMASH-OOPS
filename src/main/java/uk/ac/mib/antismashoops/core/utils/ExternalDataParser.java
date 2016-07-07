@@ -36,6 +36,8 @@ public class ExternalDataParser
 
 	public void setKnownClusterData(List<KnownClusterEntry> knownClusterList)
 	{
+		knownClusterList.clear();
+
 		for (File parent : new File(uploadPath).listFiles())
 		{
 			if (parent.isDirectory())
@@ -191,7 +193,8 @@ public class ExternalDataParser
 			for (ClusterFw c : kce.getClusterHits())
 			{
 				System.out.println(c.getName() + " " + c.getSource() + " "
-						+ (c.getBlastHits().size() * 100 / c.getGeneList().size()) + "%");
+						+ ((c.getBlastHits().size() * 100 / kce.getClusterGenes().size()) * c.getBlastHitScore() / 100)
+						+ "%");
 			}
 
 			System.out.println("");

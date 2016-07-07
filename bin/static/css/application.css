@@ -72,3 +72,20 @@
     border: 2px solid #C0C0C0;
     padding: 20px;
 }
+
+.sld
+{
+	width: 130px !important;
+	margin: auto;
+}
+
+.sld-lg
+{
+	width: 150px !important;
+	margin: auto;
+}
+
+.half
+{
+	line-height: 5px;
+}

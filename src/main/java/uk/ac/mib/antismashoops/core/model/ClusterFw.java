@@ -29,6 +29,18 @@ public class ClusterFw
 		this.source = source;
 	}
 
+	public double getBlastHitScore()
+	{
+		double score = 0.0;
+
+		for (BlastHitEntry bhe : blastHits)
+		{
+			score += (bhe.getCoveragePercentage() * bhe.getIdentityPercentage()) / 100;
+		}
+
+		return score / blastHits.size();
+	}
+
 	public String getName()
 	{
 		return name;

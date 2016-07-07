@@ -49,6 +49,15 @@ public enum ClusterSort implements Comparator<Cluster>
 		}
 	},
 
+	KCSORT
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getKcScore() < c2.getKcScore() ? 1 : -1;
+		}
+	},
+
 	NOGSORTREV
 	{
 		@Override
@@ -91,6 +100,15 @@ public enum ClusterSort implements Comparator<Cluster>
 		public int compare(Cluster c1, Cluster c2)
 		{
 			return c1.getCuScoreRef() > c2.getCuScoreRef() ? 1 : -1;
+		}
+	},
+
+	KCSORTREV
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			return c1.getKcScore() > c2.getKcScore() ? 1 : -1;
 		}
 	},
 
