@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"></meta>
+<title th:inline="text">[[#{app.name}]] :: Codon Map</title>
+
+<link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}" rel="stylesheet" media="screen"
+/>
+
+<link rel="stylesheet" th:href="@{/css/application.css}" />
+
+<script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.3/jquery.min.js" th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"></script>
+<script th:src="@{/js/script.js}"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<link rel="icon" th:href="@{/images/oops.ico}" />
+
+<script th:inline="javascript">
+
+/*<![CDATA[*/
+
+var codonMapRef = [[${tableRef}]];
+var codonMapBgc = [[${tableBgc}]];
+var mapData = [];
+               
+var mapCoords = {
+		'TTT' : [0, 0], 'TTC' : [0, 1], 'TTA' : [0, 2], 'TTG' : [0, 3], 'TCT' : [0, 4], 'TCC' : [0, 5], 'TCA' : [0, 6], 'TCG' : [0, 7], 
+		'TAT' : [0, 8], 'TAC' : [0, 9], 'TAA' : [0, 10], 'TAG' : [0, 11], 'TGT' : [0, 12], 'TGC' : [0, 13], 'TGA' : [0, 14], 'TGG' : [0, 15], 
+		'CTT' : [1, 0], 'CTC' : [1, 1], 'CTA' : [1, 2], 'CTG' : [1, 3], 'CCT' : [1, 4], 'CCC' : [1, 5], 'CCA' : [1, 6], 'CCG' : [1, 7], 
+		'CAT' : [1, 8], 'CAC' : [1, 9], 'CAA' : [1, 10], 'CAG' : [1, 11], 'CGT' : [1, 12], 'CGC' : [1, 13], 'CGA' : [1, 14], 'CGG' : [1, 15], 
+		'ATT' : [2, 0], 'ATC' : [2, 1], 'ATA' : [2, 2], 'ATG' : [2, 3], 'ACT' : [2, 4], 'ACC' : [2, 5], 'ACA' : [2, 6], 'ACG' : [2, 7], 
+		'AAT' : [2, 8], 'AAC' : [2, 9], 'AAA' : [2, 10], 'AAG' : [2, 11], 'AGT' : [2, 12], 'AGC' : [2, 13], 'AGA' : [2, 14], 'AGG' : [2, 15], 
+		'GTT' : [3, 0], 'GTC' : [3, 1], 'GTA' : [3, 2], 'GTG' : [3, 3], 'GCT' : [3, 4], 'GCC' : [3, 5], 'GCA' : [3, 6], 'GCG' : [3, 7], 
+		'GAT' : [3, 8], 'GAC' : [3, 9], 'GAA' : [3, 10], 'GAG' : [3, 11], 'GGT' : [3, 12], 'GGC' : [3, 13], 'GGA' : [3, 14], 'GGG' : [3, 15]
+		};
+
+for(var key in codonMapRef)
+{
+	var codonRef = codonMapRef[key];
+	var codonBgc = codonMapBgc[key];
+	var diff = Math.round(Math.abs(codonRef.scorePerAminoacid - codonBgc.scorePerAminoacid) * 100 ) / 100; 
+	var coords = mapCoords[key];
+	mapData.push([coords[0], coords[1], diff]);
+}
+
+var maxValue = 0;
+
+for(var key in mapData)
+{
+	if (mapData[key][2] > maxValue)
+		maxValue = mapData[key][2];
+}
+
+/*]]>*/
+
+$(function () {
+
+    $('#container').highcharts({
+
+        chart: {
+            type: 'heatmap',
+            marginTop: 90,
+            marginBottom: 80,
+            plotBorderWidth: 1
+        },
+
+
+        title: {
+            text: ' Difference of BGC usage v. Species usage'
+        },
+        
+        credits: {
+  	      style: {
+  	         visibility: 'hidden'
+  		  }
+     	},
+
+        xAxis: [{
+            categories: ['T', 'C', 'A', 'G'],
+            title: { 
+            	text: 'First Letter' 
+           	}
+          }, {
+            opposite: true,
+            categories: ['T', 'C', 'A', 'G'],
+            linkedTo: 0,
+            title: { 
+            	text: 'First Letter' 
+            }
+        }],
+        yAxis: [{
+            categories: ['TT', 'TC', 'TA', 'TG', 'CT', 'CC', 'CA', 'CG',
+                         'AT', 'AC', 'AA', 'AG', 'GT', 'GC', 'GA', 'GG'],
+            title: { 
+            	text: 'Second and Third Letters'
+            }
+          }, {
+            opposite: true,
+            categories: ['TT', 'TC', 'TA', 'TG', 'CT', 'CC', 'CA', 'CG',
+                         'AT', 'AC', 'AA', 'AG', 'GT', 'GC', 'GA', 'GG'],
+            linkedTo: 0,
+            title: { 
+            	text: 'Second and Third Letters' 
+            }
+        }],
+
+        colorAxis: {
+            min: 0,
+            max: maxValue,
+            minColor: Highcharts.getOptions().colors[7],
+            maxColor: '#FFFFFF',
+            offset: -10,
+        },
+
+        legend: {
+            align: 'right',
+            layout: 'vertical',
+            margin: 20,
+            verticalAlign: 'middle',
+            symbolHeight: 400
+        },
+
+        tooltip: {
+            formatter: function () {
+                return '<b>' + this.series.xAxis.categories[this.point.x] + this.series.yAxis.categories[this.point.y] + ' - ' + this.point.value + '%</b>';
+            }
+        },
+
+        series: [{
+            name: 'Codon usage table',
+            borderWidth: 1,
+            data: mapData,
+            dataLabels: {
+                enabled: true,
+                color: '#000000',
+                formatter: function() {
+                	return this.series.xAxis.categories[this.point.x] + this.series.yAxis.categories[this.point.y];
+                }
+            }
+        }]
+
+    });
+});
+
+</script>
+
+</head>
+
+<body>
+	<div th:replace="fragments/header :: header"></div>
+
+	<div class="container">
+		<div class="panel panel-default">
+			<div class="panel-body div-ctr">
+				<div id="container" style="min-width: 310px; max-width: 800px; height: 600px; margin: 0 auto"></div>
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

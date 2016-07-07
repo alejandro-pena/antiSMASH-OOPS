@@ -99,6 +99,75 @@ public class CodonUsageChartController
 		return "codonUsageChart";
 	}
 
+	@RequestMapping(value = "/codonUsageMap/{clusterName:.+}/{species:.+}", method = RequestMethod.GET)
+	public String getCodonUsageMap(ModelMap model, @PathVariable("clusterName") String clusterName,
+			@PathVariable("species") String species) throws IOException
+	{
+		List<Cluster> clusterData = FileDataAnalyser.getClusterList();
+		CodonUsage cuRef = new CodonUsage();
+		CodonUsage cuBgc;
+
+		Cluster requested = null;
+		for (Cluster c : clusterData)
+		{
+			if (c.getName().equalsIgnoreCase(clusterName))
+			{
+				requested = c;
+				break;
+			}
+		}
+
+		logger.info("Computing codon usage for Cluster: " + requested.getName());
+		requested.computeCodonUsage();
+
+		cuBgc = requested.getCodonUsage();
+
+		LinkedHashMap<String, Detail> tableRef = cuRef.getUsage();
+		LinkedHashMap<String, Detail> tableBgc = cuBgc.getUsage();
+
+		Document doc = Jsoup
+				.connect("http://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?species=" + species + "&aa=1&style=GCG")
+				.timeout(15000).get();
+
+		Element usageTable = doc.select("pre").first();
+		Element speciesName = doc.select("i").first();
+
+		String[] codons = usageTable.html().split("\\n");
+		codons[0] = "";
+
+		for (String s : codons)
+		{
+			if (!s.trim().equalsIgnoreCase(""))
+			{
+				String[] tmp = s.split("\\s+");
+				CodonUsage.Detail d = tableRef.get(tmp[1]);
+				d.setCodonNumber((int) Double.parseDouble(tmp[2]));
+				d.setFrequency(Double.parseDouble(tmp[3]));
+			}
+		}
+
+		Map<String, Integer> aMapRef = CodonUsage.getAminoacidMap(cuRef.getUsage());
+		Map<String, Integer> aMapBgc = CodonUsage.getAminoacidMap(cuBgc.getUsage());
+
+		for (Entry<String, Detail> codon : cuRef.getUsage().entrySet())
+		{
+			Detail d = codon.getValue();
+			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMapRef.get(d.getAminoacid()));
+		}
+
+		for (Entry<String, Detail> codon : cuBgc.getUsage().entrySet())
+		{
+			Detail d = codon.getValue();
+			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMapBgc.get(d.getAminoacid()));
+		}
+
+		model.addAttribute("name", speciesName.html());
+		model.addAttribute("tableRef", tableRef);
+		model.addAttribute("tableBgc", tableBgc);
+
+		return "codonUsageMap";
+	}
+
 	@ExceptionHandler(Exception.class)
 	public String exceptionHandler(HttpServletRequest req, Exception exception)
 	{

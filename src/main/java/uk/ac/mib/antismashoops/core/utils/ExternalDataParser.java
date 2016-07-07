@@ -191,7 +191,7 @@ public class ExternalDataParser
 			for (ClusterFw c : kce.getClusterHits())
 			{
 				System.out.println(c.getName() + " " + c.getSource() + " "
-						+ (c.getBlastHits().size() * 100 / c.getGeneList().size()));
+						+ (c.getBlastHits().size() * 100 / c.getGeneList().size()) + "%");
 			}
 
 			System.out.println("");

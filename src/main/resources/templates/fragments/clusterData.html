@@ -39,7 +39,7 @@
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a th:if="${refSpecies == null}" th:href="@{|/codonTable/${cluster.name}|}" target="_blank">Open</a>
-						<a th:if="${refSpecies != null}" th:href="@{|/codonUsageChart/${cluster.name}/${refSpecies}|}" target="_blank">Open</a>
+						<a th:if="${refSpecies != null}" th:href="@{|/codonUsageMap/${cluster.name}/${refSpecies}|}" target="_blank">Open</a>
 					</td>
 				</tr>
 			</tbody>
