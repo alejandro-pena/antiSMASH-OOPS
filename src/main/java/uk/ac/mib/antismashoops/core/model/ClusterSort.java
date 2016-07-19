@@ -9,6 +9,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getNumberOfGenes() == c2.getNumberOfGenes())
+				return 0;
 			return c1.getNumberOfGenes() > c2.getNumberOfGenes() ? 1 : -1;
 		}
 	},
@@ -18,6 +20,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getCodingSequenceLength() == c2.getCodingSequenceLength())
+				return 0;
 			return c1.getCodingSequenceLength() > c2.getCodingSequenceLength() ? 1 : -1;
 		}
 	},
@@ -27,6 +31,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getGcContent() == c2.getGcContent())
+				return 0;
 			return c1.getGcContent() > c2.getGcContent() ? 1 : -1;
 		}
 	},
@@ -36,6 +42,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getGcContentDiff() == c2.getGcContentDiff())
+				return 0;
 			return c1.getGcContentDiff() < c2.getGcContentDiff() ? 1 : -1;
 		}
 	},
@@ -45,6 +53,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getCuScoreRef() == c2.getCuScoreRef())
+				return 0;
 			return c1.getCuScoreRef() < c2.getCuScoreRef() ? 1 : -1;
 		}
 	},
@@ -54,6 +64,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getKcScore() == c2.getKcScore())
+				return 0;
 			return c1.getKcScore() < c2.getKcScore() ? 1 : -1;
 		}
 	},
@@ -63,6 +75,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getNumberOfGenes() == c2.getNumberOfGenes())
+				return 0;
 			return c1.getNumberOfGenes() < c2.getNumberOfGenes() ? 1 : -1;
 		}
 	},
@@ -72,6 +86,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getCodingSequenceLength() == c2.getCodingSequenceLength())
+				return 0;
 			return c1.getCodingSequenceLength() < c2.getCodingSequenceLength() ? 1 : -1;
 		}
 	},
@@ -81,6 +97,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getGcContent() == c2.getGcContent())
+				return 0;
 			return c1.getGcContent() < c2.getGcContent() ? 1 : -1;
 		}
 	},
@@ -90,6 +108,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getGcContentDiff() == c2.getGcContentDiff())
+				return 0;
 			return c1.getGcContentDiff() > c2.getGcContentDiff() ? 1 : -1;
 		}
 	},
@@ -99,6 +119,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getCuScoreRef() == c2.getCuScoreRef())
+				return 0;
 			return c1.getCuScoreRef() > c2.getCuScoreRef() ? 1 : -1;
 		}
 	},
@@ -108,6 +130,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getKcScore() == c2.getKcScore())
+				return 0;
 			return c1.getKcScore() > c2.getKcScore() ? 1 : -1;
 		}
 	},
@@ -117,6 +141,8 @@ public enum ClusterSort implements Comparator<Cluster>
 		@Override
 		public int compare(Cluster c1, Cluster c2)
 		{
+			if (c1.getScore() == c2.getScore())
+				return 0;
 			return c1.getScore() < c2.getScore() ? 1 : -1;
 		}
 	}

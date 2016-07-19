@@ -185,22 +185,6 @@ public class ExternalDataParser
 			}
 
 		}
-
-		for (KnownClusterEntry kce : knownClusterList)
-		{
-			System.out.println(kce.getRecordName() + " - " + kce.getClusterNumber());
-			System.out.println("");
-			for (ClusterFw c : kce.getClusterHits())
-			{
-				System.out.println(c.getName() + " " + c.getSource() + " "
-						+ ((c.getBlastHits().size() * 100 / kce.getClusterGenes().size()) * c.getBlastHitScore() / 100)
-						+ "%");
-			}
-
-			System.out.println("");
-			System.out.println("");
-		}
-
 	}
 
 	@ExceptionHandler(Exception.class)

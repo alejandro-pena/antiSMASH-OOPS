@@ -11,6 +11,15 @@ function toggleRangeDisabling(itemId, valueOutput) {
 	document.getElementById(valueOutput).value = element.value;
 };
 
+function toggleDisabling(itemId) {
+	var element = document.getElementById(itemId);
+	if (element.disabled == true) {
+		element.disabled = false;
+	} else {
+		element.disabled = true;
+	}
+};
+
 function toggleParameterOrdering(iconId) {
 	var icon = document.getElementById(iconId);
 	var orderValue = document.getElementById(iconId + "Value");
@@ -34,7 +43,7 @@ function prioritise() {
 	var gcContent = $('#gcContent').val();
 	var codonBias = $('#codonBias').val();
 	var kcs = $('#knownClustersSimilarity').val();
-	var hti = $('#homologyToItself').val();
+	var sh = $('#selfHomology').val();
 	var pd = $('#phylogeneticDiversity').val();
 	
 	var pSim = $('#similarityPercentage').val();
@@ -45,19 +54,23 @@ function prioritise() {
 	var gccOrderValue = $('#gccOrderValue').val();
 	var cbOrderValue = $('#cbOrderValue').val();
 	var kcsOrderValue = $('#kcsOrderValue').val();
-	var htiOrderValue = $('#htiOrderValue').val();
+	var shOrderValue = $('#shOrderValue').val();
 	var pdOrderValue = $('#pdOrderValue').val();
 
 	var refSpecies = $('#selectSpecies').val();
+	
+	var ignorePT = $('#ignorePT').is(":checked");
+	var types = $('#preferredType').val();
 
 	url = '/dashboardUpdate?geneCount=' + numberOfGenes + '&sequenceLength='
 			+ sequenceLength + '&gcContent=' + gcContent + '&codonBias='
-			+ codonBias + '&kcs=' + kcs + '&hti=' + hti + '&pd=' + pd 
+			+ codonBias + '&kcs=' + kcs + '&sh=' + sh + '&pd=' + pd 
 			+ '&nogOrderValue=' + nogOrderValue + '&slOrderValue='
 			+ slOrderValue + '&gccOrderValue=' + gccOrderValue
 			+ '&cbOrderValue=' + cbOrderValue + '&kcsOrderValue=' + kcsOrderValue 
-			+ '&htiOrderValue=' + htiOrderValue + '&pdOrderValue=' + pdOrderValue
-			+ '&pSim=' + pSim + '&minM=' + minM	+ '&refSpecies=' + refSpecies;
+			+ '&shOrderValue=' + shOrderValue + '&pdOrderValue=' + pdOrderValue
+			+ '&pSim=' + pSim + '&minM=' + minM	+ '&refSpecies=' + refSpecies
+			+ '&ignorePT=' + ignorePT + '&types=' + types;
 	
 	$("#outputData")
 			.html(

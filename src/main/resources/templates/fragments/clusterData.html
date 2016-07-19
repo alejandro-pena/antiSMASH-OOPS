@@ -14,6 +14,7 @@
 				<tr>
 					<th class="t-mid">#</th>
 					<th class="t-mid">CLUSTER</th>
+					<th class="t-mid">TYPE</th>
 					<th class="t-mid">GENE #</th>
 					<th class="t-mid">CDS LENGTH</th>
 					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${refSpecies != null}">
@@ -44,6 +45,7 @@
 						<a th:href="@{|/local/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] - Cluster
 							[[${cluster.clusterNumber}]]</a>
 					</td>
+					<td th:text="${cluster.clusterType}"></td>
 					<td th:text="${cluster.numberOfGenes}"></td>
 					<td th:inline="text">[[${cluster.basePairs}]] bp</td>
 					<td th:if="${refSpecies != null}" th:inline="text">[[${#numbers.formatDecimal(cluster.gcContentDiff, 1, 2)}]]%</td>

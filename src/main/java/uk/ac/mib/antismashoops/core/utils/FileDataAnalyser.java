@@ -86,6 +86,7 @@ public class FileDataAnalyser
 			c.setNumberOfGenes(c.getGenes().size());
 			c.setBasePairs(c.getCodingSequenceLength());
 			c.setGcContent(cdp.getGcContent(c));
+			c.setClusterType(cdp.getClusterType(c.getFile()));
 		}
 		return clusters;
 	}
@@ -99,6 +100,7 @@ public class FileDataAnalyser
 			c.setNumberOfGenes(c.getGenes().size());
 			c.setBasePairs(c.getCodingSequenceLength());
 			c.setGcContent(cdp.getGcContent(c));
+			c.setClusterType(cdp.getClusterType(c.getFile()));
 
 			c.setGcContentDiff(gcContentRef);
 			c.setCuScoreRef(cuRef);

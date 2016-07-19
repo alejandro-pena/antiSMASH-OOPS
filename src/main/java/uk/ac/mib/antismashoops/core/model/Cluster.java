@@ -21,6 +21,7 @@ public class Cluster
 	private String name;
 	private String recordName;
 	private String clusterNumber;
+	private String clusterType;
 	private int basePairs;
 	private List<Gene> genes;
 	private int numberOfGenes;
@@ -89,6 +90,16 @@ public class Cluster
 		this.clusterNumber = clusterNumber;
 	}
 
+	public String getClusterType()
+	{
+		return clusterType;
+	}
+
+	public void setClusterType(String clusterType)
+	{
+		this.clusterType = clusterType;
+	}
+
 	public int getBasePairs()
 	{
 		return basePairs;
@@ -142,7 +153,7 @@ public class Cluster
 	@Override
 	public String toString()
 	{
-		return "Cluster [file=" + file + ", numberOfGenes=" + numberOfGenes + "]";
+		return "Cluster [Cluster=" + recordName + clusterNumber + ", kcScore=" + kcScore + "]";
 	}
 
 	private static String removeExtension(String name)

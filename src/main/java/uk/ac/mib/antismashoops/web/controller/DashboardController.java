@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,6 +49,20 @@ public class DashboardController
 		logger.info("Loading Basic Parameters View");
 
 		List<Cluster> clusterData = fda.createClusterObjects();
+		Set<String> types = new TreeSet<>();
+		for (Cluster c : clusterData)
+		{
+			String[] type = c.getClusterType().split("-");
+			if (type.length > 1)
+				for (String t : type)
+					types.add(t);
+			else
+				types.add(c.getClusterType());
+		}
+
+		List<String> typesList = new ArrayList<>(types);
+
+		model.addAttribute("typesList", typesList);
 		model.addAttribute("clusterData", clusterData);
 
 		return "dashboard";
@@ -65,11 +81,13 @@ public class DashboardController
 			@RequestParam(value = "kcs", required = false) int knownCluster,
 			@RequestParam(value = "kcsOrderValue", required = false) String kcsOrder,
 			@RequestParam(value = "pSim", required = false) double preferredSimilarity,
-			@RequestParam(value = "hti", required = false) int homologyToItself,
-			@RequestParam(value = "htiOrderValue", required = false) String htiOrder,
+			@RequestParam(value = "sh", required = false) int selfHomology,
+			@RequestParam(value = "shOrderValue", required = false) String shOrder,
 			@RequestParam(value = "minM", required = false) String minimumMatch,
 			@RequestParam(value = "pd", required = false) int pDiversity,
-			@RequestParam(value = "pdOrderValue", required = false) String pdOrder, ModelMap model) throws IOException
+			@RequestParam(value = "pdOrderValue", required = false) String pdOrder,
+			@RequestParam(value = "ignorePT", required = false) String ignorePT,
+			@RequestParam(value = "types", required = false) String types, ModelMap model) throws IOException
 	{
 
 		logger.info("Reloading Basic Parameters View");
@@ -81,11 +99,11 @@ public class DashboardController
 		// SET THE KNOWN CLUSTER DATA
 
 		List<KnownClusterEntry> kcl = kcd.getKnownClusterData();
+
 		for (KnownClusterEntry kce : kcl)
 		{
 			Cluster bgc = getCluster(kce.getRecordName(), kce.getClusterNumber());
 			bgc.setKcScore(kce.getBestMatchScore(preferredSimilarity));
-			logger.info(kce.getRecordName() + " " + kce.getClusterNumber() + " - " + bgc.getKcScore());
 		}
 
 		// SORT BY ONLY THE BASIC FOUR PARAMETERS WITHOUT A REFERENCE SPECIES
@@ -93,8 +111,9 @@ public class DashboardController
 		if (refSpecies == null || refSpecies.equalsIgnoreCase("undefined"))
 		{
 			refSpecies = null;
-			clusterData = fda.populateClusterData();
+			clusterData = new ArrayList<>(fda.populateClusterData());
 			initialiseScore(clusterData);
+
 			if (geneCount > 0)
 				assignScoreForParameter(clusterData,
 						nogOrder.equalsIgnoreCase("d") ? ClusterSort.NOGSORT : ClusterSort.NOGSORTREV, geneCount);
@@ -105,8 +124,10 @@ public class DashboardController
 				assignScoreForParameter(clusterData,
 						gccOrder.equalsIgnoreCase("d") ? ClusterSort.GCCSORT : ClusterSort.GCCSORTREV, gcContent);
 			if (knownCluster > 0)
+			{
 				assignScoreForParameter(clusterData,
 						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
+			}
 		}
 
 		// SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
@@ -114,7 +135,7 @@ public class DashboardController
 		{
 			gcContentRef = getGcContentBySpecies(refSpecies);
 			cuRef = getSpeciesUsageTable(refSpecies);
-			clusterData = fda.populateClusterData(gcContentRef, cuRef);
+			clusterData = new ArrayList<>(fda.populateClusterData(gcContentRef, cuRef));
 			initialiseScore(clusterData);
 
 			if (geneCount > 0)
@@ -137,6 +158,41 @@ public class DashboardController
 		// SORT THE FINAL SCORE RESULT
 
 		Collections.sort(clusterData, ClusterSort.SCORESORT);
+
+		// MATCHING TYPES
+		List<Cluster> cdt = new ArrayList<>();
+
+		// NOT MATCHING TYPES
+		List<Cluster> cdt2 = new ArrayList<>();
+
+		// SORT OUT ONLY THE REQUIRED TYPES
+		if (ignorePT.equalsIgnoreCase("false") && types != null && !types.equalsIgnoreCase("null"))
+		{
+			String[] requiredTypes = types.split(",");
+
+			for (Cluster c : clusterData)
+			{
+				for (String t : requiredTypes)
+				{
+					if (c.getClusterType().contains(t))
+					{
+						cdt.add(c);
+						break;
+					}
+				}
+			}
+
+			for (Cluster c : clusterData)
+			{
+				if (!cdt.contains(c))
+					cdt2.add(c);
+			}
+
+			for (Cluster c : cdt2)
+			{
+				clusterData.remove(c);
+			}
+		}
 
 		model.addAttribute("clusterData", clusterData);
 		model.addAttribute("refSpecies", refSpecies);
@@ -171,15 +227,6 @@ public class DashboardController
 		{
 			double score = c.getScore();
 			c.setScore(score += ((sortedData.indexOf(c) + 1) * 1.0 * parameterWeight));
-		}
-	}
-
-	private void printScores(List<Cluster> clusterData)
-	{
-		for (Cluster c : clusterData)
-		{
-			System.out.println("Cluster: " + c.getClusterNumber() + " Score: " + c.getScore() + " Other score: "
-					+ c.getCuScoreRef() + " GC Content: " + c.getGcContentDiff());
 		}
 	}
 

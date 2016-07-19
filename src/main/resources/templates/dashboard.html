@@ -45,7 +45,9 @@
 					<form class="form-inline">
 						<div class="form-group div-ctr">
 							<label for="numberOfGenes">Number of Genes</label>
-							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="numberOfGenes" onInput="updateRangeValue(this, 'nogValue')" />
+							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="numberOfGenes"
+								onInput="updateRangeValue(this, 'nogValue')"
+							/>
 							<output id="nogValue">10</output>
 							<br />
 							<label>
@@ -63,7 +65,9 @@
 
 						<div class="form-group div-ctr">
 							<label for="sequenceLength">CDS Length</label>
-							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="sequenceLength" onInput="updateRangeValue(this, 'slValue')" />
+							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="sequenceLength"
+								onInput="updateRangeValue(this, 'slValue')"
+							/>
 							<output id="slValue">10</output>
 							<br />
 							<label>
@@ -81,7 +85,9 @@
 
 						<div class="form-group div-ctr">
 							<label for="gcContent">Coding GC</label>
-							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="gcContent" onInput="updateRangeValue(this, 'gccValue')" />
+							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="gcContent"
+								onInput="updateRangeValue(this, 'gccValue')"
+							/>
 							<output id="gccValue">10</output>
 							<br />
 							<label>
@@ -99,7 +105,9 @@
 
 						<div class="form-group div-ctr">
 							<label for="codonBias">Codon Bias</label>
-							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="codonBias" onInput="updateRangeValue(this, 'cbValue')" />
+							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="codonBias"
+								onInput="updateRangeValue(this, 'cbValue')"
+							/>
 							<output id="cbValue">10</output>
 							<br />
 							<label>
@@ -135,7 +143,22 @@
 						<br />
 						<br />
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<div class="form-group div-ctr">
+							<label for="preferredType">Preferred Cluster Type</label>
+							<br />
+							<select multiple="multiple" style="width: 150px" class="form-control" size="5" id="preferredType" th:field="*{typesList}">
+								<option th:each="type : ${typesList}" th:value="${type}" th:text="${#strings.capitalize(type)}"></option>
+							</select>
+							<br />
+							<br />
+							<label>
+								<input type="checkbox" id="ignorePT" onclick="toggleDisabling('preferredType')"/>
+								Ignore
+							</label>
+						</div>
+
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 						<div class="form-group div-ctr">
 							<label for="knownClustersSimilarity">Known Clusters Similarity</label>
 							<input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="knownClustersSimilarity"
@@ -173,10 +196,12 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 						<div class="form-group div-ctr">
-							<label for="homologyToItself">BGC homology to Itself</label>
-							<input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="homologyToItself" onInput="updateRangeValue(this, 'htiValue')" />
-							<output id="htiValue">10</output>
-							<br class="half" />
+							<label for="selfHomology">BGC Self-Homology</label>
+							<input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="selfHomology"
+								onInput="updateRangeValue(this, 'shValue')"
+							/>
+							<output id="shValue">10</output>
+							<br />
 							<label for="minimumMatch">Minimum Match&nbsp;</label>
 							<select class="form-control input-sm" id="minimumMatch">
 								<option value="6">6</option>
@@ -189,14 +214,14 @@
 							<br />
 							<br />
 							<label>
-								<input type="checkbox" id="ignoreHTI" onClick="toggleRangeDisabling('homologyToItself', 'htiValue');" />
+								<input type="checkbox" id="ignoreSH" onClick="toggleRangeDisabling('selfHomology', 'shValue');" />
 								Ignore
 							</label>
 							&nbsp;
-							<a href="#" onclick="toggleParameterOrdering('htiOrder');">
-								<span id="htiOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+							<a href="#" onclick="toggleParameterOrdering('shOrder');">
+								<span id="shOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
 							</a>
-							<input type="hidden" id="htiOrderValue" value="d" />
+							<input type="hidden" id="shOrderValue" value="d" />
 						</div>
 
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -239,6 +264,7 @@
 							<tr>
 								<th>#</th>
 								<th>CLUSTER</th>
+								<th>TYPE</th>
 								<th>GENE #</th>
 								<th>CDS LENGTH</th>
 								<th>CODING GC</th>
@@ -252,6 +278,7 @@
 									<a th:href="@{|/local/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] -
 										Cluster [[${cluster.clusterNumber}]]</a>
 								</td>
+								<td th:text="${cluster.clusterType}"></td>
 								<td th:text="${cluster.numberOfGenes}"></td>
 								<td th:inline="text">[[${cluster.basePairs}]] bp</td>
 								<td th:inline="text">[[${#numbers.formatDecimal(cluster.gcContent, 1, 2)}]]%</td>

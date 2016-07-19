@@ -41,18 +41,30 @@ for(var key in codonMapRef)
 {
 	var codonRef = codonMapRef[key];
 	var codonBgc = codonMapBgc[key];
-	var diff = Math.round(Math.abs(codonRef.scorePerAminoacid - codonBgc.scorePerAminoacid) * 100 ) / 100; 
+	var diff = Math.round((codonRef.scorePerAminoacid - codonBgc.scorePerAminoacid) * 100 ) / 100; 
 	var coords = mapCoords[key];
 	mapData.push([coords[0], coords[1], diff]);
 }
 
 var maxValue = 0;
+var minValue = 100;
 
 for(var key in mapData)
 {
 	if (mapData[key][2] > maxValue)
 		maxValue = mapData[key][2];
 }
+
+for(var key in mapData)
+{
+	if (mapData[key][2] < minValue)
+		minValue = mapData[key][2];
+}
+
+if(Math.abs(maxValue) > Math.abs(minValue))
+	minValue = Math.abs(maxValue) * -1;
+else
+	maxValue = Math.abs(minValue);
 
 /*]]>*/
 
@@ -108,11 +120,16 @@ $(function () {
         }],
 
         colorAxis: {
-            min: 0,
+            min: minValue,
             max: maxValue,
-            minColor: Highcharts.getOptions().colors[7],
-            maxColor: '#FFFFFF',
+            minColor: '#428bca',
+            maxColor: '#5cb85c',
             offset: -10,
+            stops: [
+                    [0, '#428bca'],
+                	[0.5, '#FFFFFF'],
+                	[1, '#5cb85c']
+                ]
         },
 
         legend: {
@@ -125,7 +142,7 @@ $(function () {
 
         tooltip: {
             formatter: function () {
-                return '<b>' + this.series.xAxis.categories[this.point.x] + this.series.yAxis.categories[this.point.y] + ' - ' + this.point.value + '%</b>';
+                return '<b>' + this.series.xAxis.categories[this.point.x] + this.series.yAxis.categories[this.point.y] + ': ' + this.point.value + '%</b>';
             }
         },
 

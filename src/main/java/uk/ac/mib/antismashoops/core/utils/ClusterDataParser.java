@@ -26,6 +26,7 @@ public class ClusterDataParser
 	private static final String GENEID_REGEXP = "(.+)\\/db_xref=\"GeneID:\\d+\"";
 	private static final String GENESYN_REGEXP = "(.+)\\/gene_synonym=\"(.+)\"";
 	private static final String SEQUENCE_REGEXP = "a|g|c|t";
+	private static final String TYPE_REGEXP = "(.+)\\/note=\"Detection rule\\(s\\) for this cluster type:(.*)";
 
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
@@ -123,6 +124,61 @@ public class ClusterDataParser
 		}
 
 		return sb.toString().toUpperCase();
+	}
+
+	public String getClusterType(File file)
+	{
+		Scanner scanner;
+		StringBuilder sb = new StringBuilder();
+
+		try
+		{
+			scanner = new Scanner(file);
+			String nextToken = "";
+
+			while (scanner.hasNextLine())
+			{
+				nextToken = scanner.nextLine();
+				if (nextToken.matches(TYPE_REGEXP))
+				{
+					break;
+				}
+			}
+
+			sb.append(nextToken);
+
+			scanner.useDelimiter("");
+
+			while (scanner.hasNext())
+			{
+				nextToken = scanner.next();
+				if (!nextToken.equalsIgnoreCase("\""))
+					sb.append(nextToken);
+				else
+					break;
+			}
+
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		String[] tokens = sb.toString().trim().split(":");
+		String type = "";
+
+		for (int i = 1; i < tokens.length - 1; i++)
+		{
+			String[] splitted = tokens[i].split(" ");
+			if (type.equalsIgnoreCase(""))
+				type = splitted[splitted.length - 1];
+			else
+				type = type + "-" + splitted[splitted.length - 1];
+		}
+
+		return type;
 	}
 
 	public double getGcContent(Cluster cluster)
