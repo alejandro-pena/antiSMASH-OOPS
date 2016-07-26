@@ -83,7 +83,7 @@ public class DashboardController
 			@RequestParam(value = "pSim", required = false) double preferredSimilarity,
 			@RequestParam(value = "sh", required = false) int selfHomology,
 			@RequestParam(value = "shOrderValue", required = false) String shOrder,
-			@RequestParam(value = "minM", required = false) String minimumMatch,
+			@RequestParam(value = "minM", required = false) int minimumMatch,
 			@RequestParam(value = "pd", required = false) int pDiversity,
 			@RequestParam(value = "pdOrderValue", required = false) String pdOrder,
 			@RequestParam(value = "ignorePT", required = false) String ignorePT,
@@ -113,6 +113,7 @@ public class DashboardController
 			refSpecies = null;
 			clusterData = new ArrayList<>(fda.populateClusterData());
 			initialiseScore(clusterData);
+			filterPreferredTypes(clusterData, ignorePT, types);
 
 			if (geneCount > 0)
 				assignScoreForParameter(clusterData,
@@ -128,6 +129,10 @@ public class DashboardController
 				assignScoreForParameter(clusterData,
 						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
 			}
+			if (selfHomology > 0)
+			{
+
+			}
 		}
 
 		// SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
@@ -137,6 +142,7 @@ public class DashboardController
 			cuRef = getSpeciesUsageTable(refSpecies);
 			clusterData = new ArrayList<>(fda.populateClusterData(gcContentRef, cuRef));
 			initialiseScore(clusterData);
+			filterPreferredTypes(clusterData, ignorePT, types);
 
 			if (geneCount > 0)
 				assignScoreForParameter(clusterData,
@@ -153,12 +159,30 @@ public class DashboardController
 			if (knownCluster > 0)
 				assignScoreForParameter(clusterData,
 						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
+			if (selfHomology > 0)
+			{
+
+			}
 		}
 
 		// SORT THE FINAL SCORE RESULT
 
 		Collections.sort(clusterData, ClusterSort.SCORESORT);
 
+		// for (Cluster c : clusterData)
+		// {
+		// c.setSelfHomologyScore(SubOptimalSmithWaterman.calculateScore(c.getClusterSequence(),
+		// minimumMatch));
+		// }
+
+		model.addAttribute("clusterData", clusterData);
+		model.addAttribute("refSpecies", refSpecies);
+
+		return "fragments/clusterData :: clusterData";
+	}
+
+	private void filterPreferredTypes(List<Cluster> clusterData, String ignorePT, String types)
+	{
 		// MATCHING TYPES
 		List<Cluster> cdt = new ArrayList<>();
 
@@ -193,11 +217,6 @@ public class DashboardController
 				clusterData.remove(c);
 			}
 		}
-
-		model.addAttribute("clusterData", clusterData);
-		model.addAttribute("refSpecies", refSpecies);
-
-		return "fragments/clusterData :: clusterData";
 	}
 
 	private void initialiseScore(List<Cluster> clusterData)

@@ -36,13 +36,16 @@
 					<th class="t-mid">
 						&Delta; TO KC
 					</th>
+					<th class="t-mid">
+						SH SCORE
+					</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr th:if="${not #lists.isEmpty(clusterData)}" th:each="cluster, iterStat : ${clusterData}">
 					<th th:text="${iterStat.count}"></th>
 					<td th:inline="text">
-						<a th:href="@{|/local/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] - Cluster
+						<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] - Cluster
 							[[${cluster.clusterNumber}]]</a>
 					</td>
 					<td th:text="${cluster.clusterType}"></td>
@@ -56,6 +59,7 @@
 						<a th:if="${refSpecies != null}" th:href="@{|/codonUsageMap/${cluster.name}/${refSpecies}|}" target="_blank">Open</a>
 					</td>
 					<td th:inline="text">[[${#numbers.formatDecimal(cluster.kcScore, 1, 2)}]]%</td>
+					<td th:text="${cluster.selfHomologyScore}"></td>
 				</tr>
 			</tbody>
 		</table>

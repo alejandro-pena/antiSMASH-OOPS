@@ -32,6 +32,16 @@
 			<a th:href="@{/}" class="alert-link">here</a>
 			to upload your files...
 		</div>
+		<div id="shAlert" style="display: none" class="alert alert-warning alert-dismissible" role="alert">
+			<button type="button" class="close" onclick="$('#shAlert').hide()" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			<div style="text-align: center">
+			<strong>Warning!</strong>
+			The BGC Self-Homology parameter triggers long running processes.<br /> In order to minimise the prioritisation time it's strongly advised to use it in conjunction with the Preferred Cluster Type parameter.
+			</div>
+		</div>
+		
 
 		<h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
 		<div class="panel panel-default">
@@ -178,7 +188,7 @@
 								<option value="70">70%</option>
 								<option value="80">80%</option>
 								<option value="90">90%</option>
-								<option selected="true" value="100">100%</option>
+								<option selected="selected" value="100">100%</option>
 							</select>
 							<br />
 							<br />
@@ -197,24 +207,26 @@
 
 						<div class="form-group div-ctr">
 							<label for="selfHomology">BGC Self-Homology</label>
-							<input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="selfHomology"
-								onInput="updateRangeValue(this, 'shValue')"
+							<input type="range" class="sld-lg" value="0" min="0" max="10" step="1" id="selfHomology"
+								onInput="updateRangeValue(this, 'shValue')" disabled="disabled"
 							/>
-							<output id="shValue">10</output>
+							<output id="shValue">0</output>
 							<br />
 							<label for="minimumMatch">Minimum Match&nbsp;</label>
-							<select class="form-control input-sm" id="minimumMatch">
-								<option value="6">6</option>
-								<option value="9">9</option>
-								<option value="12">12</option>
+							<select class="form-control input-sm" id="minimumMatch" disabled="disabled">
 								<option value="15">15</option>
-								<option value="18">18</option>
+								<option value="17">17</option>
+								<option value="19">19</option>
 								<option value="21">21</option>
+								<option value="23">23</option>
+								<option value="25">25</option>
+								<option value="27">27</option>
+								<option value="29">29</option>
 							</select>
 							<br />
 							<br />
 							<label>
-								<input type="checkbox" id="ignoreSH" onClick="toggleRangeDisabling('selfHomology', 'shValue');" />
+								<input type="checkbox" checked="checked" id="ignoreSH" onClick="toggleRangeDisabling('selfHomology', 'shValue');" />
 								Ignore
 							</label>
 							&nbsp;
@@ -275,7 +287,7 @@
 							<tr th:each="cluster, iterStat : ${clusterData}">
 								<th th:text="${iterStat.count}"></th>
 								<td th:inline="text">
-									<a th:href="@{|/local/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] -
+									<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] -
 										Cluster [[${cluster.clusterNumber}]]</a>
 								</td>
 								<td th:text="${cluster.clusterType}"></td>

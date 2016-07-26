@@ -14,8 +14,7 @@ public class MvcConfiguration extends WebMvcAutoConfiguration.WebMvcAutoConfigur
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry)
 	{
-		registry.addResourceHandler("/local/**")
-				.addResourceLocations("file:appData/2acd7e9e-4872-48d4-bae9-cac30ec52622/");
+		registry.addResourceHandler("/local/**").addResourceLocations("file:appData/");
 
 		super.addResourceHandlers(registry);
 	}

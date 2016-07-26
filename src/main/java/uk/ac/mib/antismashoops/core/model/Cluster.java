@@ -19,6 +19,7 @@ public class Cluster
 {
 	private File file;
 	private String name;
+	private String parent;
 	private String recordName;
 	private String clusterNumber;
 	private String clusterType;
@@ -31,6 +32,7 @@ public class Cluster
 	private CodonUsage codonUsage;
 	private double cuScoreRef = -1.0;
 	private double kcScore = 0.0;
+	private double selfHomologyScore = 0.0;
 	private double score = 0.0;
 
 	private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
@@ -44,6 +46,7 @@ public class Cluster
 	{
 		this.file = file;
 		this.name = removeExtension(file.getName());
+		this.parent = file.getParentFile().getName();
 		String[] qualifiedName = this.name.split(".c");
 		this.recordName = qualifiedName[0];
 		Integer clusterNo = Integer.parseInt(qualifiedName[1].replaceAll("\\D+", ""));
@@ -68,6 +71,16 @@ public class Cluster
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	public String getParent()
+	{
+		return parent;
+	}
+
+	public void setParent(String parent)
+	{
+		this.parent = parent;
 	}
 
 	public String getRecordName()
@@ -219,6 +232,16 @@ public class Cluster
 	public void setKcScore(double kcScore)
 	{
 		this.kcScore = kcScore;
+	}
+
+	public double getSelfHomologyScore()
+	{
+		return selfHomologyScore;
+	}
+
+	public void setSelfHomologyScore(double selfHomologyScore)
+	{
+		this.selfHomologyScore = selfHomologyScore;
 	}
 
 	public void computeCodonUsage()

@@ -3,10 +3,19 @@ function toggleRangeDisabling(itemId, valueOutput) {
 	if (element.disabled == true) {
 		element.disabled = false;
 		element.value = 10;
-
+		if (itemId == 'selfHomology') {
+			$('#shAlert').show();
+			toggleDisabling('minimumMatch');
+		}
+		if (itemId == 'knownClustersSimilarity')
+			toggleDisabling('similarityPercentage');
 	} else {
 		element.disabled = true;
 		element.value = 0;
+		if (itemId == 'selfHomology')
+			toggleDisabling('minimumMatch');
+		if (itemId == 'knownClustersSimilarity')
+			toggleDisabling('similarityPercentage');
 	}
 	document.getElementById(valueOutput).value = element.value;
 };
@@ -45,7 +54,7 @@ function prioritise() {
 	var kcs = $('#knownClustersSimilarity').val();
 	var sh = $('#selfHomology').val();
 	var pd = $('#phylogeneticDiversity').val();
-	
+
 	var pSim = $('#similarityPercentage').val();
 	var minM = $('#minimumMatch').val();
 
@@ -58,20 +67,21 @@ function prioritise() {
 	var pdOrderValue = $('#pdOrderValue').val();
 
 	var refSpecies = $('#selectSpecies').val();
-	
+
 	var ignorePT = $('#ignorePT').is(":checked");
 	var types = $('#preferredType').val();
 
 	url = '/dashboardUpdate?geneCount=' + numberOfGenes + '&sequenceLength='
 			+ sequenceLength + '&gcContent=' + gcContent + '&codonBias='
-			+ codonBias + '&kcs=' + kcs + '&sh=' + sh + '&pd=' + pd 
+			+ codonBias + '&kcs=' + kcs + '&sh=' + sh + '&pd=' + pd
 			+ '&nogOrderValue=' + nogOrderValue + '&slOrderValue='
 			+ slOrderValue + '&gccOrderValue=' + gccOrderValue
-			+ '&cbOrderValue=' + cbOrderValue + '&kcsOrderValue=' + kcsOrderValue 
-			+ '&shOrderValue=' + shOrderValue + '&pdOrderValue=' + pdOrderValue
-			+ '&pSim=' + pSim + '&minM=' + minM	+ '&refSpecies=' + refSpecies
-			+ '&ignorePT=' + ignorePT + '&types=' + types;
-	
+			+ '&cbOrderValue=' + cbOrderValue + '&kcsOrderValue='
+			+ kcsOrderValue + '&shOrderValue=' + shOrderValue
+			+ '&pdOrderValue=' + pdOrderValue + '&pSim=' + pSim + '&minM='
+			+ minM + '&refSpecies=' + refSpecies + '&ignorePT=' + ignorePT
+			+ '&types=' + types;
+
 	$("#outputData")
 			.html(
 					"<center><br /><h3>Prioritising... Please wait...</h3><br /></center>");
