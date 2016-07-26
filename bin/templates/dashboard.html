@@ -32,16 +32,6 @@
 			<a th:href="@{/}" class="alert-link">here</a>
 			to upload your files...
 		</div>
-		<div id="shAlert" style="display: none" class="alert alert-warning alert-dismissible" role="alert">
-			<button type="button" class="close" onclick="$('#shAlert').hide()" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-			<div style="text-align: center">
-			<strong>Warning!</strong>
-			The BGC Self-Homology parameter triggers long running processes.<br /> In order to minimise the prioritisation time it's strongly advised to use it in conjunction with the Preferred Cluster Type parameter.
-			</div>
-		</div>
-		
 
 		<h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
 		<div class="panel panel-default">
@@ -162,7 +152,7 @@
 							<br />
 							<br />
 							<label>
-								<input type="checkbox" id="ignorePT" onclick="toggleDisabling('preferredType')"/>
+								<input type="checkbox" id="ignorePT" onclick="toggleDisabling('preferredType')" />
 								Ignore
 							</label>
 						</div>
@@ -214,7 +204,11 @@
 							<br />
 							<label for="minimumMatch">Minimum Match&nbsp;</label>
 							<select class="form-control input-sm" id="minimumMatch" disabled="disabled">
-								<option value="15">15</option>
+								<option value="7">7</option>
+								<option value="9">9</option>
+								<option value="11">11</option>
+								<option value="13">13</option>
+								<option selected="selected" value="15">15</option>
 								<option value="17">17</option>
 								<option value="19">19</option>
 								<option value="21">21</option>
@@ -261,6 +255,18 @@
 
 						<br />
 						<br />
+						<div id="shAlert" style="display: none" class="alert alert-warning alert-dismissible" role="alert">
+							<button type="button" class="close" onclick="$('#shAlert').hide()" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<div style="text-align: center">
+								<strong>Warning!</strong>
+								The BGC Self-Homology parameter triggers long running processes.
+								<br />
+								In order to minimise the prioritisation time it's strongly advised to use it in conjunction with the Preferred Cluster
+								Type parameter.
+							</div>
+						</div>
 
 						<button type="button" class="btn btn-primary btn-lg btn-block" onclick="prioritise()">PRIORITISE</button>
 					</form>
@@ -287,8 +293,8 @@
 							<tr th:each="cluster, iterStat : ${clusterData}">
 								<th th:text="${iterStat.count}"></th>
 								<td th:inline="text">
-									<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] -
-										Cluster [[${cluster.clusterNumber}]]</a>
+									<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]]
+										- Cluster [[${cluster.clusterNumber}]]</a>
 								</td>
 								<td th:text="${cluster.clusterType}"></td>
 								<td th:text="${cluster.numberOfGenes}"></td>

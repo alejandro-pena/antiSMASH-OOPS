@@ -37,7 +37,7 @@
 						&Delta; TO KC
 					</th>
 					<th class="t-mid">
-						SH SCORE
+						SELF-H<br />SCORE
 					</th>
 				</tr>
 			</thead>
@@ -59,7 +59,8 @@
 						<a th:if="${refSpecies != null}" th:href="@{|/codonUsageMap/${cluster.name}/${refSpecies}|}" target="_blank">Open</a>
 					</td>
 					<td th:inline="text">[[${#numbers.formatDecimal(cluster.kcScore, 1, 2)}]]%</td>
-					<td th:text="${cluster.selfHomologyScore}"></td>
+					<td th:if="${cluster.selfHomologyScore != -1}" th:text="${cluster.selfHomologyScore}"></td>
+					<td th:if="${cluster.selfHomologyScore == -1}" th:inline="text">N/A</td>
 				</tr>
 			</tbody>
 		</table>

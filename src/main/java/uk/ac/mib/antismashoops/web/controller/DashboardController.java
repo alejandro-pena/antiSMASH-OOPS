@@ -31,6 +31,7 @@ import uk.ac.mib.antismashoops.core.model.CodonUsage.Detail;
 import uk.ac.mib.antismashoops.core.model.KnownClusterEntry;
 import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
 import uk.ac.mib.antismashoops.core.utils.KnownClusterData;
+import uk.ac.mib.antismashoops.core.utils.SubOptimalSmithWaterman;
 
 @Controller
 public class DashboardController
@@ -131,7 +132,9 @@ public class DashboardController
 			}
 			if (selfHomology > 0)
 			{
-
+				setSelfHomologyScore(clusterData, minimumMatch);
+				assignScoreForParameter(clusterData,
+						shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
 			}
 		}
 
@@ -161,7 +164,9 @@ public class DashboardController
 						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
 			if (selfHomology > 0)
 			{
-
+				setSelfHomologyScore(clusterData, minimumMatch);
+				assignScoreForParameter(clusterData,
+						shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
 			}
 		}
 
@@ -169,16 +174,24 @@ public class DashboardController
 
 		Collections.sort(clusterData, ClusterSort.SCORESORT);
 
-		// for (Cluster c : clusterData)
-		// {
-		// c.setSelfHomologyScore(SubOptimalSmithWaterman.calculateScore(c.getClusterSequence(),
-		// minimumMatch));
-		// }
-
 		model.addAttribute("clusterData", clusterData);
 		model.addAttribute("refSpecies", refSpecies);
 
 		return "fragments/clusterData :: clusterData";
+	}
+
+	private void setSelfHomologyScore(List<Cluster> clusterData, int minimumMatch)
+	{
+		for (Cluster c : clusterData)
+		{
+			if (c.getSelfHomologyScores().containsKey(minimumMatch))
+				c.setSelfHomologyScore(c.getSelfHomologyScores().get(minimumMatch));
+			else
+			{
+				c.setSelfHomologyScore(SubOptimalSmithWaterman.calculateScore(c.getClusterSequence(), minimumMatch));
+				c.getSelfHomologyScores().put(minimumMatch, c.getSelfHomologyScore());
+			}
+		}
 	}
 
 	private void filterPreferredTypes(List<Cluster> clusterData, String ignorePT, String types)

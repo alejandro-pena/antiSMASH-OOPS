@@ -70,6 +70,17 @@ public enum ClusterSort implements Comparator<Cluster>
 		}
 	},
 
+	SHSORT
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			if (c1.getSelfHomologyScore() == c2.getSelfHomologyScore())
+				return 0;
+			return c1.getSelfHomologyScore() > c2.getSelfHomologyScore() ? 1 : -1;
+		}
+	},
+
 	NOGSORTREV
 	{
 		@Override
@@ -133,6 +144,17 @@ public enum ClusterSort implements Comparator<Cluster>
 			if (c1.getKcScore() == c2.getKcScore())
 				return 0;
 			return c1.getKcScore() > c2.getKcScore() ? 1 : -1;
+		}
+	},
+
+	SHSORTREV
+	{
+		@Override
+		public int compare(Cluster c1, Cluster c2)
+		{
+			if (c1.getSelfHomologyScore() == c2.getSelfHomologyScore())
+				return 0;
+			return c1.getSelfHomologyScore() < c2.getSelfHomologyScore() ? 1 : -1;
 		}
 	},
 

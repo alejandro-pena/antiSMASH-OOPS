@@ -1,6 +1,7 @@
 package uk.ac.mib.antismashoops.core.model;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,7 +33,8 @@ public class Cluster
 	private CodonUsage codonUsage;
 	private double cuScoreRef = -1.0;
 	private double kcScore = 0.0;
-	private double selfHomologyScore = 0.0;
+	private int selfHomologyScore = -1;
+	private Map<Integer, Integer> selfHomologyScores = new HashMap<>();
 	private double score = 0.0;
 
 	private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
@@ -234,14 +236,24 @@ public class Cluster
 		this.kcScore = kcScore;
 	}
 
-	public double getSelfHomologyScore()
+	public int getSelfHomologyScore()
 	{
 		return selfHomologyScore;
 	}
 
-	public void setSelfHomologyScore(double selfHomologyScore)
+	public void setSelfHomologyScore(int selfHomologyScore)
 	{
 		this.selfHomologyScore = selfHomologyScore;
+	}
+
+	public Map<Integer, Integer> getSelfHomologyScores()
+	{
+		return selfHomologyScores;
+	}
+
+	public void setSelfHomologyScores(Map<Integer, Integer> selfHomologyScores)
+	{
+		this.selfHomologyScores = selfHomologyScores;
 	}
 
 	public void computeCodonUsage()

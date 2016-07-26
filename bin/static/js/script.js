@@ -84,7 +84,8 @@ function prioritise() {
 
 	$("#outputData")
 			.html(
-					"<center><br /><h3>Prioritising... Please wait...</h3><br /></center>");
+					"<center><button class='btn btn-lg btn-success'><span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span> Prioritising... Please wait...</button></center>");
+
 	$("#outputData").load(url);
 }
 
