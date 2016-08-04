@@ -1,3 +1,5 @@
+
+
 function toggleRangeDisabling(itemId, valueOutput) {
 	var element = document.getElementById(itemId);
 	if (element.disabled == true) {
@@ -7,6 +9,8 @@ function toggleRangeDisabling(itemId, valueOutput) {
 			$('#shAlert').show();
 			toggleDisabling('minimumMatch');
 		}
+		if (itemId == 'phylogeneticDiversity')
+			$('#pdAlert').show();
 		if (itemId == 'knownClustersSimilarity')
 			toggleDisabling('similarityPercentage');
 	} else {

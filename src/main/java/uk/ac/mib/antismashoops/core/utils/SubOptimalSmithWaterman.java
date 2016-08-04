@@ -1,5 +1,9 @@
 package uk.ac.mib.antismashoops.core.utils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Stack;
 
 public class SubOptimalSmithWaterman
@@ -14,6 +18,8 @@ public class SubOptimalSmithWaterman
 	private static short g;
 	private static int minMatch;
 	private static int score;
+	private static String fileName;
+	private static final String directory = "selfhomology";
 
 	public static short[][] matrix;
 
@@ -21,12 +27,22 @@ public class SubOptimalSmithWaterman
 	{
 	}
 
-	public static int calculateScore(String sequence, int mMatch)
+	public static int calculateScore(String sequence, int mMatch, String cluster, String number)
 	{
 		int size = 1000;
 		int counter = 0;
 		score = 0;
 		minMatch = mMatch;
+		fileName = cluster + ".cluster" + number + ".txt";
+
+		File directoryFile = new File(directory);
+		File file = new File(directory, fileName);
+
+		if (file.exists())
+			file.delete();
+
+		if (!directoryFile.exists())
+			directoryFile.mkdirs();
 
 		sequences = sequence.split("(?<=\\G.{" + size + "})");
 
@@ -40,6 +56,7 @@ public class SubOptimalSmithWaterman
 		}
 
 		System.out.println("\nFinal score for the Cluster is: " + score);
+		writeToFile("\nFinal score for the Cluster is: " + score);
 		return score;
 	}
 
@@ -146,8 +163,6 @@ public class SubOptimalSmithWaterman
 			}
 		}
 
-		System.out.println("Highest score: " + highest + " at (" + maxI + "," + maxJ + ")\n");
-
 		int i = maxI;
 		int j = maxJ;
 
@@ -207,12 +222,18 @@ public class SubOptimalSmithWaterman
 			}
 		}
 
-		// System.out.println("");
-		// System.out.println(seqOneAlignment.toString() + " | " + (jValue +
-		// (iteration * 1000)) + " - "
-		// + ((j - 1) + (iteration * 1000)));
-		// System.out.println(seqTwoAlignment.toString() + " | " + iValue + " -
-		// " + (i - 1));
+		System.out.println("Alignment score: " + highest);
+		writeToFile("Alignment score: " + highest + "\n");
+
+		System.out.println(seqOneAlignment.toString() + " | " + (jValue + (iteration * 1000)) + " - "
+				+ ((j - 1) + (iteration * 1000)));
+		writeToFile(seqOneAlignment.toString() + " | " + (jValue + (iteration * 1000)) + " - "
+				+ ((j - 1) + (iteration * 1000)) + "\n");
+
+		System.out.println(seqTwoAlignment.toString() + " | " + iValue + " - " + (i - 1) + "\n");
+		writeToFile(seqTwoAlignment.toString() + " | " + iValue + " - " + (i - 1) + "\n\n");
+
+		System.out.println("");
 
 		return highest;
 	}
@@ -258,6 +279,27 @@ public class SubOptimalSmithWaterman
 					System.out.format("%4d", matrix[i][j]);
 			}
 			System.out.println("");
+		}
+	}
+
+	public static void writeToFile(String data)
+	{
+		File file = new File(directory, fileName);
+		try
+		{
+			if (!file.exists())
+			{
+				file.createNewFile();
+			}
+
+			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.append(data);
+			bw.close();
+
+		} catch (IOException e)
+		{
+			e.printStackTrace();
 		}
 	}
 }

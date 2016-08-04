@@ -40,6 +40,11 @@ public class FileDataAnalyser
 	{
 		logger.info("Cluster population started...");
 
+		File root = new File(uploadPath);
+		clusters = new ArrayList<>();
+		if (!root.exists())
+			return clusters;
+
 		for (File parent : new File(uploadPath).listFiles())
 		{
 			if (parent.isFile() && parent.getName().matches(ZIP_REGEX))
@@ -51,8 +56,6 @@ public class FileDataAnalyser
 		File __MACOSX = new File(uploadPath, "__MACOSX");
 		if (__MACOSX.exists())
 			delete(__MACOSX);
-
-		clusters = new ArrayList<>();
 
 		for (File parent : new File(uploadPath).listFiles())
 		{

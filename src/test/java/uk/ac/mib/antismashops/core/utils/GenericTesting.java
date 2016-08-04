@@ -1,10 +1,21 @@
 package uk.ac.mib.antismashops.core.utils;
 
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,10 +24,16 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
 import uk.ac.mib.antismashoops.MvcConfiguration;
-import uk.ac.mib.antismashoops.core.utils.ExternalDataParser;
+import uk.ac.mib.antismashoops.core.model.ClusterBlastEntry;
+import uk.ac.mib.antismashoops.core.model.ClusterBlastLineage;
+import uk.ac.mib.antismashoops.core.utils.ClusterBlastData;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { AntiSmashOopsApplication.class, MvcConfiguration.class })
@@ -24,7 +41,9 @@ import uk.ac.mib.antismashoops.core.utils.ExternalDataParser;
 public class GenericTesting
 {
 	@Autowired
-	private ExternalDataParser edp;
+	private ClusterBlastData cbd;
+
+	private List<Node> leafNodes = new ArrayList<>();
 
 	// @Test
 	public void test()
@@ -110,7 +129,7 @@ public class GenericTesting
 		// edp.setKnownClusterData(KnownClusterData.getKnownClusterList());
 	}
 
-	@Test
+	// @Test
 	public void printMatrix()
 	{
 		String sequence = "gcgggacccctgtgacgctaccggcgtgcccctcgcggtccgcggccgccccgcaacgcgcaccgcgccggcaccaaggccggcgcgctgggcggtgtcaccaccctcggggtccggtcagtcctcgccccggacgatgttcgactcctgacccgattgcggtgcgcggacggtgctgccgtcctccacggcgggtacgcaggtgcgcatcacgcctctgctccgcaggcggcgggccttcgaccagcctgtctccagccgccggacggcgggtttgccgtcggtgtccgtggtcacggggcatcatcttccttctggttccgcttctggtgcgctcgcccctgcgggtccccggacggggaccggtgaaacccaggggccgtgcgggccgcgcggctcagccgccgcccaccgggatctcgctccacacctgcttgcccccgctgaccggcagcgtcccccaggtcgccgacatcgcctcgaccaggaggatgccgcgtccgccggtggcctcccagccgatgctggtcggcttgaccggcgtgcgcggcgaggcgtcggcgacggccacgcgcagccgtccgccgatcagggtgaggtcgagccgtaccttgccgtcggtgtgcaccagggcgttggtgaccagctcggagacgatcaggagcactccgtcgatgtcgtcgtccggtacgccccaggtgcgcagggtgcgccgggtgaagcggcgggcgtgccgcacggcctcgggcagccgccacaccgaccagctctcgcgcagcgggcgcagggccattccgtcgtagcgcaccagcagcagggccacgtcgtcgttgcggcgggcgttgccgagcagggcgtcggcgacgagtccgaggtggtcgggggcggagacggccagcgcgtgcgcgaaccggtccatgccctcgtcgatgtcggactccggcgtctccaccaggccgtccgtggtgagggcgatcagcgtgccgggccgcagccgcagcgggctcatcgggaagtcggcctgggtcaccacgccgagcggcgggccgccctccacctccgcgatctcggtgctgccgtcgggatggcgcagcaccggtggcaggtgccccgcgcgcacgcaccaggcggagccctcctccatgtcgaggtcgacgtagacgcaggtggcgaagaggtcggtctccatgcccgtcagcagccggttggcgtgggagaccacgacgtccggcgggtggccctcgaccgcgtaggcgcgcagggcggtgcgcatctggcccatgagggtggccgcgccggcgctgtggccctggacgtcgccgatgacgagggcgacgtggtggtcgggcagcgggatcacgtcgtaccagtcgccgcccagctccaggcccgccgtgctgggcaggtagcgggcgacggcgaccgcgccgggcagcttgggcaggcggcgcggcagcagctggcgctggagcatgccgaccagctcgtgctcggcgtcgaaggcgtgggcgcgcatcagggcctgcccggccaggcccgcggaggcggtgagcagggcccgttcgtcggggccgaagtcgtgcggggtgtcccagccgatcaggcaggcaccggccatgcgtccgccggcgggcagcggcagcacggcgaggccgccggggccgacgtcggcgagggcgggctccaggtccccggtgccggcgggccagatccgggcgcggccctcgcgcagcgcggcggccagggtcggcatggcccgtaccggcgcgtccggccactcggtgcgccactccaggcgccacagttcgggccaggactcggggtcgggcgggtcgaggacggtgacgacgagccggtcgttctccagctcggccagcgcgatccggtcggcccgcagcggcctgcgcagggcggcgacgacggcctggctgacgtcgcggaccgtcccggcggtggcgagcgcggcggccagccgctggacgcgggcgacgtcggtcacgtccggacgcagggtggaggcgtcggcgacggtgccgaccagaagggccggccggccctcgccgccgggcagcaggcgcccgctgagccgcagccacttcggcgggccggtgggctggagcacccggaactccagctcgcgctcgccgatggtcatgtggtcggactcggtcaccgacatcagggacggcaggtcctccggcacggtgaggccgagcagcgtctcgaccttgccgtcgaactcgccgggggccagtccgaacagccgcaggatgccgtcgccgacctccacccggccggagtccatggtcagggtgaaggcgtccggctggaggtcaccggtctcggcacgggcggcggtctcggccggggcggggcaggtcatcgcctccgcgatcgcctccaggcacgtacggtcgtcggtgtcgaacccgtccgggcgctcggtcagggcgagaaggcagccgccgccgtccccgcgcacgggcaggacggcgagcgagaagccgctcgacggcacatgccgtgactccgccgatccggcgaactcctccggcccgatccacaccgcctcgccggcgcggtgggcgtcggcgaccggggaaccgccggacgcggggtagctgtcgcgtacgccgtacagggagcggggcactccggccgactcgaccaggcagagcagctcgcgatcgtcgcccggcgcgtagagcgcggcgaaggaggcgcccgcgaagaccagcgcctgctcgaggattacgcgcagccgctcctgcggcaccggtccggccacgatcgcgttcagggcgccctcggcacgcagcgtcctcggtccgcgttccgcagcgtcctctccggccacctcgccattacagcgcttgtgaggcatccgcgcagcccctggggaccggggagcggcgatcaggggcactccggggctcgcggacgggcgcttcgcgcctccggacgggtgcgggccgggccgggacctgccggcggccaggaggtggtggcggacacgcaccgctgcccgcgggccgtgaaccagtgcggcgggcggtgcggccggggcgcagaccggccgcaccgagccgacgtggcgtcagcccgtcagcccgtcagccccgagccgtccccagcgccgacgggtgcaccgtcacccgcgtcacccgcgtcacctgtgtcacctttgtcacccgcaccagcgccgccgtcgcccgcgtcgcccgcacctcccgcatcaccctcctcgccggcacctgcgccggcaccgcccgcgtctccggcacccgcgccgccgtcctcgcccccgagggtggcgccgaccgccgccagggccgtggtgaccggctggaagaaggtctcgccgccgacggtgcagtcaccgctgccgccggaggtcaggccgatcgcgaggccgtcccgcgtgaagagggagccgccgctgtcgccgggctcggcgcagacgtcggtctgtatgaggccggtgaccatgccctcgggatagttgacggtggcgtccaggccgagcacctgcccgtcggccagtccggtcgtactgcccatgcggaagacctcctggccgaccgccgcctcggcggccccgctgatcggcagggtctggtcgccgaggtcgacctcgctcggcgcctcggtcgccgggtcgtcgtacctgacgagcgcgaagtcgccctcgccggggaagaccgcctggtcgacggtggcgatcggctgtccgccctgtgcgtcggaccactggtcggccgccaccccgcagtgaccggccgtcaggaaggcgggcgagccgtcgcccgcggtgacgttgaacccgagtgagcagcgcgctccgccgccgaagatcgcgtcgccgcccgacgcgaaggtcttgaaggtgccggcggacttcctgaccgtcgccatgccggacccgaggccgtcgacggtggactccagccggtcccaccggtcgccggtgacggtgctgtcggcggtcaccaggatcttgttggtccgcgggtcgatcgcccacgcggtcccggggatgccggcctcggccttcagggtctgcgcgccgccgcgcagctcgcccatgctgttgtcgacctcgcggaccttcgcacccgccttctcggcctgcacgaccacctggttgttgtcgccggggacgacgttgacgaccagttgccgggcgccggagtcgtagtaggagccggcgaagctgtcgccgagcaggccggcgagccgggcggcgaggtccgacgcgtccgccgccttgagcgtcctgggtgccgcggcggcatcgtccgaggagccgccgtcctgcgaggcgttcgcgttcggcagcaggatcgcggccgcgccgagcgccaccacaccgcccgccgccatcgcggccctgcgcttggggattcgcttgtgactcaacctgctcgacctcctgggaccggggttgatgcccgccggtccggcagctgttgggggcgcctggacggctgttggtacgcacggaccgggcggggtgttcagccgggccctcgcgccgcccccgatcggcaccctccgcatccggagcgcgacgcaccgttgcgatcacggagcggaatgactgcttcagcgaatctgcacatcgaatgcccaacccggtcactcccgttggcgcatctgcacaagcccgcggcggcccgtacgcctttggggccgtagtgccccaatcgcctcggccggggcaaggggccgcacgagccgatctcgcgcaccgtgtgaagaagtggccgcgaaggagtgcgcgcccctgcacgcttgggcccgcaggcctcgcaagtgtgctggtgagaggggtgtttgattggaagcccggaccggccgcgtgctttgatccatcgcaccgcgggggccgcggagggctccggaaaagggcgcccggcgcccgcggtcgcggccgtcatctgtccccagagggggccgctccccccttgtgaaatggctatacgaagggaagttccatcatgaactccaccccccaggttgagaccgtcgagatctccgacgccgacctcgacaacgtctccggcggcctgaacgtgaacgccgtcggcaccgtcaccggcctggtggacggcatcgccccggtctccggcctgctcaacaccgccgtcggcaccgtcgagggtgtcaccggcctgaacacggccccggtcacgggcctggtcgccggtctctgatcgcgcccttgcgtcgctgagtcccggagccgtccaggctccgggacttttcggccgttctccctccggccgtgatcgtcccccggccgttctcaccaagccctggatacgtcagccgtgcagttccgccaacaggccctcgcaaaactccagtcgccggaggagctcgatctcccggtgcgtttcgcccgtccccagggctggctggtgctgtccgtgacgctgatcgccatggccgccgcgtccgtgtgggcggtgggcggctcggtgacctccacggtgtccgcgcccgccgtcctcacccacggccagggcagttacctcctgcagagccccgtctccgggcaggtcaccgcggtcctcgcccgtccggggcagcggctggccgccgacgccccggtgctgaaggtccgcaccgcgaagggcgagacggtggtccgcacggtggacgccggccgggtcagcgcactcgccgccaccgtcgggcagatcatcgccaccggcgcgaacgtcgcgtccgtcgagaaggtcgcccacgccggcgacccgctctacgccaccgtctacgtccccgcggagaacgccgccgccatccccgcccacgcctcggtcgacctgaccgtccagtcggtgccgacgcagcagtacggcgtcctgcacggggaggtgaagtccgtggaccgctcggcccagtcggcgcagacgatcggcgcgttcctcggggacagcgcgctcggcgagcagttcaccgaggacggcaggccggtggccgtgacggtgcggctggcaacctcgaagtccacgaagagcggctacgcgtggtcctcggccgacgggccgccgttcgaactgacctccatgaccctggcctcgggctcgatccggctggccgaccagcgtcccgtcgattggctgctgccgtgagcaccgcacaggagacccggggcaggcgccgtgccgccccgccgaggcgcagcgtgccgaagagccgcgcgaggaccgtccgcacgcccacggtgctccagatggaggccgtggagtgcggtgccgcctccctcgccatggtgctgggacactacggccgccatgtccccctggaggagctgcggatcgcctgcggtgtctcccgcgacgggtcccgggcgagcaacctgctgaaggccgcgcggagttacgggttcaccgccaagggcatgcagatggacctggccgccctcgccgaggtgacggcaccggccatcctcttctgggagttcaaccactacgtcgtctacgacggcatgggccgccggttcgggcggcgcggggtgttcatcaacgacccgggcaagggacgcaggttcgtgtccctggaggacttcgacgggtccttcaccggtgtcgtgctgaccatggagcccggtgacggcttcacccgcggcggccgcaagcccggtgtgctcggtgcgatgcccgcccggctgcgcggaaccgcgggcacgctgcccgccgcggtgctggcgagcctgctcctggtggcggtcggcgcggcggtgcccgcgctcagccgcacctacatcgacatgttcctcatcggtgggcagacctcgctgctcggcgtgctgttcgcgtcgatgggcgcctgtgtgctgctcacggtggtgctgacctggctccagcaggccaacctgctgcacgggcgcatcatctcctccaccctctccagcgcccgcttcctgcggcacctgctgcggctgccggtgaccttcttctcccagcgcagccccgccgacctggtgcagcggctccagtccaacgacgccgtcgccgagacgctggcccgcgacctcgccgcggcgggcgtggacgcgatcgtggtcgtcctgtacgccgtgctgctgtacacgtacgacccgcagctcaccttcgtcggcatcggtgtggcgctgctcaacatcctggcgatgcgggtcgtcatccggctgcgcgcgacccgtacggccaagctgcgggcggacacggcgcggctgaccaacaccgcctacaccggcctccagctgatcgagacgatgaaggcgaccggcggcgaggacggctacttccgcaagtgggccggccagcacgccaccacgctggaggagcagcagcggctcggggtgcccagtgcctggctgggcgtggtcgcgccgacgctggcgacgctgaacagcgggctgatcctgtggatcggcggcatgcgcgcggtcgagggccacatctcggtcgggctgctggtcgccttccaggcgctggtggtccgcttcaccgcgccgctgacccggctgaacggtgtcgcgggccgcatccaggacttcgcggccgacgtggcccgcctcaaggacgtggagaacttccgggcggatccgctctacgaccgccccggtgacggcgactccacccgccggctgcgcgggcacgtggagctgcagaacgtctccttcggctacaacccgctcgacaagccgctgctgtccggtttcgacctgaccgtggggccggggcagcaggtggccctggtcggcggttcgggcagcggcaagtcgacggtgtcgcggctgatctcgggcctgtacgcgtcctgggacggcgtgatccgcatcgacgggcagcggctcgacgacatcccgcgcggggcgctggcgtcctccgtctccttcgtcgaccaggacgtgttcctgttcgagggctcggtgcgcgacaacgtggccctgtgggacccgtcgatccccgacgacgccgtggtggaggcgctgaaggacgccgcgctgtacgacgtggtgacgcgcaggccgggcgggctccacagcccggtggagcaggacggccgcaacttctccggcgggcagcgccagcgcctggagatcgcgcgggccctggtgcgccgccccagcatcctcgtcctggacgaggtgaccagcgcgctggacgcggagaccgagctggtggtgatggacaacctgcgccggcgcggctgcgcctgcgtggtgatcgcgcaccggctcagcacggtgcgggacagcgacgagatcgtcgtcctcgaccacggcacggtcgtggagcgcgggcggcacgaggagctgctggcgcgcggtggcgcgtacgcggcgctggtcagggagcggtgagatgacaaccgtgcacgaggggcagggcgacctggtcctgggggcgctcggctcgctgggcacgcgcgtcgactgcgccgggttcaaccgcctcgacctggaggggccgcaggtgctgtggctcgtggtgtccggcgcggtggacctgttcgcggtcgacgccggggagcagggccactggcaccacctgggacgcctggaggcgggctcggtactgctgggaccggtcgccgggccgcagcacacgctggtggcacgcccgctgcgggactgcgtggtgcaccggatcgggctgcgcgagctgtaccagccggcgcccacccagacgtggtcgtacgacgcgtacggcaacccccagtacgtgccgccgacgacgagtccgctggagtacgccctggccctcggcgtgggacgcggcctgaccgtcctcttccaggcgccgatggccacggagcgggccggcgcacccacggacgacgacgtgttctggatgcaggtgccgccgggcagcgtgcagtacggggcggtgtacggcgaggaggcggccgccgacctgttgatggacccggcgctgtggcagagcatggtcgaccagcagtaccggctgctgaccacccttgaccggtggatcgagcagctggagcgcacccacgagacccgcacggcggccggtatcaaggccggtgaggcggtgcgcgcgcgggccgaccggacgctgctggcctccatcggcaagcgctcggcgcagcgcaccacggccgccgacgccgacgccacgtacgcggcgtgcgggctggtcgcccgcgccgccggtattccgctcgccgagccgtccccgggcggcaccgagagcgaccggctggacccggtggagcggatcgcgctcgcctcgcgggtgcggaccaggtcggtgcggctggcggaccgctggtggcgggaggacgtggggccgctggtcgggcaccgcaccctgtcgggggcgccggtggctctgctgtggcggcgcggcggctatgtggccgtgcatccggcgaccggtcgggagacgcccgtggagcgggcgaacgccggggagttcgaaccgcgcgcggtgatgttctaccgcccgctgccggagcggcggccgagtccgctcgggctgctccggttctgtctggcgggcacccgccgggatctgacgtcgctgctgctcgccgggctggtgacggtggtgctcggcgcgctggtgccgatcgcgacgggccgggtgctcggcgagttcgtgccgaaggcgcagaccgggctgatcgtgcaggtgtgtctcgcggtgatgctgagcagcgtcgtcgcggcggccttcatgctgctgcagaacctcaccatcctgcgtctggagggccggatcgaggccaccctccagcccgccgtgtgggaccgcctgctgcggctgccgacgaagttcttcaccgagcgctccaccggcgaactggcgagcgcggccatgggcatcagcgcgatccgcagactgctcgcgggggtcggcccgaccgtggcccagtcggtgaccgtcggggcgatgaacctcggtctgctgctctggtacagcgtgccgatggcgttcgccgcgatcggcatgctggtggtcgtcgccggggtgttcctcgggctcgggctgtggcaggtgcgctggcagcggcggctggtcaaactcaccaacaagctgaacaaccaggcgttccagacgctgcgcgggctgccgaagctgcgggtggcggcagccgagaactacgcctacgcggcgtgggcggagcggttcgcgcacagccgggagctgcagcagcgggcgggccggatcaagaacctgaacgcggtgctcgg";
@@ -135,5 +154,141 @@ public class GenericTesting
 			}
 			System.out.println("");
 		}
+	}
+
+	// @Test
+	public void getOrganism() throws Exception
+	{
+		List<ClusterBlastLineage> cbl = new ArrayList<>();
+
+		// {CP003209=[Corynebacterium diphtheriae BH8, Bacteria, Actinobacteria,
+		// Corynebacteriales, Corynebacteriaceae, Corynebacterium],
+		// CP003217=[Corynebacterium diphtheriae VA01, Bacteria, Actinobacteria,
+		// Corynebacteriales, Corynebacteriaceae, Corynebacterium],
+		// CP003207=[Corynebacterium diphtheriae 241, Bacteria, Actinobacteria,
+		// Corynebacteriales, Corynebacteriaceae, Corynebacterium],
+		// CP003215=[Corynebacterium diphtheriae HC04, Bacteria, Actinobacteria,
+		// Corynebacteriales, Corynebacteriaceae, Corynebacterium],
+		// BX248355=[Corynebacterium diphtheriae, Bacteria, Actinobacteria,
+		// Corynebacteriales, Corynebacteriaceae, Corynebacterium],
+		// CP003213=[Corynebacterium diphtheriae HC02, Bacteria, Actinobacteria,
+		// Corynebacteriales, Corynebacteriaceae, Corynebacterium],
+		// CP003214=[Corynebacterium diphtheriae HC03, Bacteria, Actinobacteria,
+		// Corynebacteriales, Corynebacteriaceae, Corynebacterium],
+		// CP003211=[Corynebacterium diphtheriae CDCE 8392, Bacteria,
+		// Actinobacteria, Corynebacteriales, Corynebacteriaceae,
+		// Corynebacterium], CP003212=[Corynebacterium diphtheriae HC01,
+		// Bacteria, Actinobacteria, Corynebacteriales, Corynebacteriaceae,
+		// Corynebacterium], AJVH01000008=[Corynebacterium diphtheriae bv.
+		// intermedius str. NCTC 5011, Bacteria, Actinobacteria,
+		// Corynebacteriales, Corynebacteriaceae, Corynebacterium]}
+
+		List<String> lineage = new ArrayList<>();
+
+		lineage.add("Corynebacterium-diphtheriae-BH8");
+		lineage.add("Bacteria");
+		lineage.add("Actinobacteria");
+		lineage.add("Corynebacteriales");
+		lineage.add("Corynebacteriaceae");
+		lineage.add("Corynebacterium");
+		lineage.add(lineage.remove(0));
+		ClusterBlastLineage lin = new ClusterBlastLineage();
+		lin.setLineage(lineage);
+		cbl.add(lin);
+
+		lineage = new ArrayList<>();
+
+		lineage.add("Corynebacterium diphtheriae VA01");
+		lineage.add("Bacteria");
+		lineage.add("Actinobacteria");
+		lineage.add("Corynebacteriales");
+		lineage.add("Corynebacteriaceae");
+		lineage.add("Corynebacterium");
+		lineage.add(lineage.remove(0));
+		lin = new ClusterBlastLineage();
+		lin.setLineage(lineage);
+		cbl.add(lin);
+
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = dbf.newDocumentBuilder();
+		Document doc = builder.newDocument();
+
+		Element element = doc.createElement("root");
+		doc.appendChild(element);
+
+		Node root = doc.getFirstChild();
+
+		for (ClusterBlastLineage item : cbl)
+		{
+			Node current = root;
+			for (String species : item.getLineage())
+			{
+				NodeList children = current.getChildNodes();
+				boolean found = false;
+				for (int i = 0; i < children.getLength(); i++)
+				{
+					if (children.item(i).getNodeName() == species)
+					{
+						current = children.item(i);
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+				{
+					Element e = doc.createElement(species);
+					current.appendChild(e);
+					current = e;
+				}
+			}
+		}
+
+		prettyPrint(doc);
+
+	}
+
+	public static final void prettyPrint(Document doc) throws Exception
+	{
+
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+		StreamResult result = new StreamResult(new StringWriter());
+		DOMSource source = new DOMSource(doc);
+		transformer.transform(source, result);
+		String xmlString = result.getWriter().toString();
+		System.out.println(xmlString);
+	}
+
+	@Test
+	public void testing()
+	{
+		// SET THE CLUSTER BLAST DATA
+
+		List<ClusterBlastEntry> cbl = cbd.getClusterBlastData(new ArrayList<>());
+
+		for (ClusterBlastEntry cbe : cbl)
+		{
+			cbe.generateLineageTree();
+			System.out.println(
+					cbe.getRecordName() + " " + cbe.getRecordNumber() + " Size:  " + getTreeSize(cbe.getXmlLifeTree()));
+		}
+	}
+
+	public int getTreeSize(Node root)
+	{
+		if (root == null)
+			return 0;
+
+		if (!root.hasChildNodes())
+			return 1;
+
+		int count = 0;
+		NodeList children = root.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++)
+		{
+			count += getTreeSize(children.item(i));
+		}
+		return count + 1;
 	}
 }

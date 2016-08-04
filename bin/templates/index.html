@@ -16,6 +16,15 @@
 <script th:src="@{/js/fileupload.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
 
+<script>
+
+function loading()
+{
+	$('#submitBtn').html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Decompressing files... Please wait...');
+}
+
+</script>
+
 <link rel="icon" th:href="@{/images/oops.ico}" />
 
 </head>
@@ -60,7 +69,8 @@
 				<br />
 				<form th:action="@{/dashboard}" action="" method="POST">
 					<input type="hidden" th:value="${fileName}" name="fileName" />
-					<button type="submit" class="btn btn-primary btn-lg btn-block">GO TO PRIORITISATION DASHBOARD</button>
+					<button type="submit" id="submitBtn" class="btn btn-primary btn-lg btn-block" onclick="loading();">GO TO
+						PRIORITISATION DASHBOARD</button>
 				</form>
 
 

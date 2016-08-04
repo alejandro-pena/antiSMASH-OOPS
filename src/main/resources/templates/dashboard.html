@@ -66,8 +66,8 @@
 						<div class="form-group div-ctr">
 							<label for="sequenceLength">CDS Length</label>
 							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="sequenceLength"
-								onInput="updateRangeValue(this, 'slValue')"
-							/>
+								onInput="updateRangeValue(this, 'slValue')"							
+/>
 							<output id="slValue">10</output>
 							<br />
 							<label>
@@ -217,6 +217,9 @@
 								<option value="27">27</option>
 								<option value="29">29</option>
 							</select>
+							&nbsp;
+							<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right"
+							title="This input parameter considers a sequence of at least N nucleotides aligned contiguously to be considered for the Self-Homology score."></span>
 							<br />
 							<br />
 							<label>
@@ -234,13 +237,13 @@
 
 						<div class="form-group div-ctr" style="margin-bottom: 10px;">
 							<label for="phylogeneticDiversity">Phylogenetic Diversity</label>
-							<input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="phylogeneticDiversity"
+							<input type="range" disabled="disabled" class="sld-lg" value="0" min="0" max="10" step="1" id="phylogeneticDiversity"
 								onInput="updateRangeValue(this, 'pdValue')"
 							/>
-							<output id="pdValue">10</output>
+							<output id="pdValue">0</output>
 							<br />
 							<label>
-								<input type="checkbox" id="ignorePD" onClick="toggleRangeDisabling('phylogeneticDiversity', 'pdValue');" />
+								<input type="checkbox" checked="checked" id="ignorePD" onClick="toggleRangeDisabling('phylogeneticDiversity', 'pdValue');" />
 								Ignore
 							</label>
 							&nbsp;
@@ -262,6 +265,18 @@
 							<div style="text-align: center">
 								<strong>Warning!</strong>
 								The BGC Self-Homology parameter triggers long running processes.
+								<br />
+								In order to minimise the prioritisation time it's strongly advised to use it in conjunction with the Preferred Cluster
+								Type parameter.
+							</div>
+						</div>
+						<div id="pdAlert" style="display: none" class="alert alert-warning alert-dismissible" role="alert">
+							<button type="button" class="close" onclick="$('#pdAlert').hide()" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<div style="text-align: center">
+								<strong>Warning!</strong>
+								The Phylogenetic Diversity parameter triggers long running processes.
 								<br />
 								In order to minimise the prioritisation time it's strongly advised to use it in conjunction with the Preferred Cluster
 								Type parameter.

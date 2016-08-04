@@ -120,6 +120,12 @@ $(function () {
         }],
 
         colorAxis: {
+        	labels:
+        	{
+        		formatter: function () {
+        			return Math.abs(this.value) + '%';
+        		}
+        	},
             min: minValue,
             max: maxValue,
             minColor: '#428bca',
@@ -141,8 +147,18 @@ $(function () {
         },
 
         tooltip: {
-            formatter: function () {
-                return '<b>' + this.series.xAxis.categories[this.point.x] + this.series.yAxis.categories[this.point.y] + ': ' + this.point.value + '%</b>';
+            formatter: function () {         	
+            	var bias;
+            	if(this.point.value === 0)
+            		bias = 'No bias';
+            	else if(this.point.value > 0)
+            		bias = 'Species biased';
+            	else
+            		bias = 'BGC biased';
+            	
+                return '<b>' + this.series.xAxis.categories[this.point.x] 
+                		+ this.series.yAxis.categories[this.point.y] + ': '
+                		+ Math.abs(this.point.value) + '% </b><br />' + bias;
             }
         },
 

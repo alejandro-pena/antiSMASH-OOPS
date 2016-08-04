@@ -33,11 +33,16 @@
 						<br />
 						HEAT MAP
 					</th>
+					<th class="t-mid">&Delta; TO KC</th>
 					<th class="t-mid">
-						&Delta; TO KC
+						SELF-H
+						<br />
+						SCORE
 					</th>
 					<th class="t-mid">
-						SELF-H<br />SCORE
+						DIVERSITY
+						<br />
+						SCORE
 					</th>
 				</tr>
 			</thead>
@@ -45,8 +50,8 @@
 				<tr th:if="${not #lists.isEmpty(clusterData)}" th:each="cluster, iterStat : ${clusterData}">
 					<th th:text="${iterStat.count}"></th>
 					<td th:inline="text">
-						<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]] - Cluster
-							[[${cluster.clusterNumber}]]</a>
+						<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]]
+							- Cluster [[${cluster.clusterNumber}]]</a>
 					</td>
 					<td th:text="${cluster.clusterType}"></td>
 					<td th:text="${cluster.numberOfGenes}"></td>
@@ -61,6 +66,10 @@
 					<td th:inline="text">[[${#numbers.formatDecimal(cluster.kcScore, 1, 2)}]]%</td>
 					<td th:if="${cluster.selfHomologyScore != -1}" th:text="${cluster.selfHomologyScore}"></td>
 					<td th:if="${cluster.selfHomologyScore == -1}" th:inline="text">N/A</td>
+					<td th:if="${cluster.pdScore == -1}" th:inline="text">N/A</td>
+					<td th:if="${cluster.pdScore != -1}" th:inline="text">
+						<a th:href="@{|/lifeTree/${cluster.RecordName}.cluster${cluster.clusterNumber}.xml|}" target="_blank">[[${cluster.pdScore}]]</a>
+					</td>
 				</tr>
 			</tbody>
 		</table>

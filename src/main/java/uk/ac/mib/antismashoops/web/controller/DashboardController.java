@@ -25,10 +25,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import uk.ac.mib.antismashoops.core.model.Cluster;
+import uk.ac.mib.antismashoops.core.model.ClusterBlastEntry;
 import uk.ac.mib.antismashoops.core.model.ClusterSort;
 import uk.ac.mib.antismashoops.core.model.CodonUsage;
 import uk.ac.mib.antismashoops.core.model.CodonUsage.Detail;
 import uk.ac.mib.antismashoops.core.model.KnownClusterEntry;
+import uk.ac.mib.antismashoops.core.utils.ClusterBlastData;
 import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
 import uk.ac.mib.antismashoops.core.utils.KnownClusterData;
 import uk.ac.mib.antismashoops.core.utils.SubOptimalSmithWaterman;
@@ -40,6 +42,9 @@ public class DashboardController
 
 	@Autowired
 	private FileDataAnalyser fda;
+
+	@Autowired
+	private ClusterBlastData cbd;
 
 	@Autowired
 	private KnownClusterData kcd;
@@ -95,7 +100,7 @@ public class DashboardController
 
 		Double gcContentRef = 0.0;
 		CodonUsage cuRef;
-		List<Cluster> clusterData;
+		List<Cluster> clusterData = null;
 
 		// SET THE KNOWN CLUSTER DATA
 
@@ -136,6 +141,20 @@ public class DashboardController
 				assignScoreForParameter(clusterData,
 						shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
 			}
+			if (pDiversity > 0)
+			{
+				// SET THE CLUSTER BLAST DATA
+				List<ClusterBlastEntry> cbl = cbd.getClusterBlastData(clusterData);
+
+				for (ClusterBlastEntry cbe : cbl)
+				{
+					cbe.generateLineageTree();
+					Cluster bgc = getCluster(cbe.getRecordName(), cbe.getRecordNumber());
+					bgc.setPdScore(cbe.getDiversityScore());
+				}
+				assignScoreForParameter(clusterData,
+						pdOrder.equalsIgnoreCase("d") ? ClusterSort.PDSORT : ClusterSort.PDSORTREV, pDiversity);
+			}
 		}
 
 		// SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
@@ -168,11 +187,30 @@ public class DashboardController
 				assignScoreForParameter(clusterData,
 						shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
 			}
+			if (pDiversity > 0)
+			{
+				// SET THE CLUSTER BLAST DATA
+				List<ClusterBlastEntry> cbl = cbd.getClusterBlastData(clusterData);
+
+				for (ClusterBlastEntry cbe : cbl)
+				{
+					cbe.generateLineageTree();
+					Cluster bgc = getCluster(cbe.getRecordName(), cbe.getRecordNumber());
+					bgc.setPdScore(cbe.getDiversityScore());
+				}
+				assignScoreForParameter(clusterData,
+						pdOrder.equalsIgnoreCase("d") ? ClusterSort.PDSORT : ClusterSort.PDSORTREV, pDiversity);
+			}
 		}
 
 		// SORT THE FINAL SCORE RESULT
 
 		Collections.sort(clusterData, ClusterSort.SCORESORT);
+
+		for (Cluster c : clusterData)
+		{
+			System.out.println(c.getRecordName() + " " + c.getClusterNumber() + " Score: " + c.getScore());
+		}
 
 		model.addAttribute("clusterData", clusterData);
 		model.addAttribute("refSpecies", refSpecies);
@@ -188,7 +226,8 @@ public class DashboardController
 				c.setSelfHomologyScore(c.getSelfHomologyScores().get(minimumMatch));
 			else
 			{
-				c.setSelfHomologyScore(SubOptimalSmithWaterman.calculateScore(c.getClusterSequence(), minimumMatch));
+				c.setSelfHomologyScore(SubOptimalSmithWaterman.calculateScore(c.getClusterSequence(), minimumMatch,
+						c.getRecordName(), c.getClusterNumber()));
 				c.getSelfHomologyScores().put(minimumMatch, c.getSelfHomologyScore());
 			}
 		}

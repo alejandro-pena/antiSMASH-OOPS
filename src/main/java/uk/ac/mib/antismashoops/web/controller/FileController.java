@@ -1,5 +1,6 @@
 package uk.ac.mib.antismashoops.web.controller;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,6 +67,9 @@ public class FileController
 
 			try
 			{
+				File root = new File(uploadPath);
+				if (!root.exists())
+					root.mkdir();
 				fileMeta2.setBytes(mpf.getBytes());
 				FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(uploadPath + mpf.getOriginalFilename()));
 

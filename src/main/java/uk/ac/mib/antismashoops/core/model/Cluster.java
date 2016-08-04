@@ -35,6 +35,7 @@ public class Cluster
 	private double kcScore = 0.0;
 	private int selfHomologyScore = -1;
 	private Map<Integer, Integer> selfHomologyScores = new HashMap<>();
+	private int pdScore = -1;
 	private double score = 0.0;
 
 	private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
@@ -254,6 +255,16 @@ public class Cluster
 	public void setSelfHomologyScores(Map<Integer, Integer> selfHomologyScores)
 	{
 		this.selfHomologyScores = selfHomologyScores;
+	}
+
+	public int getPdScore()
+	{
+		return pdScore;
+	}
+
+	public void setPdScore(int pdScore)
+	{
+		this.pdScore = pdScore;
 	}
 
 	public void computeCodonUsage()
