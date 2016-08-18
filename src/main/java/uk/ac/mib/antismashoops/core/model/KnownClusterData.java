@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.utils;
+package uk.ac.mib.antismashoops.core.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,32 +11,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import uk.ac.mib.antismashoops.core.model.Cluster;
-import uk.ac.mib.antismashoops.core.model.ClusterBlastEntry;
+import uk.ac.mib.antismashoops.core.services.ExternalDataParser;
 
 @Component
-public class ClusterBlastData
+public class KnownClusterData
 {
-	private static final Logger logger = LoggerFactory.getLogger(ClusterBlastData.class);
+	private static final Logger logger = LoggerFactory.getLogger(KnownClusterData.class);
 
 	@Autowired
 	private ExternalDataParser edp;
 
-	private static List<ClusterBlastEntry> blastClusters = new ArrayList<>();
+	private static List<KnownClusterEntry> knownClusters = new ArrayList<>();
 
-	public ClusterBlastData()
+	public KnownClusterData()
 	{
 	}
 
-	public static List<ClusterBlastEntry> getClusterBlastList()
+	public static List<KnownClusterEntry> getKnownClusterList()
 	{
-		return blastClusters;
+		return knownClusters;
 	}
 
-	public List<ClusterBlastEntry> getClusterBlastData(List<Cluster> clusterData)
+	public List<KnownClusterEntry> getKnownClusterData()
 	{
-		edp.setClusterBlastData(blastClusters, clusterData);
-		return blastClusters;
+		edp.setKnownClusterData(knownClusters);
+		return knownClusters;
 	}
 
 	@ExceptionHandler(Exception.class)

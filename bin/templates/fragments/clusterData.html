@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+
+<link rel="stylesheet" th:href="@{/css/application.css}" />
+
+</head>
+
+<body>
+	<div th:fragment="clusterData" id="results-block">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th class="t-mid">#</th>
+					<th class="t-mid">CLUSTER</th>
+					<th class="t-mid">TYPE</th>
+					<th class="t-mid">GENE #</th>
+					<th class="t-mid">CDS LENGTH</th>
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${refSpecies != null}">
+						&Delta; GC REF
+						<br />
+						SPECIES
+					</th>
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${refSpecies == null}">CODING GC</th>
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${refSpecies == null}">
+						CODON USAGE
+						<br />
+						TABLE
+					</th>
+					<th class="t-mid" th:if="${not #lists.isEmpty(clusterData)} and ${refSpecies != null}">
+						CODON USAGE
+						<br />
+						HEAT MAP
+					</th>
+					<th class="t-mid">&Delta; TO KC</th>
+					<th class="t-mid">
+						SELF-H
+						<br />
+						SCORE
+					</th>
+					<th class="t-mid">
+						DIVERSITY
+						<br />
+						SCORE
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${not #lists.isEmpty(clusterData)}" th:each="cluster, iterStat : ${clusterData}">
+					<th th:text="${iterStat.count}"></th>
+					<td th:inline="text">
+						<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]]
+							- Cluster [[${cluster.clusterNumber}]]</a>
+					</td>
+					<td th:text="${cluster.clusterType}"></td>
+					<td th:text="${cluster.numberOfGenes}"></td>
+					<td th:inline="text">[[${cluster.basePairs}]] bp</td>
+					<td th:if="${refSpecies != null}" th:inline="text">[[${#numbers.formatDecimal(cluster.gcContentDiff, 1, 2)}]]%</td>
+					<td th:if="${refSpecies == null}" th:inline="text">[[${#numbers.formatDecimal(cluster.gcContent, 1, 2)}]]%</td>
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a th:if="${refSpecies == null}" th:href="@{|/codonTable/${cluster.name}|}" target="_blank">Open</a>
+						<a th:if="${refSpecies != null}" th:href="@{|/codonUsageMap/${cluster.name}/${refSpecies}|}" target="_blank">Open</a>
+					</td>
+					<td th:inline="text">[[${#numbers.formatDecimal(cluster.kcScore, 1, 2)}]]%</td>
+					<td th:if="${cluster.selfHomologyScore != -1}" th:text="${cluster.selfHomologyScore}"></td>
+					<td th:if="${cluster.selfHomologyScore == -1}" th:inline="text">N/A</td>
+					<td th:if="${cluster.pdScore == -1}" th:inline="text">N/A</td>
+					<td th:if="${cluster.pdScore != -1}" th:inline="text">
+						<a th:href="@{|/lifeTree/${cluster.RecordName}.cluster${cluster.clusterNumber}.xml|}" target="_blank">[[${cluster.pdScore}]]</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

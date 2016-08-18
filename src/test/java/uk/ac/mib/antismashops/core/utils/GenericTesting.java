@@ -31,9 +31,9 @@ import org.w3c.dom.NodeList;
 
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
 import uk.ac.mib.antismashoops.MvcConfiguration;
+import uk.ac.mib.antismashoops.core.model.ClusterBlastData;
 import uk.ac.mib.antismashoops.core.model.ClusterBlastEntry;
 import uk.ac.mib.antismashoops.core.model.ClusterBlastLineage;
-import uk.ac.mib.antismashoops.core.utils.ClusterBlastData;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { AntiSmashOopsApplication.class, MvcConfiguration.class })

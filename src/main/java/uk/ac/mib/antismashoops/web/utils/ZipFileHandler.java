@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.utils;
+package uk.ac.mib.antismashoops.web.utils;
 
 import java.io.File;
 

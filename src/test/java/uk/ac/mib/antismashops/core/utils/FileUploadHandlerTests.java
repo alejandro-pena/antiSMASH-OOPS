@@ -15,7 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
 import uk.ac.mib.antismashoops.MvcConfiguration;
-import uk.ac.mib.antismashoops.core.utils.ZipFileHandler;
+import uk.ac.mib.antismashoops.web.utils.ZipFileHandler;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { AntiSmashOopsApplication.class, MvcConfiguration.class })

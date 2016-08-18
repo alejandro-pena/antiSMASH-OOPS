@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.utils;
+package uk.ac.mib.antismashoops.core.services;
 
 import java.io.File;
 import java.io.FileNotFoundException;

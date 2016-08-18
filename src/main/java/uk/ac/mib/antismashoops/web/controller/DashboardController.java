@@ -25,15 +25,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import uk.ac.mib.antismashoops.core.model.Cluster;
+import uk.ac.mib.antismashoops.core.model.ClusterBlastData;
 import uk.ac.mib.antismashoops.core.model.ClusterBlastEntry;
 import uk.ac.mib.antismashoops.core.model.ClusterSort;
 import uk.ac.mib.antismashoops.core.model.CodonUsage;
+import uk.ac.mib.antismashoops.core.model.KnownClusterData;
 import uk.ac.mib.antismashoops.core.model.CodonUsage.Detail;
+import uk.ac.mib.antismashoops.core.services.FileDataAnalyser;
+import uk.ac.mib.antismashoops.core.services.SubOptimalSmithWaterman;
 import uk.ac.mib.antismashoops.core.model.KnownClusterEntry;
-import uk.ac.mib.antismashoops.core.utils.ClusterBlastData;
-import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
-import uk.ac.mib.antismashoops.core.utils.KnownClusterData;
-import uk.ac.mib.antismashoops.core.utils.SubOptimalSmithWaterman;
 
 @Controller
 public class DashboardController

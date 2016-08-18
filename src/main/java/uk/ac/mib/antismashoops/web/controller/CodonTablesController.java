@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.ac.mib.antismashoops.core.model.Cluster;
-import uk.ac.mib.antismashoops.core.utils.FileDataAnalyser;
+import uk.ac.mib.antismashoops.core.services.FileDataAnalyser;
 
 @Controller
 public class CodonTablesController

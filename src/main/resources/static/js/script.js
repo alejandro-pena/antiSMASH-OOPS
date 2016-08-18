@@ -1,4 +1,8 @@
-
+$(document).ready(function () {
+     if ($('[data-toggle="tooltip"]').length) {
+     $('[data-toggle="tooltip"]').tooltip();
+     }
+});
 
 function toggleRangeDisabling(itemId, valueOutput) {
 	var element = document.getElementById(itemId);

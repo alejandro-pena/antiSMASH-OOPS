@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.utils;
+package uk.ac.mib.antismashoops.core.services;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import uk.ac.mib.antismashoops.core.model.Cluster;
 import uk.ac.mib.antismashoops.core.model.CodonUsage;
+import uk.ac.mib.antismashoops.web.utils.ZipFileHandler;
 
 @Component
 public class FileDataAnalyser

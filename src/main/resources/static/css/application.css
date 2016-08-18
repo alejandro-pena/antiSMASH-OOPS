@@ -23,6 +23,10 @@
   border-color: #222;
 }
 
+.tooltip-inner {
+    max-width: 300px !important;
+}
+
 .btn-sq-lg {
   width: 400px !important;
   height: 400px !important;

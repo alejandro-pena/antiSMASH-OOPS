@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.utils;
+package uk.ac.mib.antismashoops.core.services;
 
 import java.util.Collection;
 import java.util.Comparator;
