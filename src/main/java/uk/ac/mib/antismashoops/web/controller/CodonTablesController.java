@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import uk.ac.mib.antismashoops.core.model.Cluster;
+import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 import uk.ac.mib.antismashoops.core.services.FileDataAnalyser;
 
 @Controller
@@ -25,10 +25,10 @@ public class CodonTablesController
 	@RequestMapping(value = "/codonTable/{cluster:.+}", method = RequestMethod.GET)
 	public String getCodonUsageInfo(Model model, @PathVariable("cluster") String cluster) throws IOException
 	{
-		List<Cluster> clusterData = FileDataAnalyser.getClusterList();
+		List<BiosyntheticGeneCluster> clusterData = FileDataAnalyser.getClusterList();
 
-		Cluster requested = null;
-		for (Cluster c : clusterData)
+		BiosyntheticGeneCluster requested = null;
+		for (BiosyntheticGeneCluster c : clusterData)
 		{
 			if (c.getName().equalsIgnoreCase(cluster))
 			{

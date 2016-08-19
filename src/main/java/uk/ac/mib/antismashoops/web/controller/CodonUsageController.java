@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,29 +15,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import uk.ac.mib.antismashoops.core.model.CodonUsage;
-import uk.ac.mib.antismashoops.core.model.CodonUsage.Detail;
-import uk.ac.mib.antismashoops.core.model.Species;
+import uk.ac.mib.antismashoops.core.domainobject.CodonUsage;
+import uk.ac.mib.antismashoops.core.domainobject.CodonUsage.Detail;
+import uk.ac.mib.antismashoops.core.domainobject.Species;
 
 @Controller
-public class CodonUsageController
-{
+public class CodonUsageController {
 	private static final Logger logger = LoggerFactory.getLogger(CodonUsageController.class);
 
 	@RequestMapping("/codonUsage")
-	public String getSpecies()
-	{
+	public String getSpecies() {
 		return "codonUsage";
 	}
 
 	@RequestMapping(value = "/codonUsage/{species}", method = RequestMethod.GET)
-	public String getSpeciesByName(Model model, @PathVariable("species") String species) throws IOException
-	{
+	public String getSpeciesByName(Model model, @PathVariable("species") String species) throws IOException {
 		List<Species> speciesList = new ArrayList<>();
 
 		Document doc = Jsoup.connect("http://www.kazusa.or.jp/codon/cgi-bin/spsearch.cgi?species=" + species + "&c=i")
@@ -47,8 +41,7 @@ public class CodonUsageController
 
 		Elements links = doc.select("a[href]");
 
-		if (links.size() == 1)
-		{
+		if (links.size() == 1) {
 			speciesList.add(new Species("No data found.", "No data found.", "No data found."));
 			model.addAttribute("speciesList", speciesList);
 			return "fragments/speciesList :: speciesList";
@@ -57,8 +50,7 @@ public class CodonUsageController
 
 		links.remove(links.size() - 1);
 
-		for (Element link : links)
-		{
+		for (Element link : links) {
 			String id = link.attr("href").split("=")[1];
 			speciesList.add(new Species(id, link.text(), "/codonUsage/show/" + id));
 		}
@@ -68,8 +60,7 @@ public class CodonUsageController
 	}
 
 	@RequestMapping(value = "/codonUsage/show/{species:.+}", method = RequestMethod.GET)
-	public String getSpeciesUsageTable(Model model, @PathVariable("species") String species) throws IOException
-	{
+	public String getSpeciesUsageTable(Model model, @PathVariable("species") String species) throws IOException {
 		CodonUsage cu = new CodonUsage();
 		LinkedHashMap<String, Detail> table = cu.getUsage();
 
@@ -83,10 +74,8 @@ public class CodonUsageController
 		String[] codons = usageTable.html().split("\\n");
 		codons[0] = "";
 
-		for (String s : codons)
-		{
-			if (!s.trim().equalsIgnoreCase(""))
-			{
+		for (String s : codons) {
+			if (!s.trim().equalsIgnoreCase("")) {
 				String[] tmp = s.split("\\s+");
 				CodonUsage.Detail d = table.get(tmp[1]);
 				d.setCodonNumber((int) Double.parseDouble(tmp[2]));
@@ -96,8 +85,7 @@ public class CodonUsageController
 
 		Map<String, Integer> aMap = CodonUsage.getAminoacidMap(cu.getUsage());
 
-		for (Entry<String, Detail> codon : cu.getUsage().entrySet())
-		{
+		for (Entry<String, Detail> codon : cu.getUsage().entrySet()) {
 			Detail d = codon.getValue();
 			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMap.get(d.getAminoacid()));
 		}
@@ -105,15 +93,5 @@ public class CodonUsageController
 		model.addAttribute("name", speciesName.html());
 		model.addAttribute("table", table);
 		return "clusterCodonTable";
-	}
-
-	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
-		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
-		logger.error("Exception thrown: " + exception.getClass());
-		logger.error("Exception message: " + exception.getMessage());
-		exception.printStackTrace();
-		return "error";
 	}
 }

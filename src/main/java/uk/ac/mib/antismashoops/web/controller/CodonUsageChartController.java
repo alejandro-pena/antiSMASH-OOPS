@@ -20,29 +20,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import uk.ac.mib.antismashoops.core.model.Cluster;
-import uk.ac.mib.antismashoops.core.model.CodonUsage;
-import uk.ac.mib.antismashoops.core.model.CodonUsage.Detail;
+import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
+import uk.ac.mib.antismashoops.core.domainobject.CodonUsage;
+import uk.ac.mib.antismashoops.core.domainobject.CodonUsage.Detail;
 import uk.ac.mib.antismashoops.core.services.FileDataAnalyser;
 
 @Controller
-public class CodonUsageChartController
-{
+public class CodonUsageChartController {
 	private static final Logger logger = LoggerFactory.getLogger(CodonUsageChartController.class);
 
 	@RequestMapping(value = "/codonUsageChart/{clusterName:.+}/{species:.+}", method = RequestMethod.GET)
 	public String getCodonUsageChart(ModelMap model, @PathVariable("clusterName") String clusterName,
-			@PathVariable("species") String species) throws IOException
-	{
-		List<Cluster> clusterData = FileDataAnalyser.getClusterList();
+			@PathVariable("species") String species) throws IOException {
+		List<BiosyntheticGeneCluster> clusterData = FileDataAnalyser.getClusterList();
 		CodonUsage cuRef = new CodonUsage();
 		CodonUsage cuBgc;
 
-		Cluster requested = null;
-		for (Cluster c : clusterData)
-		{
-			if (c.getName().equalsIgnoreCase(clusterName))
-			{
+		BiosyntheticGeneCluster requested = null;
+		for (BiosyntheticGeneCluster c : clusterData) {
+			if (c.getName().equalsIgnoreCase(clusterName)) {
 				requested = c;
 				break;
 			}
@@ -66,10 +62,8 @@ public class CodonUsageChartController
 		String[] codons = usageTable.html().split("\\n");
 		codons[0] = "";
 
-		for (String s : codons)
-		{
-			if (!s.trim().equalsIgnoreCase(""))
-			{
+		for (String s : codons) {
+			if (!s.trim().equalsIgnoreCase("")) {
 				String[] tmp = s.split("\\s+");
 				CodonUsage.Detail d = tableRef.get(tmp[1]);
 				d.setCodonNumber((int) Double.parseDouble(tmp[2]));
@@ -80,14 +74,12 @@ public class CodonUsageChartController
 		Map<String, Integer> aMapRef = CodonUsage.getAminoacidMap(cuRef.getUsage());
 		Map<String, Integer> aMapBgc = CodonUsage.getAminoacidMap(cuBgc.getUsage());
 
-		for (Entry<String, Detail> codon : cuRef.getUsage().entrySet())
-		{
+		for (Entry<String, Detail> codon : cuRef.getUsage().entrySet()) {
 			Detail d = codon.getValue();
 			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMapRef.get(d.getAminoacid()));
 		}
 
-		for (Entry<String, Detail> codon : cuBgc.getUsage().entrySet())
-		{
+		for (Entry<String, Detail> codon : cuBgc.getUsage().entrySet()) {
 			Detail d = codon.getValue();
 			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMapBgc.get(d.getAminoacid()));
 		}
@@ -101,17 +93,14 @@ public class CodonUsageChartController
 
 	@RequestMapping(value = "/codonUsageMap/{clusterName:.+}/{species:.+}", method = RequestMethod.GET)
 	public String getCodonUsageMap(ModelMap model, @PathVariable("clusterName") String clusterName,
-			@PathVariable("species") String species) throws IOException
-	{
-		List<Cluster> clusterData = FileDataAnalyser.getClusterList();
+			@PathVariable("species") String species) throws IOException {
+		List<BiosyntheticGeneCluster> clusterData = FileDataAnalyser.getClusterList();
 		CodonUsage cuRef = new CodonUsage();
 		CodonUsage cuBgc;
 
-		Cluster requested = null;
-		for (Cluster c : clusterData)
-		{
-			if (c.getName().equalsIgnoreCase(clusterName))
-			{
+		BiosyntheticGeneCluster requested = null;
+		for (BiosyntheticGeneCluster c : clusterData) {
+			if (c.getName().equalsIgnoreCase(clusterName)) {
 				requested = c;
 				break;
 			}
@@ -135,10 +124,8 @@ public class CodonUsageChartController
 		String[] codons = usageTable.html().split("\\n");
 		codons[0] = "";
 
-		for (String s : codons)
-		{
-			if (!s.trim().equalsIgnoreCase(""))
-			{
+		for (String s : codons) {
+			if (!s.trim().equalsIgnoreCase("")) {
 				String[] tmp = s.split("\\s+");
 				CodonUsage.Detail d = tableRef.get(tmp[1]);
 				d.setCodonNumber((int) Double.parseDouble(tmp[2]));
@@ -149,14 +136,12 @@ public class CodonUsageChartController
 		Map<String, Integer> aMapRef = CodonUsage.getAminoacidMap(cuRef.getUsage());
 		Map<String, Integer> aMapBgc = CodonUsage.getAminoacidMap(cuBgc.getUsage());
 
-		for (Entry<String, Detail> codon : cuRef.getUsage().entrySet())
-		{
+		for (Entry<String, Detail> codon : cuRef.getUsage().entrySet()) {
 			Detail d = codon.getValue();
 			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMapRef.get(d.getAminoacid()));
 		}
 
-		for (Entry<String, Detail> codon : cuBgc.getUsage().entrySet())
-		{
+		for (Entry<String, Detail> codon : cuBgc.getUsage().entrySet()) {
 			Detail d = codon.getValue();
 			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMapBgc.get(d.getAminoacid()));
 		}
@@ -169,9 +154,9 @@ public class CodonUsageChartController
 	}
 
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
+		req.setAttribute("error", exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());
 		exception.printStackTrace();

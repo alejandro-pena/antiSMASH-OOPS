@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import uk.ac.mib.antismashoops.core.model.Cluster;
-import uk.ac.mib.antismashoops.core.model.Gene;
+import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
+import uk.ac.mib.antismashoops.core.domainobject.Gene;
 
 @Component
 public class ClusterDataParser
@@ -181,7 +181,7 @@ public class ClusterDataParser
 		return type;
 	}
 
-	public double getGcContent(Cluster cluster)
+	public double getGcContent(BiosyntheticGeneCluster cluster)
 	{
 		int count = 0;
 		int total = 0;

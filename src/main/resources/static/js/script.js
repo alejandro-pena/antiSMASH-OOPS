@@ -1,8 +1,75 @@
-$(document).ready(function () {
-     if ($('[data-toggle="tooltip"]').length) {
-     $('[data-toggle="tooltip"]').tooltip();
-     }
+/* --------------------------------------------------------------------------------------------- */
+/* 								FUNCTIONS FOR THE INDEX VIEW 									 */
+/* --------------------------------------------------------------------------------------------- */
+
+/**
+ * Handles the zip file load functionality and prints back in a table the loaded
+ * files. Updates the progress bar according to the load process progress.
+ */
+
+$(function () {
+    $('#fileupload').fileupload({
+    	
+    	dataType: 'json',
+ 
+        done: function (e, data) {
+            $("tr:has(td)").remove();
+            $.each(data.result, function (index, file) {
+            	var x = document.getElementById
+                $("#uploaded-files").append(
+                        $('<tr/>')
+                        .append($('<td/>').text(file.fileName))
+                        .append($('<td/>').text(file.fileSize))
+                        .append($('<td/>').text(file.fileType))
+                        .append($('<td/>').html("<a href='get/"+ index +"'>Click</a>"))
+                        )
+            });
+        },
+ 
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress').css('width',progress + '%');
+            $('#progress').html('<b>' + progress + '% Completed</b>');
+        },
+ 
+        dropZone: $('#dropzone')
+    });
 });
+
+/**
+ * Changes the 'Go to Priorisation Dashboard' button text to a loading message
+ * for the user. Includes an animated refresh image to indicate that the
+ * application is busy working.
+ */
+
+function loading() {
+	var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
+			+ '</span> Decompressing files... Please wait...';
+	$('#submitBtn').html(buttonText);
+}
+
+
+/* --------------------------------------------------------------------------------------------- */
+/* FUNCTIONS FOR THE PRIORITISATION VIEW */
+/* --------------------------------------------------------------------------------------------- */
+
+
+/**
+ * This code is executed as soon as the page loads. It enables the Tooltips in
+ * the UI. If no tooltips exist nothing it will have no effect.
+ */
+
+$(document).ready(function() {
+	if ($('[data-toggle="tooltip"]').length) {
+		$('[data-toggle="tooltip"]').tooltip();
+	}
+});
+
+
+/**
+ * This function encapsulates the logic for disabling and enabling the view
+ * elements when the Ignore checkbox of each parameter is clicked
+ */
 
 function toggleRangeDisabling(itemId, valueOutput) {
 	var element = document.getElementById(itemId);
@@ -25,111 +92,228 @@ function toggleRangeDisabling(itemId, valueOutput) {
 		if (itemId == 'knownClustersSimilarity')
 			toggleDisabling('similarityPercentage');
 	}
-	document.getElementById(valueOutput).value = element.value;
+	$('#' + valueOutput).html(element.value);
 };
+
+
+/**
+ * Receives the id of any element in the web page and disables or enables said
+ * element depending on its previous state.
+ */
 
 function toggleDisabling(itemId) {
-	var element = document.getElementById(itemId);
-	if (element.disabled == true) {
-		element.disabled = false;
-	} else {
-		element.disabled = true;
-	}
+	$('#' + itemId).prop('disabled', function(i, value) {
+		return !value;
+	});
 };
 
-function toggleParameterOrdering(iconId) {
-	var icon = document.getElementById(iconId);
-	var orderValue = document.getElementById(iconId + "Value");
-	if (icon.className == 'glyphicon glyphicon-sort-by-attributes-alt') {
-		icon.className = 'glyphicon glyphicon-sort-by-attributes';
-		orderValue.value = 'a';
+
+/**
+ * Toggles the class and order value for the specified icon to change the image
+ * from ascending to descending and vice versa.
+ */
+
+function toggleParameterOrdering(icon) {
+
+	var iconId = '#' + icon;
+	var orderValId = '#' + icon + 'Value';
+
+	if ($(orderValId).attr('value') == 'd') {
+		$(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes');
+		$(orderValId).attr('value', 'a');
 	} else {
-		icon.className = 'glyphicon glyphicon-sort-by-attributes-alt'
-		orderValue.value = 'd';
+		$(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes-alt');
+		$(orderValId).attr('value', 'd');
 	}
+
 };
+
+
+/**
+ * Synchronises the Slider Value with its Output Value
+ */
 
 function updateRangeValue(rangeElement, itemId) {
-	document.getElementById(itemId).value = rangeElement.value;
+	$('#' + itemId).html(rangeElement.value);
 };
 
+
+/**
+ * Sends the AJAX call to the Dashboard Controller with all the selected
+ * parameters to perform the prioritisation.
+ */
+
 function prioritise() {
-
+	
+	// NUMBER OF GENES
+	
 	var numberOfGenes = $('#numberOfGenes').val();
-	var sequenceLength = $('#sequenceLength').val();
-	var gcContent = $('#gcContent').val();
-	var codonBias = $('#codonBias').val();
-	var kcs = $('#knownClustersSimilarity').val();
-	var sh = $('#selfHomology').val();
-	var pd = $('#phylogeneticDiversity').val();
-
-	var pSim = $('#similarityPercentage').val();
-	var minM = $('#minimumMatch').val();
-
 	var nogOrderValue = $('#nogOrderValue').val();
+	
+	// CDS LENGTH
+	
+	var sequenceLength = $('#sequenceLength').val();
 	var slOrderValue = $('#slOrderValue').val();
+	
+	// GC CONTENT
+	
+	var gcContent = $('#gcContent').val();
 	var gccOrderValue = $('#gccOrderValue').val();
+	
+	// CODON BIAS
+	
+	var codonBias = $('#codonBias').val();
 	var cbOrderValue = $('#cbOrderValue').val();
-	var kcsOrderValue = $('#kcsOrderValue').val();
-	var shOrderValue = $('#shOrderValue').val();
-	var pdOrderValue = $('#pdOrderValue').val();
-
+	
+	// REFERENCE SPECIES
+	
 	var refSpecies = $('#selectSpecies').val();
-
-	var ignorePT = $('#ignorePT').is(":checked");
+	if(refSpecies === 'No data found.')
+		refSpecies = 'undefined';
+	
+	// CLUSTER TYPE
+	
 	var types = $('#preferredType').val();
+	var ignorePT = $('#ignorePT').is(":checked");
+	
+	// KNOWN CLUSTER SIMILARITY
+	
+	var kcs = $('#knownClustersSimilarity').val();
+	var pSim = $('#similarityPercentage').val();
+	var kcsOrderValue = $('#kcsOrderValue').val();
+	
+	// SELF-HOMOLOGY
+	
+	var sh = $('#selfHomology').val();
+	var minM = $('#minimumMatch').val();
+	var shOrderValue = $('#shOrderValue').val();
+	
+	// PHYLOGENETIC DIVERSITY
+	
+	var pd = $('#phylogeneticDiversity').val();
+	var pdOrderValue = $('#pdOrderValue').val();
+	
+	// BUILDS THE URL FOR THE AJAX CALL
 
-	url = '/dashboardUpdate?geneCount=' + numberOfGenes + '&sequenceLength='
-			+ sequenceLength + '&gcContent=' + gcContent + '&codonBias='
-			+ codonBias + '&kcs=' + kcs + '&sh=' + sh + '&pd=' + pd
-			+ '&nogOrderValue=' + nogOrderValue + '&slOrderValue='
-			+ slOrderValue + '&gccOrderValue=' + gccOrderValue
-			+ '&cbOrderValue=' + cbOrderValue + '&kcsOrderValue='
-			+ kcsOrderValue + '&shOrderValue=' + shOrderValue
-			+ '&pdOrderValue=' + pdOrderValue + '&pSim=' + pSim + '&minM='
-			+ minM + '&refSpecies=' + refSpecies + '&ignorePT=' + ignorePT
-			+ '&types=' + types;
+	url = '/dashboardUpdate?'
+			+ 'geneCount=' + numberOfGenes
+			+ '&nogOrderValue=' + nogOrderValue
+			+ '&sequenceLength=' + sequenceLength
+			+ '&slOrderValue=' + slOrderValue
+			+ '&gcContent=' + gcContent
+			+ '&gccOrderValue=' + gccOrderValue
+			+ '&codonBias='	+ codonBias
+			+ '&cbOrderValue=' + cbOrderValue
+			+ '&refSpecies=' + refSpecies
+			+ '&types=' + types
+			+ '&ignorePT=' + ignorePT
+			+ '&kcs=' + kcs
+			+ '&pSim=' + pSim 
+			+ '&kcsOrderValue='	+ kcsOrderValue
+			+ '&sh=' + sh
+			+ '&minM=' + minM
+			+ '&shOrderValue=' + shOrderValue
+			+ '&pd=' + pd
+			+ '&pdOrderValue=' + pdOrderValue 
+			;
 
-	$("#outputData")
-			.html(
-					"<center><button class='btn btn-lg btn-success'><span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span> Prioritising... Please wait...</button></center>");
+	// CHANGES THE PRIORITISE BUTTON INTO AN ANIMATED REFRESH ICON
+	
+	var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
+			+ '</span> Prioritising... Please wait...';
+	
+	$('#prioritiseBtn').html(buttonText);
+	
+	// LOADS THE PRIORITISED DATA INTO THE OUTPUT SECTION
 
-	$("#outputData").load(url);
+	$("#outputData").load(url, function(response, status, xhr) {
+		if (xhr.status != '200') {
+			var message = 'The Application cannot fulfil your request. Either the Kazusa or the EBI Website are not available or you are not connected to the Internet.';
+			$('#gaMessage').html(message);
+			$('#genericAlert').show();
+		}
+	});
 }
+
+/**
+ * Returns the prioritise button to its original state after the AJAX call is
+ * completed and removes the spinner in case the AJAX call came from the species
+ * look up.
+ */
+
+$(document).ajaxComplete(function() {
+	$('#prioritiseBtn').html('PRIORITISE');
+	$('#sSpinner').addClass('hidden');
+});
+
+
+/**
+ * Creates an AJAX request to load the species list according to the species
+ * specified in the text box.
+ */
 
 function loadSpecies() {
 
 	var keyword = $('#speciesName').val();
-
 	if (keyword == '') {
-		alert("The species name cannot be empty!")
+		$('#speciesName').addClass('error-field');
 		return;
 	}
-
-	keyword = keyword.trim();
-	keyword = keyword.replace(/\s+/g, '+');
-
+	$('#sSpinner').removeClass('hidden');
+	$('#speciesName').removeClass('error-field');
+	keyword = keyword.trim().replace(/\s+/g, '+');
 	url = '/species/' + keyword;
-	$("#speciesDD").load(url);
+	$("#speciesDD").load(url, function(response, status, xhr) {
+		if (xhr.status != '200') {
+			var message = 'The Application cannot fulfil your request. The Kazusa Website is not available or you are not connected to the Internet.';
+			$('#gaMessage').html(message);
+			$('#genericAlert').show();
+		}
+	});
 }
+
+
+/* --------------------------------------------------------------------------------------------- */
+/* FUNCTIONS FOR THE CODON USAGE */
+/* --------------------------------------------------------------------------------------------- */
+
+/**
+ * Calls with AJAX the CodonUsageController to get the species specified in the
+ * input box.
+ */
 
 function getSpecies() {
 
 	var keyword = $('#speciesInput').val();
-
 	if (keyword == '') {
-		alert("The name cannot be empty!")
+		$('#speciesInput').addClass('error-field');
 		return;
 	}
-
-	keyword = keyword.trim();
-	keyword = keyword.replace(/\s+/g, '+');
-
+	$('#speciesInput').removeClass('error-field');
+	keyword = keyword.trim().replace(/\s+/g, '+');
 	url = '/codonUsage/' + keyword;
-	$("#resultsBlock").html(
-			"<center><br /><h3>Loading species list...</h3><br /></center>");
-	$("#resultsBlock").load(url);
+
+	// CHANGES THE SEARCH BUTTON INTO AN ANIMATED REFRESH ICON FOR LOADING
+
+	$("#resultsBlock")
+			.html(
+					'<center><h3><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
+							+ '</span> Loading species... Please wait....</h3></center>');
+
+	$("#resultsBlock").load(url, function(response, status, xhr) {
+		if (xhr.status != '200') {
+			var message = 'The Application cannot fulfil your request. The Kazusa Website is not available or you are not connected to the Internet.';
+			$('#gaMessage').html(message);
+			$('#genericAlert').show();
+		}
+	});
 }
+
+
+/**
+ * Calls the getSpecies() function when the enter key is pressed in the Codon
+ * Usage view to look for a custom species.
+ */
 
 function submitEnter(e) {
 	if (e.keyCode == 13) {

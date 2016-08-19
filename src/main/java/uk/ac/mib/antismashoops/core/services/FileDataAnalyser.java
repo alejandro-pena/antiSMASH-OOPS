@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import uk.ac.mib.antismashoops.core.model.Cluster;
-import uk.ac.mib.antismashoops.core.model.CodonUsage;
+import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
+import uk.ac.mib.antismashoops.core.domainobject.CodonUsage;
 import uk.ac.mib.antismashoops.web.utils.ZipFileHandler;
 
 @Component
@@ -30,14 +30,14 @@ public class FileDataAnalyser
 	@Autowired
 	private ClusterDataParser cdp;
 
-	private static List<Cluster> clusters;
+	private static List<BiosyntheticGeneCluster> clusters;
 
-	public static List<Cluster> getClusterList()
+	public static List<BiosyntheticGeneCluster> getClusterList()
 	{
 		return clusters;
 	}
 
-	public List<Cluster> createClusterObjects()
+	public List<BiosyntheticGeneCluster> createClusterObjects()
 	{
 		logger.info("Cluster population started...");
 
@@ -70,7 +70,7 @@ public class FileDataAnalyser
 				{
 					if (f.getName().matches(REGEX))
 					{
-						clusters.add(new Cluster(f));
+						clusters.add(new BiosyntheticGeneCluster(f));
 					}
 				}
 			}
@@ -81,9 +81,9 @@ public class FileDataAnalyser
 		return clusters;
 	}
 
-	public List<Cluster> populateClusterData()
+	public List<BiosyntheticGeneCluster> populateClusterData()
 	{
-		for (Cluster c : clusters)
+		for (BiosyntheticGeneCluster c : clusters)
 		{
 			c.setGenes(cdp.getGenesData(c.getFile()));
 			c.setClusterSequence(cdp.getClusterSequence(c.getFile()));
@@ -95,9 +95,9 @@ public class FileDataAnalyser
 		return clusters;
 	}
 
-	public List<Cluster> populateClusterData(double gcContentRef, CodonUsage cuRef)
+	public List<BiosyntheticGeneCluster> populateClusterData(double gcContentRef, CodonUsage cuRef)
 	{
-		for (Cluster c : clusters)
+		for (BiosyntheticGeneCluster c : clusters)
 		{
 			c.setGenes(cdp.getGenesData(c.getFile()));
 			c.setClusterSequence(cdp.getClusterSequence(c.getFile()));

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import uk.ac.mib.antismashoops.core.model.FileMetadata;
+import uk.ac.mib.antismashoops.core.domainobject.FileMetadata;
 
 @Controller
 public class FileController

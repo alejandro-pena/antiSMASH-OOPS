@@ -24,20 +24,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import uk.ac.mib.antismashoops.core.model.Cluster;
-import uk.ac.mib.antismashoops.core.model.ClusterBlastData;
-import uk.ac.mib.antismashoops.core.model.ClusterBlastEntry;
-import uk.ac.mib.antismashoops.core.model.ClusterSort;
-import uk.ac.mib.antismashoops.core.model.CodonUsage;
-import uk.ac.mib.antismashoops.core.model.KnownClusterData;
-import uk.ac.mib.antismashoops.core.model.CodonUsage.Detail;
+import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
+import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastData;
+import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastEntry;
+import uk.ac.mib.antismashoops.core.domainobject.CodonUsage;
+import uk.ac.mib.antismashoops.core.domainobject.CodonUsage.Detail;
+import uk.ac.mib.antismashoops.core.domainobject.KnownCluster;
+import uk.ac.mib.antismashoops.core.domainobject.KnownClusterData;
+import uk.ac.mib.antismashoops.core.domainvalue.ClusterSort;
 import uk.ac.mib.antismashoops.core.services.FileDataAnalyser;
 import uk.ac.mib.antismashoops.core.services.SubOptimalSmithWaterman;
-import uk.ac.mib.antismashoops.core.model.KnownClusterEntry;
 
 @Controller
-public class DashboardController
-{
+public class DashboardController {
 	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
 	@Autowired
@@ -50,14 +49,12 @@ public class DashboardController
 	private KnownClusterData kcd;
 
 	@RequestMapping("/dashboard")
-	public String showResults(ModelMap model) throws IOException
-	{
+	public String showResults(ModelMap model) throws IOException {
 		logger.info("Loading Basic Parameters View");
 
-		List<Cluster> clusterData = fda.createClusterObjects();
+		List<BiosyntheticGeneCluster> clusterData = fda.createClusterObjects();
 		Set<String> types = new TreeSet<>();
-		for (Cluster c : clusterData)
-		{
+		for (BiosyntheticGeneCluster c : clusterData) {
 			String[] type = c.getClusterType().split("-");
 			if (type.length > 1)
 				for (String t : type)
@@ -93,29 +90,26 @@ public class DashboardController
 			@RequestParam(value = "pd", required = false) int pDiversity,
 			@RequestParam(value = "pdOrderValue", required = false) String pdOrder,
 			@RequestParam(value = "ignorePT", required = false) String ignorePT,
-			@RequestParam(value = "types", required = false) String types, ModelMap model) throws IOException
-	{
+			@RequestParam(value = "types", required = false) String types, ModelMap model) throws IOException {
 
 		logger.info("Reloading Basic Parameters View");
 
 		Double gcContentRef = 0.0;
 		CodonUsage cuRef;
-		List<Cluster> clusterData = null;
+		List<BiosyntheticGeneCluster> clusterData = null;
 
 		// SET THE KNOWN CLUSTER DATA
 
-		List<KnownClusterEntry> kcl = kcd.getKnownClusterData();
+		List<KnownCluster> kcl = kcd.getKnownClusterData();
 
-		for (KnownClusterEntry kce : kcl)
-		{
-			Cluster bgc = getCluster(kce.getRecordName(), kce.getClusterNumber());
+		for (KnownCluster kce : kcl) {
+			BiosyntheticGeneCluster bgc = getCluster(kce.getRecordName(), kce.getClusterNumber());
 			bgc.setKcScore(kce.getBestMatchScore(preferredSimilarity));
 		}
 
 		// SORT BY ONLY THE BASIC FOUR PARAMETERS WITHOUT A REFERENCE SPECIES
 
-		if (refSpecies == null || refSpecies.equalsIgnoreCase("undefined"))
-		{
+		if (refSpecies == null || refSpecies.equalsIgnoreCase("undefined")) {
 			refSpecies = null;
 			clusterData = new ArrayList<>(fda.populateClusterData());
 			initialiseScore(clusterData);
@@ -130,26 +124,22 @@ public class DashboardController
 			if (gcContent > 0)
 				assignScoreForParameter(clusterData,
 						gccOrder.equalsIgnoreCase("d") ? ClusterSort.GCCSORT : ClusterSort.GCCSORTREV, gcContent);
-			if (knownCluster > 0)
-			{
+			if (knownCluster > 0) {
 				assignScoreForParameter(clusterData,
 						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
 			}
-			if (selfHomology > 0)
-			{
+			if (selfHomology > 0) {
 				setSelfHomologyScore(clusterData, minimumMatch);
 				assignScoreForParameter(clusterData,
 						shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
 			}
-			if (pDiversity > 0)
-			{
+			if (pDiversity > 0) {
 				// SET THE CLUSTER BLAST DATA
 				List<ClusterBlastEntry> cbl = cbd.getClusterBlastData(clusterData);
 
-				for (ClusterBlastEntry cbe : cbl)
-				{
+				for (ClusterBlastEntry cbe : cbl) {
 					cbe.generateLineageTree();
-					Cluster bgc = getCluster(cbe.getRecordName(), cbe.getRecordNumber());
+					BiosyntheticGeneCluster bgc = getCluster(cbe.getRecordName(), cbe.getRecordNumber());
 					bgc.setPdScore(cbe.getDiversityScore());
 				}
 				assignScoreForParameter(clusterData,
@@ -158,8 +148,7 @@ public class DashboardController
 		}
 
 		// SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
-		else
-		{
+		else {
 			gcContentRef = getGcContentBySpecies(refSpecies);
 			cuRef = getSpeciesUsageTable(refSpecies);
 			clusterData = new ArrayList<>(fda.populateClusterData(gcContentRef, cuRef));
@@ -181,21 +170,18 @@ public class DashboardController
 			if (knownCluster > 0)
 				assignScoreForParameter(clusterData,
 						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
-			if (selfHomology > 0)
-			{
+			if (selfHomology > 0) {
 				setSelfHomologyScore(clusterData, minimumMatch);
 				assignScoreForParameter(clusterData,
 						shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
 			}
-			if (pDiversity > 0)
-			{
+			if (pDiversity > 0) {
 				// SET THE CLUSTER BLAST DATA
 				List<ClusterBlastEntry> cbl = cbd.getClusterBlastData(clusterData);
 
-				for (ClusterBlastEntry cbe : cbl)
-				{
+				for (ClusterBlastEntry cbe : cbl) {
 					cbe.generateLineageTree();
-					Cluster bgc = getCluster(cbe.getRecordName(), cbe.getRecordNumber());
+					BiosyntheticGeneCluster bgc = getCluster(cbe.getRecordName(), cbe.getRecordNumber());
 					bgc.setPdScore(cbe.getDiversityScore());
 				}
 				assignScoreForParameter(clusterData,
@@ -207,8 +193,7 @@ public class DashboardController
 
 		Collections.sort(clusterData, ClusterSort.SCORESORT);
 
-		for (Cluster c : clusterData)
-		{
+		for (BiosyntheticGeneCluster c : clusterData) {
 			System.out.println(c.getRecordName() + " " + c.getClusterNumber() + " Score: " + c.getScore());
 		}
 
@@ -218,14 +203,11 @@ public class DashboardController
 		return "fragments/clusterData :: clusterData";
 	}
 
-	private void setSelfHomologyScore(List<Cluster> clusterData, int minimumMatch)
-	{
-		for (Cluster c : clusterData)
-		{
+	private void setSelfHomologyScore(List<BiosyntheticGeneCluster> clusterData, int minimumMatch) {
+		for (BiosyntheticGeneCluster c : clusterData) {
 			if (c.getSelfHomologyScores().containsKey(minimumMatch))
 				c.setSelfHomologyScore(c.getSelfHomologyScores().get(minimumMatch));
-			else
-			{
+			else {
 				c.setSelfHomologyScore(SubOptimalSmithWaterman.calculateScore(c.getClusterSequence(), minimumMatch,
 						c.getRecordName(), c.getClusterNumber()));
 				c.getSelfHomologyScores().put(minimumMatch, c.getSelfHomologyScore());
@@ -233,76 +215,63 @@ public class DashboardController
 		}
 	}
 
-	private void filterPreferredTypes(List<Cluster> clusterData, String ignorePT, String types)
-	{
+	private void filterPreferredTypes(List<BiosyntheticGeneCluster> clusterData, String ignorePT, String types) {
 		// MATCHING TYPES
-		List<Cluster> cdt = new ArrayList<>();
+		List<BiosyntheticGeneCluster> cdt = new ArrayList<>();
 
 		// NOT MATCHING TYPES
-		List<Cluster> cdt2 = new ArrayList<>();
+		List<BiosyntheticGeneCluster> cdt2 = new ArrayList<>();
 
 		// SORT OUT ONLY THE REQUIRED TYPES
-		if (ignorePT.equalsIgnoreCase("false") && types != null && !types.equalsIgnoreCase("null"))
-		{
+		if (ignorePT.equalsIgnoreCase("false") && types != null && !types.equalsIgnoreCase("null")) {
 			String[] requiredTypes = types.split(",");
 
-			for (Cluster c : clusterData)
-			{
-				for (String t : requiredTypes)
-				{
-					if (c.getClusterType().contains(t))
-					{
+			for (BiosyntheticGeneCluster c : clusterData) {
+				for (String t : requiredTypes) {
+					if (c.getClusterType().contains(t)) {
 						cdt.add(c);
 						break;
 					}
 				}
 			}
 
-			for (Cluster c : clusterData)
-			{
+			for (BiosyntheticGeneCluster c : clusterData) {
 				if (!cdt.contains(c))
 					cdt2.add(c);
 			}
 
-			for (Cluster c : cdt2)
-			{
+			for (BiosyntheticGeneCluster c : cdt2) {
 				clusterData.remove(c);
 			}
 		}
 	}
 
-	private void initialiseScore(List<Cluster> clusterData)
-	{
-		for (Cluster c : clusterData)
-		{
+	private void initialiseScore(List<BiosyntheticGeneCluster> clusterData) {
+		for (BiosyntheticGeneCluster c : clusterData) {
 			c.setScore(0.0);
 		}
 	}
 
-	private Cluster getCluster(String family, int number)
-	{
-		for (Cluster c : FileDataAnalyser.getClusterList())
-		{
+	private BiosyntheticGeneCluster getCluster(String family, int number) {
+		for (BiosyntheticGeneCluster c : FileDataAnalyser.getClusterList()) {
 			if (Integer.parseInt(c.getClusterNumber()) == number && c.getRecordName().equalsIgnoreCase(family))
 				return c;
 		}
 		return null;
 	}
 
-	private void assignScoreForParameter(List<Cluster> clusterData, ClusterSort comparator, int parameterWeight)
-	{
-		List<Cluster> sortedData = new ArrayList<>(clusterData);
+	private void assignScoreForParameter(List<BiosyntheticGeneCluster> clusterData, ClusterSort comparator,
+			int parameterWeight) {
+		List<BiosyntheticGeneCluster> sortedData = new ArrayList<>(clusterData);
 		Collections.sort(sortedData, comparator);
 
-		for (Cluster c : clusterData)
-		{
+		for (BiosyntheticGeneCluster c : clusterData) {
 			double score = c.getScore();
 			c.setScore(score += ((sortedData.indexOf(c) + 1) * 1.0 * parameterWeight));
 		}
 	}
 
-	private double getGcContentBySpecies(String refSpecies) throws IOException
-	{
+	private double getGcContentBySpecies(String refSpecies) throws IOException {
 		Document doc = Jsoup
 				.connect(
 						"http://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?species=" + refSpecies + "&aa=1&style=GCG")
@@ -314,8 +283,7 @@ public class DashboardController
 		return Double.parseDouble(codingGC);
 	}
 
-	private CodonUsage getSpeciesUsageTable(String refSpecies) throws IOException
-	{
+	private CodonUsage getSpeciesUsageTable(String refSpecies) throws IOException {
 		CodonUsage cu = new CodonUsage();
 		LinkedHashMap<String, Detail> table = cu.getUsage();
 
@@ -332,10 +300,8 @@ public class DashboardController
 		String[] codons = usageTable.html().split("\\n");
 		codons[0] = "";
 
-		for (String s : codons)
-		{
-			if (!s.trim().equalsIgnoreCase(""))
-			{
+		for (String s : codons) {
+			if (!s.trim().equalsIgnoreCase("")) {
 				String[] tmp = s.split("\\s+");
 				CodonUsage.Detail d = table.get(tmp[1]);
 				d.setCodonNumber((int) Double.parseDouble(tmp[2]));
@@ -345,8 +311,7 @@ public class DashboardController
 
 		Map<String, Integer> aMap = CodonUsage.getAminoacidMap(cu.getUsage());
 
-		for (Entry<String, Detail> codon : cu.getUsage().entrySet())
-		{
+		for (Entry<String, Detail> codon : cu.getUsage().entrySet()) {
 			Detail d = codon.getValue();
 			d.setScorePerAminoacid(d.getCodonNumber() * 100.0 / aMap.get(d.getAminoacid()));
 		}
@@ -355,8 +320,7 @@ public class DashboardController
 	}
 
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());
