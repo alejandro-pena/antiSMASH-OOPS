@@ -91,7 +91,7 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 						<div class="form-group div-ctr">
-							<label for="gcContent">Coding GC</label>
+							<label for="gcContent">GC Content</label>
 							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="gcContent"
 								onInput="updateRangeValue(this, 'gccValue')"
 							/>
@@ -317,12 +317,12 @@
 							<tr th:each="cluster, iterStat : ${clusterData}">
 								<th th:text="${iterStat.count}"></th>
 								<td th:inline="text">
-									<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.clusterNumber}|}" target="_blank">[[${cluster.recordName}]]
-										- Cluster [[${cluster.clusterNumber}]]</a>
+									<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${number}|}" target="_blank">[[${cluster.origin}]]
+										- Cluster [[${cluster.number}]]</a>
 								</td>
 								<td th:text="${cluster.clusterType}"></td>
 								<td th:text="${cluster.numberOfGenes}"></td>
-								<td th:inline="text">[[${cluster.basePairs}]] bp</td>
+								<td th:inline="text">[[${cluster.cdsLength}]] bp</td>
 								<td th:inline="text">[[${#numbers.formatDecimal(cluster.gcContent, 1, 2)}]]%</td>
 								<td>
 									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

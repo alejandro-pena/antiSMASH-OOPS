@@ -9,20 +9,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class IndexController
-{
+public class IndexController {
 	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
 	@RequestMapping("/")
-	public String index()
-	{
-		logger.info("Loading main page...");
+	public String index() {
+		logger.info("Loading Index View...");
 		return "index";
 	}
 
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());

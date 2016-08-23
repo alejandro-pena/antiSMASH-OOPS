@@ -4,189 +4,154 @@ import java.util.Comparator;
 
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 
-public enum ClusterSort implements Comparator<BiosyntheticGeneCluster>
-{
-	NOGSORT
-	{
+public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
+	NOGSORT {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getNumberOfGenes() == c2.getNumberOfGenes())
 				return 0;
 			return c1.getNumberOfGenes() > c2.getNumberOfGenes() ? 1 : -1;
 		}
 	},
 
-	SLSORT
-	{
+	SLSORT {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
-			if (c1.getCodingSequenceLength() == c2.getCodingSequenceLength())
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
+			if (c1.getCdsLength() == c2.getCdsLength())
 				return 0;
-			return c1.getCodingSequenceLength() > c2.getCodingSequenceLength() ? 1 : -1;
+			return c1.getCdsLength() > c2.getCdsLength() ? 1 : -1;
 		}
 	},
 
-	GCCSORT
-	{
+	GCCSORT {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getGcContent() == c2.getGcContent())
 				return 0;
 			return c1.getGcContent() > c2.getGcContent() ? 1 : -1;
 		}
 	},
 
-	GCCREFSORT
-	{
+	GCCREFSORT {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
-			if (c1.getGcContentDiff() == c2.getGcContentDiff())
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
+			if (c1.getGcContentS() == c2.getGcContentS())
 				return 0;
-			return c1.getGcContentDiff() < c2.getGcContentDiff() ? 1 : -1;
+			return c1.getGcContentS() < c2.getGcContentS() ? 1 : -1;
 		}
 	},
 
-	CBSORT
-	{
+	CBSORT {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
-			if (c1.getCuScoreRef() == c2.getCuScoreRef())
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
+			if (c1.getCodonBiasS() == c2.getCodonBiasS())
 				return 0;
-			return c1.getCuScoreRef() < c2.getCuScoreRef() ? 1 : -1;
+			return c1.getCodonBiasS() < c2.getCodonBiasS() ? 1 : -1;
 		}
 	},
 
-	KCSORT
-	{
+	KCSORT {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getKcScore() == c2.getKcScore())
 				return 0;
 			return c1.getKcScore() < c2.getKcScore() ? 1 : -1;
 		}
 	},
 
-	SHSORT
-	{
+	SHSORT {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getSelfHomologyScore() == c2.getSelfHomologyScore())
 				return 0;
 			return c1.getSelfHomologyScore() > c2.getSelfHomologyScore() ? 1 : -1;
 		}
 	},
 
-	PDSORT
-	{
+	PDSORT {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getPdScore() == c2.getPdScore())
 				return 0;
 			return c1.getPdScore() > c2.getPdScore() ? 1 : -1;
 		}
 	},
 
-	NOGSORTREV
-	{
+	NOGSORTREV {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getNumberOfGenes() == c2.getNumberOfGenes())
 				return 0;
 			return c1.getNumberOfGenes() < c2.getNumberOfGenes() ? 1 : -1;
 		}
 	},
 
-	SLSORTREV
-	{
+	SLSORTREV {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
-			if (c1.getCodingSequenceLength() == c2.getCodingSequenceLength())
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
+			if (c1.getCdsLength() == c2.getCdsLength())
 				return 0;
-			return c1.getCodingSequenceLength() < c2.getCodingSequenceLength() ? 1 : -1;
+			return c1.getCdsLength() < c2.getCdsLength() ? 1 : -1;
 		}
 	},
 
-	GCCSORTREV
-	{
+	GCCSORTREV {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getGcContent() == c2.getGcContent())
 				return 0;
 			return c1.getGcContent() < c2.getGcContent() ? 1 : -1;
 		}
 	},
 
-	GCCREFSORTREV
-	{
+	GCCREFSORTREV {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
-			if (c1.getGcContentDiff() == c2.getGcContentDiff())
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
+			if (c1.getGcContentS() == c2.getGcContentS())
 				return 0;
-			return c1.getGcContentDiff() > c2.getGcContentDiff() ? 1 : -1;
+			return c1.getGcContentS() > c2.getGcContentS() ? 1 : -1;
 		}
 	},
 
-	CBSORTREV
-	{
+	CBSORTREV {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
-			if (c1.getCuScoreRef() == c2.getCuScoreRef())
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
+			if (c1.getCodonBiasS() == c2.getCodonBiasS())
 				return 0;
-			return c1.getCuScoreRef() > c2.getCuScoreRef() ? 1 : -1;
+			return c1.getCodonBiasS() > c2.getCodonBiasS() ? 1 : -1;
 		}
 	},
 
-	KCSORTREV
-	{
+	KCSORTREV {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getKcScore() == c2.getKcScore())
 				return 0;
 			return c1.getKcScore() > c2.getKcScore() ? 1 : -1;
 		}
 	},
 
-	SHSORTREV
-	{
+	SHSORTREV {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getSelfHomologyScore() == c2.getSelfHomologyScore())
 				return 0;
 			return c1.getSelfHomologyScore() < c2.getSelfHomologyScore() ? 1 : -1;
 		}
 	},
 
-	PDSORTREV
-	{
+	PDSORTREV {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getPdScore() == c2.getPdScore())
 				return 0;
 			return c1.getPdScore() < c2.getPdScore() ? 1 : -1;
 		}
 	},
 
-	SCORESORT
-	{
+	SCORESORT {
 		@Override
-		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2)
-		{
+		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
 			if (c1.getScore() == c2.getScore())
 				return 0;
 			return c1.getScore() < c2.getScore() ? 1 : -1;

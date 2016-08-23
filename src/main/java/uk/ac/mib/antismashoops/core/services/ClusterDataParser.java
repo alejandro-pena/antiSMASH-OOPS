@@ -14,12 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 import uk.ac.mib.antismashoops.core.domainobject.Gene;
 
 @Component
-public class ClusterDataParser
-{
+public class ClusterDataParser {
 
 	private static final Logger logger = LoggerFactory.getLogger(ClusterDataParser.class);
 	private static final String GENE_REGEXP = "(.+)gene(.+)(\\d+\\.\\.\\d+|complement\\(\\d+\\.\\.\\d+\\))";
@@ -31,8 +29,7 @@ public class ClusterDataParser
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
 
-	public List<Gene> getGenesData(File file)
-	{
+	public List<Gene> getGenesData(File file) {
 		List<Gene> geneList = new ArrayList<>();
 		String geneId = "";
 		String geneSynonym = "";
@@ -42,20 +39,16 @@ public class ClusterDataParser
 
 		Scanner scanner = null;
 
-		try
-		{
+		try {
 			scanner = new Scanner(file);
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			logger.error(e.getMessage());
 		}
 
-		while (scanner.hasNextLine())
-		{
+		while (scanner.hasNextLine()) {
 			String token = scanner.nextLine();
 
-			if (token.matches(GENE_REGEXP))
-			{
+			if (token.matches(GENE_REGEXP)) {
 				if (token.contains("complement"))
 					complement = true;
 				else
@@ -68,14 +61,12 @@ public class ClusterDataParser
 
 				token = scanner.nextLine();
 
-				if (token.matches(GENEID_REGEXP))
-				{
+				if (token.matches(GENEID_REGEXP)) {
 					geneId = token.replaceAll("[^0-9]", "");
 					scanner.nextLine();
 					token = scanner.nextLine();
 
-					if (token.matches(GENESYN_REGEXP))
-					{
+					if (token.matches(GENESYN_REGEXP)) {
 						geneSynonym = token.substring(token.indexOf('"') + 1, token.length() - 1);
 					}
 				}
@@ -90,17 +81,14 @@ public class ClusterDataParser
 		return geneList;
 	}
 
-	public String getClusterSequence(File file)
-	{
+	public String getClusterSequence(File file) {
 		Scanner scanner;
 		StringBuilder sb = new StringBuilder();
 
-		try
-		{
+		try {
 			scanner = new Scanner(file);
 
-			while (scanner.hasNext())
-			{
+			while (scanner.hasNext()) {
 				String nextToken = scanner.next();
 				if (nextToken.equalsIgnoreCase("ORIGIN"))
 					break;
@@ -108,39 +96,32 @@ public class ClusterDataParser
 
 			scanner.useDelimiter("");
 
-			while (scanner.hasNext())
-			{
+			while (scanner.hasNext()) {
 				String nextToken = scanner.next();
 				if (nextToken.matches(SEQUENCE_REGEXP))
 					sb.append(nextToken);
 			}
 
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return sb.toString().toUpperCase();
 	}
 
-	public String getClusterType(File file)
-	{
+	public String getClusterType(File file) {
 		Scanner scanner;
 		StringBuilder sb = new StringBuilder();
 
-		try
-		{
+		try {
 			scanner = new Scanner(file);
 			String nextToken = "";
 
-			while (scanner.hasNextLine())
-			{
+			while (scanner.hasNextLine()) {
 				nextToken = scanner.nextLine();
-				if (nextToken.matches(TYPE_REGEXP))
-				{
+				if (nextToken.matches(TYPE_REGEXP)) {
 					break;
 				}
 			}
@@ -149,8 +130,7 @@ public class ClusterDataParser
 
 			scanner.useDelimiter("");
 
-			while (scanner.hasNext())
-			{
+			while (scanner.hasNext()) {
 				nextToken = scanner.next();
 				if (!nextToken.equalsIgnoreCase("\""))
 					sb.append(nextToken);
@@ -158,19 +138,16 @@ public class ClusterDataParser
 					break;
 			}
 
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		String[] tokens = sb.toString().trim().split(":");
 		String type = "";
 
-		for (int i = 1; i < tokens.length - 1; i++)
-		{
+		for (int i = 1; i < tokens.length - 1; i++) {
 			String[] splitted = tokens[i].split(" ");
 			if (type.equalsIgnoreCase(""))
 				type = splitted[splitted.length - 1];
@@ -181,28 +158,8 @@ public class ClusterDataParser
 		return type;
 	}
 
-	public double getGcContent(BiosyntheticGeneCluster cluster)
-	{
-		int count = 0;
-		int total = 0;
-
-		for (Gene g : cluster.getGenes())
-		{
-			String cds = cluster.getClusterSequence().substring(g.getStartBase() - 1, g.getStopBase());
-			for (int i = 0; i < cds.length(); i++)
-			{
-				if (cds.charAt(i) == 'C' || cds.charAt(i) == 'G')
-					count++;
-			}
-			total += cds.length();
-		}
-
-		return count * 100.0 / total;
-	}
-
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());

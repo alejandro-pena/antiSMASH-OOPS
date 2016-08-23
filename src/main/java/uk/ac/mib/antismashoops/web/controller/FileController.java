@@ -26,8 +26,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import uk.ac.mib.antismashoops.core.domainobject.FileMetadata;
 
 @Controller
-public class FileController
-{
+public class FileController {
 	private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
 	@Value("${app.files.uploadpath}")
@@ -37,16 +36,14 @@ public class FileController
 	List<FileMetadata> filesFull = new ArrayList<>();
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public @ResponseBody List<FileMetadata> upload(MultipartHttpServletRequest request, HttpServletResponse response)
-	{
+	public @ResponseBody List<FileMetadata> upload(MultipartHttpServletRequest request, HttpServletResponse response) {
 		// 1. build an iterator
 		Iterator<String> itr = request.getFileNames();
 		FileMetadata fileMeta = null;
 		FileMetadata fileMeta2 = null;
 
 		// 2. get each file
-		while (itr.hasNext())
-		{
+		while (itr.hasNext()) {
 			// 2.1 get next MultipartFile
 			MultipartFile mpf = request.getFile(itr.next());
 
@@ -65,50 +62,41 @@ public class FileController
 			fileMeta2.setFileSize(mpf.getSize() / 1024 + " Kb");
 			fileMeta2.setFileType(mpf.getContentType());
 
-			try
-			{
+			try {
 				File root = new File(uploadPath);
 				if (!root.exists())
 					root.mkdir();
 				fileMeta2.setBytes(mpf.getBytes());
 				FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(uploadPath + mpf.getOriginalFilename()));
 
-			} catch (IOException e)
-			{
-				// TODO Auto-generated catch block
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			// 2.4 add to files
 			files.add(0, fileMeta);
 			filesFull.add(0, fileMeta2);
 
-			System.out.println(mpf.getOriginalFilename() + " uploaded!");
+			logger.info(mpf.getOriginalFilename() + " loaded!");
 		}
-
-		logger.info(files.toString());
 
 		return files;
 
 	}
 
 	@RequestMapping(value = "/get/{value}", method = RequestMethod.GET)
-	public void get(HttpServletResponse response, @PathVariable String value)
-	{
+	public void get(HttpServletResponse response, @PathVariable String value) {
 		FileMetadata getFile = filesFull.get(Integer.parseInt(value));
-		try
-		{
+		try {
 			response.setContentType(getFile.getFileType());
 			response.setHeader("Content-disposition", "attachment; filename=\"" + getFile.getFileName() + "\"");
 			FileCopyUtils.copy(getFile.getBytes(), response.getOutputStream());
-		} catch (IOException e)
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());

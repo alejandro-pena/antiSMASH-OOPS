@@ -26,18 +26,21 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class ClusterBlastEntry {
+
+	private String clusterId;
 	private File file;
-	private String recordName;
-	private int recordNumber;
+	private String origin;
+	private String number;
 	private List<ClusterBlastLineage> cbLin = new ArrayList<>();
 	private Document xmlLifeTree;
 
 	private static final Logger logger = LoggerFactory.getLogger(ClusterBlastEntry.class);
 
-	public ClusterBlastEntry(File file, String recordName, int recordNumber) {
+	public ClusterBlastEntry(File file, String origin, String number) {
 		this.file = file;
-		this.recordName = recordName;
-		this.recordNumber = recordNumber;
+		this.origin = origin;
+		this.number = number;
+		this.clusterId = this.origin + "-" + this.number;
 	}
 
 	public int getDiversityScore() {
@@ -120,7 +123,7 @@ public class ClusterBlastEntry {
 
 	public void writeToFile(String data) {
 		File directory = new File("lifeTreeOutput");
-		File file = new File(directory, this.recordName + ".cluster" + this.recordNumber + ".xml");
+		File file = new File(directory, this.origin + ".cluster" + this.number + ".xml");
 
 		if (!directory.exists()) {
 			directory.mkdirs();
@@ -140,6 +143,14 @@ public class ClusterBlastEntry {
 		}
 	}
 
+	public String getClusterId() {
+		return clusterId;
+	}
+
+	public void setClusterId(String clusterId) {
+		this.clusterId = clusterId;
+	}
+
 	public File getFile() {
 		return file;
 	}
@@ -149,19 +160,19 @@ public class ClusterBlastEntry {
 	}
 
 	public String getRecordName() {
-		return recordName;
+		return origin;
 	}
 
 	public void setRecordName(String recordName) {
-		this.recordName = recordName;
+		this.origin = recordName;
 	}
 
-	public int getRecordNumber() {
-		return recordNumber;
+	public String getNumber() {
+		return number;
 	}
 
-	public void setRecordNumber(int recordNumber) {
-		this.recordNumber = recordNumber;
+	public void setNumber(String number) {
+		this.number = number;
 	}
 
 	public List<ClusterBlastLineage> getCbLin() {
@@ -182,8 +193,7 @@ public class ClusterBlastEntry {
 
 	@Override
 	public String toString() {
-		return "ClusterBlastEntry [file=" + file + ", recordName=" + recordName + ", recordNumber=" + recordNumber
-				+ "]\n";
+		return "ClusterBlastEntry [file=" + file + ", recordName=" + origin + ", recordNumber=" + number + "]\n";
 	}
 
 	@ExceptionHandler(Exception.class)

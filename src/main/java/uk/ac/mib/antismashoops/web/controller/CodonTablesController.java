@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,41 +15,39 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
-import uk.ac.mib.antismashoops.core.services.FileDataAnalyser;
 
 @Controller
-public class CodonTablesController
-{
+public class CodonTablesController {
 	private static final Logger logger = LoggerFactory.getLogger(CodonTablesController.class);
 
+	@Autowired
+	ApplicationBgcData appData;
+
 	@RequestMapping(value = "/codonTable/{cluster:.+}", method = RequestMethod.GET)
-	public String getCodonUsageInfo(Model model, @PathVariable("cluster") String cluster) throws IOException
-	{
-		List<BiosyntheticGeneCluster> clusterData = FileDataAnalyser.getClusterList();
+	public String getCodonUsageInfo(Model model, @PathVariable("cluster") String cluster) throws IOException {
+		List<BiosyntheticGeneCluster> clusterData = appData.getBgcData();
 
 		BiosyntheticGeneCluster requested = null;
-		for (BiosyntheticGeneCluster c : clusterData)
-		{
-			if (c.getName().equalsIgnoreCase(cluster))
-			{
+		for (BiosyntheticGeneCluster c : clusterData) {
+			if (c.getName().equalsIgnoreCase(cluster)) {
 				requested = c;
 				break;
 			}
 		}
 
-		logger.info("Computing codon usage for Cluster: " + requested.getName());
-		requested.computeCodonUsage();
+		logger.info("Loading Codon Usage Table for Cluster: " + requested.getName());
+		requested.computeCodonUsageTable();
 
-		model.addAttribute("name", requested.getRecordName() + " - Cluster" + requested.getClusterNumber());
-		model.addAttribute("table", requested.getCodonUsage().getUsage());
+		model.addAttribute("name", requested.getOrigin() + " - Cluster" + requested.getNumber());
+		model.addAttribute("table", requested.getCodonUsageTable().getUsage());
 
-		return "clusterCodonTable";
+		return "codonUsageTable";
 	}
 
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());

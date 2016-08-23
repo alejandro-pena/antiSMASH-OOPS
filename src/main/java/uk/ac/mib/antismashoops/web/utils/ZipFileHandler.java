@@ -11,31 +11,33 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
-public class ZipFileHandler
-{
+public class ZipFileHandler {
 	private static final Logger logger = LoggerFactory.getLogger(ZipFileHandler.class);
 
-	public static void decompressFile(File compressedFile, String uploadPath)
-	{
-		try
-		{
+	/**
+	 * Decompresses the specified file in the specified location
+	 *
+	 * @param compressedFile The ZIP file to decompress
+	 * @param uploadPath The path where the file contents will be placed
+	 * 
+	 */
+
+	public static void decompressFile(File compressedFile, String uploadPath) {
+		try {
 			ZipFile zipFile = new ZipFile(compressedFile);
-			if (zipFile.isEncrypted())
-			{
+			if (zipFile.isEncrypted()) {
 				logger.info("The file is password protected... Unable to decompress.");
 			}
 
 			zipFile.extractAll(uploadPath);
 
-		} catch (ZipException e)
-		{
+		} catch (ZipException e) {
 			logger.error(e.getMessage());
 		}
 	}
 
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());

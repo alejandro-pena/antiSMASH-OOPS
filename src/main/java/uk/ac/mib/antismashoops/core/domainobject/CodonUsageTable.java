@@ -11,15 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-public class CodonUsage
-{
-	private static final Logger logger = LoggerFactory.getLogger(CodonUsage.class);
+public class CodonUsageTable {
+	private static final Logger logger = LoggerFactory.getLogger(CodonUsageTable.class);
 
 	private String species;
-	private LinkedHashMap<String, Detail> usage = new LinkedHashMap<>();
+	private final LinkedHashMap<String, Detail> usage = new LinkedHashMap<>();
 
-	public CodonUsage()
-	{
+	public CodonUsageTable() {
 		// ALANINE
 		usage.put("GCG", new Detail("Alanine", "Ala", "A"));
 		usage.put("GCA", new Detail("Alanine", "Ala", "A"));
@@ -127,156 +125,31 @@ public class CodonUsage
 		usage.put("GTC", new Detail("Valine", "Val", "V"));
 	}
 
-	public CodonUsage(String species)
-	{
+	public CodonUsageTable(String species) {
 		this.species = species;
 	}
 
-	public String getSpecies()
-	{
+	public String getSpecies() {
 		return species;
 	}
 
-	public void setSpecies(String species)
-	{
+	public void setSpecies(String species) {
 		this.species = species;
 	}
 
-	public LinkedHashMap<String, Detail> getUsage()
-	{
+	public LinkedHashMap<String, Detail> getUsage() {
 		return usage;
 	}
 
-	public void setUsage(LinkedHashMap<String, Detail> usage)
-	{
-		this.usage = usage;
-	}
-
-	public class Detail implements Comparable<Detail>
-	{
-		private String aminoacid;
-		private String abbr;
-		private String letterAbbr;
-		private int codonNumber = 0;
-		private double frequency = 0.0;
-		private double scorePerAminoacid = 0.0;
-		private double codingGC = 0.0;
-
-		public Detail()
-		{
-
-		}
-
-		public Detail(String aminoacid, String abbr, String letterAbbr)
-		{
-			this.aminoacid = aminoacid;
-			this.abbr = abbr;
-			this.letterAbbr = letterAbbr;
-		}
-
-		public Detail(String aminoacid, String abbr, String letterAbbr, int codonNumber, double frequency)
-		{
-			this.aminoacid = aminoacid;
-			this.abbr = abbr;
-			this.letterAbbr = letterAbbr;
-			this.frequency = frequency;
-			this.codonNumber = codonNumber;
-		}
-
-		public String getAminoacid()
-		{
-			return aminoacid;
-		}
-
-		public void setAminoacid(String aminoacid)
-		{
-			this.aminoacid = aminoacid;
-		}
-
-		public String getAbbr()
-		{
-			return abbr;
-		}
-
-		public void setAbbr(String abbr)
-		{
-			this.abbr = abbr;
-		}
-
-		public String getLetterAbbr()
-		{
-			return letterAbbr;
-		}
-
-		public void setLetterAbbr(String letterAbbr)
-		{
-			this.letterAbbr = letterAbbr;
-		}
-
-		public double getFrequency()
-		{
-			return frequency;
-		}
-
-		public void setFrequency(double frequency)
-		{
-			this.frequency = frequency;
-		}
-
-		public int getCodonNumber()
-		{
-			return codonNumber;
-		}
-
-		public void setCodonNumber(int codonNumber)
-		{
-			this.codonNumber = codonNumber;
-		}
-
-		public double getCodingGC()
-		{
-			return codingGC;
-		}
-
-		public void setCodingGC(double codingGC)
-		{
-			this.codingGC = codingGC;
-		}
-
-		public double getScorePerAminoacid()
-		{
-			return scorePerAminoacid;
-		}
-
-		public void setScorePerAminoacid(double scorePerAminoacid)
-		{
-			if (Double.isNaN(scorePerAminoacid))
-				this.scorePerAminoacid = 0.0;
-			else
-				this.scorePerAminoacid = scorePerAminoacid;
-		}
-
-		@Override
-		public String toString()
-		{
-			return "Detail [aminoacid=" + aminoacid + ", abbr=" + abbr + ", letterAbbr=" + letterAbbr + ", codonNumber="
-					+ codonNumber + ", frequency=" + frequency + "]";
-		}
-
-		@Override
-		public int compareTo(Detail d)
-		{
-			if (d == null)
-				return 0;
-			if (d == this)
-				return 0;
-
-			return this.aminoacid.compareTo(d.getAminoacid());
+	public void setCodonFrequencies(int cdsLength) {
+		for (Entry<String, Detail> codon : this.usage.entrySet()) {
+			Detail d = codon.getValue();
+			d.setFrequency((d.getCodonNumber() * 1000.0) / cdsLength);
 		}
 	}
 
-	public static Map<String, Integer> getAminoacidMap(LinkedHashMap<String, Detail> detail)
-	{
+	public void setUsagePerAminoacids() {
+
 		Map<String, Integer> map = new HashMap<>();
 
 		map.put("Alanine", 0);
@@ -301,24 +174,113 @@ public class CodonUsage
 		map.put("Tyrosine", 0);
 		map.put("Valine", 0);
 
-		for (Entry<String, Detail> codon : detail.entrySet())
-		{
+		for (Entry<String, Detail> codon : this.usage.entrySet()) {
 			Detail d = codon.getValue();
 			map.put(d.getAminoacid(), map.get(d.getAminoacid()) + d.getCodonNumber());
 		}
 
-		return map;
+		for (Entry<String, Detail> codon : this.usage.entrySet()) {
+			Detail d = codon.getValue();
+			d.setAminoacidUsage(d.getCodonNumber() * 100.0 / map.get(d.getAminoacid()));
+		}
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "CodonUsage [species=" + species + ", usage=" + usage + "]";
 	}
 
+	public class Detail implements Comparable<Detail> {
+		private String aminoacid;
+		private String abbr;
+		private String letterAbbr;
+		private int codonNumber = 0;
+		private double frequency = 0.0;
+		private double aminoacidUsage = 0.0;
+
+		public Detail(String aminoacid, String abbr, String letterAbbr) {
+			this.aminoacid = aminoacid;
+			this.abbr = abbr;
+			this.letterAbbr = letterAbbr;
+		}
+
+		public Detail(String aminoacid, String abbr, String letterAbbr, int codonNumber, double frequency) {
+			this.aminoacid = aminoacid;
+			this.abbr = abbr;
+			this.letterAbbr = letterAbbr;
+			this.codonNumber = codonNumber;
+			this.frequency = frequency;
+		}
+
+		public String getAminoacid() {
+			return aminoacid;
+		}
+
+		public void setAminoacid(String aminoacid) {
+			this.aminoacid = aminoacid;
+		}
+
+		public String getAbbr() {
+			return abbr;
+		}
+
+		public void setAbbr(String abbr) {
+			this.abbr = abbr;
+		}
+
+		public String getLetterAbbr() {
+			return letterAbbr;
+		}
+
+		public void setLetterAbbr(String letterAbbr) {
+			this.letterAbbr = letterAbbr;
+		}
+
+		public int getCodonNumber() {
+			return codonNumber;
+		}
+
+		public void setCodonNumber(int codonNumber) {
+			this.codonNumber = codonNumber;
+		}
+
+		public double getFrequency() {
+			return frequency;
+		}
+
+		public void setFrequency(double frequency) {
+			this.frequency = frequency;
+		}
+
+		public double getAminoacidUsage() {
+			return aminoacidUsage;
+		}
+
+		public void setAminoacidUsage(double aminoacidUsage) {
+			if (Double.isNaN(aminoacidUsage))
+				this.aminoacidUsage = 0.0;
+			else
+				this.aminoacidUsage = aminoacidUsage;
+		}
+
+		@Override
+		public String toString() {
+			return "Detail [aminoacid=" + aminoacid + ", abbr=" + abbr + ", letterAbbr=" + letterAbbr + ", codonNumber="
+					+ codonNumber + ", frequency=" + frequency + "]";
+		}
+
+		@Override
+		public int compareTo(Detail d) {
+			if (d == null)
+				return 0;
+			if (d == this)
+				return 0;
+			return this.aminoacid.compareTo(d.getAminoacid());
+		}
+	}
+
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());

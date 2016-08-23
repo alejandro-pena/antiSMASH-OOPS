@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Stack;
 
-public class SubOptimalSmithWaterman
+public class SelfHomologyService
 {
 	public static String seqOne;
 	public static String seqTwo;
@@ -23,7 +23,7 @@ public class SubOptimalSmithWaterman
 
 	public static short[][] matrix;
 
-	public SubOptimalSmithWaterman()
+	public SelfHomologyService()
 	{
 	}
 

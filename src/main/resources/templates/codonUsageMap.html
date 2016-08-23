@@ -43,7 +43,7 @@ for(var key in codonMapRef)
 {
 	var codonRef = codonMapRef[key];
 	var codonBgc = codonMapBgc[key];
-	var diff = Math.round((codonRef.scorePerAminoacid - codonBgc.scorePerAminoacid) * 100 ) / 100; 
+	var diff = Math.round((codonRef.aminoacidUsage - codonBgc.aminoacidUsage) * 100 ) / 100; 
 	var coords = mapCoords[key];
 	mapData.push([coords[0], coords[1], diff]);
 }

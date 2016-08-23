@@ -32,8 +32,8 @@ for(var key in codonMapRef)
 {
 	var codonRef = codonMapRef[key];
 	var codonBgc = codonMapBgc[key];
-	dataRef.push(Math.round(codonRef.scorePerAminoacid * 100) / 100);
-	dataBgc.push(Math.round(codonBgc.scorePerAminoacid * -100) / 100);
+	dataRef.push(Math.round(codonRef.aminoacidUsage * 100) / 100);
+	dataBgc.push(Math.round(codonBgc.aminoacidUsage * -100) / 100);
 }
 
 dataRef.reverse();

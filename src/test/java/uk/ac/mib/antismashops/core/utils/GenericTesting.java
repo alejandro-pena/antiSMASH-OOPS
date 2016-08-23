@@ -32,7 +32,6 @@ import org.w3c.dom.NodeList;
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
 import uk.ac.mib.antismashoops.MvcConfiguration;
 import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastData;
-import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastEntry;
 import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastLineage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -242,21 +241,15 @@ public class GenericTesting {
 
 	@Test
 	public void testing() {
-		// SET THE CLUSTER BLAST DATA
+		List<Dog> a = new ArrayList<>();
+		a.add(new Dog());
+		a.get(0).age = 10;
 
-		List<ClusterBlastEntry> cbl = null;
-		try {
-			cbl = cbd.getClusterBlastData(new ArrayList<>());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		List<Dog> b = new ArrayList<>(a);
+		b.get(0).age = 12;
 
-		for (ClusterBlastEntry cbe : cbl) {
-			cbe.generateLineageTree();
-			System.out.println(
-					cbe.getRecordName() + " " + cbe.getRecordNumber() + " Size:  " + getTreeSize(cbe.getXmlLifeTree()));
-		}
+		System.out.println(a.get(0).age);
+
 	}
 
 	public int getTreeSize(Node root) {
@@ -273,4 +266,9 @@ public class GenericTesting {
 		}
 		return count + 1;
 	}
+
+	class Dog {
+		public int age = 10;
+	}
+
 }
