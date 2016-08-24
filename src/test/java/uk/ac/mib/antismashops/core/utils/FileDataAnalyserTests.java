@@ -15,40 +15,36 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
 import uk.ac.mib.antismashoops.MvcConfiguration;
-import uk.ac.mib.antismashoops.core.services.ClusterDataParser;
+import uk.ac.mib.antismashoops.core.services.ExternalDataService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { AntiSmashOopsApplication.class, MvcConfiguration.class })
 @WebAppConfiguration
-public class FileDataAnalyserTests
-{
+public class FileDataAnalyserTests {
 	private static final Logger logger = LoggerFactory.getLogger(FileDataAnalyserTests.class);
 
 	@Value("${app.files.uploadpath}")
 	private String uploadPath;
 
 	@Autowired
-	private ClusterDataParser cdp;
+	private ExternalDataService eds;
 
 	@Test
-	public void countWordTest()
-	{
+	public void countWordTest() {
 		logger.info("Word count started...");
 		File file = new File(uploadPath, "NC_003888.3.cluster002.gbk");
 	}
 
 	@Test
-	public void genericTest()
-	{
+	public void genericTest() {
 		// FileDataAnalyser.populateClusterObjects("");
 	}
 
 	@Test
-	public void populateClusterSequenceTest()
-	{
+	public void populateClusterSequenceTest() {
 		logger.info("Sequence retrieval started...");
 		File file = new File(uploadPath, "NC_003888.3.cluster002.gbk");
-		String sequence = cdp.getClusterSequence(file);
+		String sequence = eds.getClusterSequence(file);
 		logger.info("Hola mundo".substring(0, 10));
 		Assert.assertEquals(25538, sequence.length());
 	}

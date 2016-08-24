@@ -23,15 +23,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
-import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastData;
-import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastEntry;
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable;
-import uk.ac.mib.antismashoops.core.domainobject.KnownCluster;
-import uk.ac.mib.antismashoops.core.domainobject.KnownClusterData;
 import uk.ac.mib.antismashoops.core.domainvalue.ClusterSort;
+import uk.ac.mib.antismashoops.core.services.ExternalDataService;
 import uk.ac.mib.antismashoops.core.services.OnlineResourceService;
+import uk.ac.mib.antismashoops.core.services.PrioritisationService;
 import uk.ac.mib.antismashoops.core.services.ScoringService;
-import uk.ac.mib.antismashoops.core.services.SelfHomologyService;
 
 @Controller
 public class DashboardController {
@@ -47,10 +44,10 @@ public class DashboardController {
 	private ScoringService scoreService;
 
 	@Autowired
-	private ClusterBlastData cbd;
+	private PrioritisationService prioritisationService;
 
 	@Autowired
-	private KnownClusterData kcd;
+	private ExternalDataService eds;
 
 	/**
 	 * Responds to the /dashboard URL request coming from the Index Page or a
@@ -139,102 +136,82 @@ public class DashboardController {
 
 			Set<String> typesSet = this.getTypesSet(types);
 
-			workingDataSet = workingDataSet.stream()
-					.filter(bgc -> typesSet.stream().anyMatch(bgc.getClusterTypes()::contains))
-					.collect(Collectors.toList());
+			appData.setWorkingDataSet(
+					workingDataSet.stream().filter(bgc -> typesSet.stream().anyMatch(bgc.getClusterTypes()::contains))
+							.collect(Collectors.toList()));
+			workingDataSet = appData.getWorkingDataSet();
 		}
 
 		// SET THE KNOWN CLUSTER DATA
 
-		List<KnownCluster> kcl = kcd.getKnownClusterData();
-
-		for (KnownCluster kce : kcl) {
-			BiosyntheticGeneCluster bgc = getCluster(kce.getClusterId());
-			if (bgc != null)
-				bgc.setKcScore(kce.getBestMatchScore(preferredSimilarity));
-		}
-
-		Double gcContentRef = 0.0;
-		CodonUsageTable cutRef;
+		eds.setKnownClusterData();
+		scoreService.setKnownClusterSimilarityScore(preferredSimilarity);
 
 		// SORT BY ONLY THE BASIC FOUR PARAMETERS WITHOUT A REFERENCE SPECIES
 
 		if (refSpecies.equalsIgnoreCase("undefined")) {
 
 			if (geneCount > 0)
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						nogOrder.equalsIgnoreCase("d") ? ClusterSort.NOGSORT : ClusterSort.NOGSORTREV, geneCount);
 			if (sequenceLength > 0)
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						slOrder.equalsIgnoreCase("d") ? ClusterSort.SLSORT : ClusterSort.SLSORTREV, sequenceLength);
 			if (gcContent > 0)
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						gccOrder.equalsIgnoreCase("d") ? ClusterSort.GCCSORT : ClusterSort.GCCSORTREV, gcContent);
 			if (knownCluster > 0) {
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
 			}
 			if (selfHomology > 0) {
-				setSelfHomologyScore(workingDataSet, minimumMatch);
-				scoreService.assignScoreForParameter(workingDataSet,
+				scoreService.setSelfHomologyScore(minimumMatch);
+				prioritisationService.prioritiseParameterAndAddScore(
 						shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
 			}
 			if (pDiversity > 0) {
 				// SET THE CLUSTER BLAST DATA
-				List<ClusterBlastEntry> cbl = cbd.getClusterBlastData(workingDataSet);
+				eds.setClusterBlastData();
+				scoreService.setPhylogeneticDiversityScore();
 
-				for (ClusterBlastEntry cbe : cbl) {
-					cbe.generateLineageTree();
-					BiosyntheticGeneCluster bgc = getCluster(cbe.getClusterId());
-					if (bgc != null) {
-						bgc.setPdScore(cbe.getDiversityScore());
-					}
-				}
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						pdOrder.equalsIgnoreCase("d") ? ClusterSort.PDSORT : ClusterSort.PDSORTREV, pDiversity);
 			}
+
 		}
 
 		// SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
 		else {
-			gcContentRef = ors.getGcContentBySpecies(refSpecies);
-			cutRef = ors.getSpeciesUsageTable(refSpecies);
+			Double gcContentRef = ors.getGcContentBySpecies(refSpecies);
+			CodonUsageTable cutRef = ors.getSpeciesUsageTable(refSpecies);
 			appData.loadBgcDataWithSpecies(gcContentRef, cutRef);
 
 			if (geneCount > 0)
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						nogOrder.equalsIgnoreCase("d") ? ClusterSort.NOGSORT : ClusterSort.NOGSORTREV, geneCount);
-
 			if (sequenceLength > 0)
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						slOrder.equalsIgnoreCase("d") ? ClusterSort.SLSORT : ClusterSort.SLSORTREV, sequenceLength);
 			if (gcContent > 0)
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						gccOrder.equalsIgnoreCase("d") ? ClusterSort.GCCREFSORTREV : ClusterSort.GCCREFSORT, gcContent);
 			if (codonBias > 0)
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						cbOrder.equalsIgnoreCase("a") ? ClusterSort.CBSORT : ClusterSort.CBSORTREV, codonBias);
 			if (knownCluster > 0)
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
 			if (selfHomology > 0) {
-				setSelfHomologyScore(workingDataSet, minimumMatch);
-				scoreService.assignScoreForParameter(workingDataSet,
+				scoreService.setSelfHomologyScore(minimumMatch);
+				prioritisationService.prioritiseParameterAndAddScore(
 						shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
 			}
-
 			if (pDiversity > 0) {
 				// SET THE CLUSTER BLAST DATA
-				List<ClusterBlastEntry> cbl = cbd.getClusterBlastData(workingDataSet);
+				eds.setClusterBlastData();
+				scoreService.setPhylogeneticDiversityScore();
 
-				for (ClusterBlastEntry cbe : cbl) {
-					cbe.generateLineageTree();
-					BiosyntheticGeneCluster bgc = getCluster(cbe.getClusterId());
-					if (bgc != null) {
-						bgc.setPdScore(cbe.getDiversityScore());
-					}
-				}
-				scoreService.assignScoreForParameter(workingDataSet,
+				prioritisationService.prioritiseParameterAndAddScore(
 						pdOrder.equalsIgnoreCase("d") ? ClusterSort.PDSORT : ClusterSort.PDSORTREV, pDiversity);
 			}
 		}
@@ -252,7 +229,7 @@ public class DashboardController {
 	}
 
 	/**
-	 * Transforms the Cluster Type input data (originally a comma separated
+	 * Transforms the Cluster Type input data (originally, a comma separated
 	 * String) into a HashSet Collection
 	 *
 	 * @param types The comma separated String with the Cluster Types selected
@@ -263,27 +240,6 @@ public class DashboardController {
 	private Set<String> getTypesSet(String types) {
 		String[] requiredTypes = types.split(",");
 		return new HashSet<String>(Arrays.asList(requiredTypes));
-	}
-
-	/**
-	 * Calls the Self-Homology Score function. If the Homology for a determined
-	 * minimum match paramter is already calculated then it will be cached
-	 *
-	 * @param types The comma separated String with the Cluster Types selected
-	 * 
-	 * @return typesSet A HashSet including all the Cluster Types selected
-	 */
-
-	private void setSelfHomologyScore(List<BiosyntheticGeneCluster> workingDataSet, int minimumMatch) {
-		for (BiosyntheticGeneCluster c : workingDataSet) {
-			if (c.getSelfHomologyScores().containsKey(minimumMatch))
-				c.setSelfHomologyScore(c.getSelfHomologyScores().get(minimumMatch));
-			else {
-				c.setSelfHomologyScore(SelfHomologyService.calculateScore(c.getClusterSequence(), minimumMatch,
-						c.getOrigin(), c.getNumber()));
-				c.getSelfHomologyScores().put(minimumMatch, c.getSelfHomologyScore());
-			}
-		}
 	}
 
 	/**
@@ -302,14 +258,6 @@ public class DashboardController {
 				types.add(t);
 		}
 		return new ArrayList<>(types);
-	}
-
-	private BiosyntheticGeneCluster getCluster(String clusterId) {
-		for (BiosyntheticGeneCluster c : appData.getWorkingDataSet()) {
-			if (c.getClusterId().equals(clusterId))
-				return c;
-		}
-		return null;
 	}
 
 	@ExceptionHandler(Exception.class)

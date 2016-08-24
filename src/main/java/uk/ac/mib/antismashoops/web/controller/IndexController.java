@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class IndexController {
 	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
+	/**
+	 * Handles the URL call to /index path. Loads index view of the application
+	 * where the loading of files occur.
+	 * 
+	 * @return The index HTML view.
+	 */
+
 	@RequestMapping("/")
 	public String index() {
 		logger.info("Loading Index View...");

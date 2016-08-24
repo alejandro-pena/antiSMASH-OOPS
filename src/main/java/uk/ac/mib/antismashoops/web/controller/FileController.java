@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import uk.ac.mib.antismashoops.core.domainobject.FileMetadata;
+import uk.ac.mib.antismashoops.core.domainvalue.FileMetadata;
 
 @Controller
 public class FileController {
@@ -34,6 +34,16 @@ public class FileController {
 
 	List<FileMetadata> files = new ArrayList<>();
 	List<FileMetadata> filesFull = new ArrayList<>();
+
+	/**
+	 * Handles the URL call to /upload path. Loads the files into the
+	 * application data folder.
+	 * 
+	 * @param request The servlet request object
+	 * @param request The servlet response object
+	 * 
+	 * @return The files list uploaded
+	 */
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public @ResponseBody List<FileMetadata> upload(MultipartHttpServletRequest request, HttpServletResponse response) {
@@ -82,6 +92,15 @@ public class FileController {
 		return files;
 
 	}
+
+	/**
+	 * Handles the URL call to /get path specifying the file id to download.
+	 * 
+	 * @param request The servlet response object
+	 * @param value The file id to download
+	 * 
+	 * @return The files list uploaded
+	 */
 
 	@RequestMapping(value = "/get/{value}", method = RequestMethod.GET)
 	public void get(HttpServletResponse response, @PathVariable String value) {

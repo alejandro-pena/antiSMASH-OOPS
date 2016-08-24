@@ -6,8 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-public class Gene
-{
+public class Gene {
 	private static final Logger logger = LoggerFactory.getLogger(Gene.class);
 
 	private String geneId;
@@ -17,13 +16,23 @@ public class Gene
 	private boolean complement;
 	private String annotation;
 
-	public Gene()
-	{
-
+	public Gene() {
 	}
 
-	public Gene(String geneId, String synonym, int startBase, int stopBase, boolean complement, String annotation)
-	{
+	/**
+	 * 
+	 * Class constructor.
+	 * 
+	 * @param geneId String containing the gene id
+	 * @param synonym String containing the gene synonym
+	 * @param startBase The exact starting base number in the coding sequence
+	 * @param stopBase The exact stopping base number in the coding sequence
+	 * @param complement If the sequence must be read in a complementary way
+	 * @param annotation Further annotations
+	 * 
+	 */
+
+	public Gene(String geneId, String synonym, int startBase, int stopBase, boolean complement, String annotation) {
 		this.geneId = geneId;
 		this.synonym = synonym;
 		this.startBase = startBase;
@@ -32,76 +41,62 @@ public class Gene
 		this.annotation = annotation;
 	}
 
-	public String getGeneId()
-	{
+	public String getGeneId() {
 		return geneId;
 	}
 
-	public void setGeneId(String geneId)
-	{
+	public void setGeneId(String geneId) {
 		this.geneId = geneId;
 	}
 
-	public String getSynonym()
-	{
+	public String getSynonym() {
 		return synonym;
 	}
 
-	public void setSynonym(String synonym)
-	{
+	public void setSynonym(String synonym) {
 		this.synonym = synonym;
 	}
 
-	public int getStartBase()
-	{
+	public int getStartBase() {
 		return startBase;
 	}
 
-	public void setStartBase(int startBase)
-	{
+	public void setStartBase(int startBase) {
 		this.startBase = startBase;
 	}
 
-	public int getStopBase()
-	{
+	public int getStopBase() {
 		return stopBase;
 	}
 
-	public void setStopBase(int stopBase)
-	{
+	public void setStopBase(int stopBase) {
 		this.stopBase = stopBase;
 	}
 
-	public boolean isComplement()
-	{
+	public boolean isComplement() {
 		return complement;
 	}
 
-	public void setComplement(boolean complement)
-	{
+	public void setComplement(boolean complement) {
 		this.complement = complement;
 	}
 
-	public String getAnnotation()
-	{
+	public String getAnnotation() {
 		return annotation;
 	}
 
-	public void setAnnotation(String annotation)
-	{
+	public void setAnnotation(String annotation) {
 		this.annotation = annotation;
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "Gene [geneId=" + geneId + ", synonym=" + synonym + ", startBase=" + startBase + ", stopBase=" + stopBase
 				+ ", complement=" + complement + "]";
 	}
 
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());

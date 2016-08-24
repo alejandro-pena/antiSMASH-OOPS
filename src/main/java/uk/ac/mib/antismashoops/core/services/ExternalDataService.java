@@ -2,15 +2,12 @@ package uk.ac.mib.antismashoops.core.services;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
+import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 import uk.ac.mib.antismashoops.core.domainobject.BlastHit;
-import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastEntry;
+import uk.ac.mib.antismashoops.core.domainobject.Cluster;
+import uk.ac.mib.antismashoops.core.domainobject.ClusterBlast;
 import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastLineage;
-import uk.ac.mib.antismashoops.core.domainobject.ClusterFw;
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable;
 import uk.ac.mib.antismashoops.core.domainobject.Gene;
 import uk.ac.mib.antismashoops.core.domainobject.KnownCluster;
@@ -39,7 +35,10 @@ public class ExternalDataService {
 	private String uploadPath;
 
 	@Autowired
-	private ClusterDataParser cdp;
+	private ApplicationBgcData appData;
+
+	@Autowired
+	private OnlineResourceService ors;
 
 	private static final String REGEX = "(.+)(cluster)(.*)(\\.gbk)";
 	private static final String ZIP_REGEX = "(.+)(\\.zip)";
@@ -50,6 +49,11 @@ public class ExternalDataService {
 	private static final String HITS_REGEXP = "Significant hits:";
 	private static final String DETAILS_REGEXP = "Details:";
 	private static final String HITS_TABLE_REGEXP = "Table of Blast hits (query gene, subject gene, %identity, blast score, %coverage, e-value):";
+	private static final String GENE_REGEXP = "(.+)gene(.+)(\\d+\\.\\.\\d+|complement\\(\\d+\\.\\.\\d+\\))";
+	private static final String GENEID_REGEXP = "(.+)\\/db_xref=\"GeneID:\\d+\"";
+	private static final String GENESYN_REGEXP = "(.+)\\/gene_synonym=\"(.+)\"";
+	private static final String SEQUENCE_REGEXP = "a|g|c|t";
+	private static final String TYPE_REGEXP = "(.+)\\/note=\"Detection rule\\(s\\) for this cluster type:(.*)";
 
 	/**
 	 * Decompresses the ZIP files loaded into the application. If no files are
@@ -71,7 +75,6 @@ public class ExternalDataService {
 		File __MACOSX = new File(uploadPath, "__MACOSX");
 		if (__MACOSX.exists())
 			this.delete(__MACOSX);
-
 	}
 
 	/**
@@ -85,11 +88,10 @@ public class ExternalDataService {
 
 	public void loadBggData(List<BiosyntheticGeneCluster> bgcData) {
 
+		bgcData.clear();
 		File root = new File(uploadPath);
 		if (!root.exists())
 			return;
-
-		bgcData.clear();
 
 		for (File parent : new File(uploadPath).listFiles()) {
 			if (parent.isDirectory()) {
@@ -102,9 +104,7 @@ public class ExternalDataService {
 				}
 			}
 		}
-
 		populateClusterData(bgcData);
-
 	}
 
 	/**
@@ -118,13 +118,13 @@ public class ExternalDataService {
 	private void populateClusterData(List<BiosyntheticGeneCluster> bgcData) {
 
 		for (BiosyntheticGeneCluster c : bgcData) {
-			c.setGenes(cdp.getGenesData(c.getFile()));
-			c.setClusterSequence(cdp.getClusterSequence(c.getFile()));
+			c.setGenes(this.getGenesData(c.getFile()));
+			c.setClusterSequence(this.getClusterSequence(c.getFile()));
 			c.setNumberOfGenes(c.getGenes().size());
 			c.setCdsLength();
 			c.setGcContent();
 			c.setCodonUsageTable();
-			c.setClusterType(cdp.getClusterType(c.getFile()));
+			c.setClusterType(this.getClusterType(c.getFile()));
 		}
 	}
 
@@ -160,7 +160,18 @@ public class ExternalDataService {
 		int directories = 0;
 		int count = 0;
 
-		for (File parent : new File(uploadPath).listFiles()) {
+		File root = new File(uploadPath);
+		File[] list;
+		if (!root.exists()) {
+			return false;
+		} else {
+			list = root.listFiles();
+			if (list.length == 0) {
+				return false;
+			}
+		}
+
+		for (File parent : list) {
 			if (parent.isDirectory()) {
 				directories++;
 				File folder = new File(uploadPath, parent.getName());
@@ -174,16 +185,194 @@ public class ExternalDataService {
 				zipFiles++;
 			}
 		}
-
 		if (count == bgcDataSize && directories == zipFiles)
 			return true;
 		return false;
 	}
 
-	public void setKnownClusterData(List<KnownCluster> knownClusterList) {
-		knownClusterList.clear();
+	/**
+	 * 
+	 * Retrieves the Genes Data from a GBK cluster file. The gene data is a list
+	 * of Gene Objects.
+	 * 
+	 * @param file the File object associated the BGC
+	 * 
+	 * @return An ArrayList of Gene objects
+	 * 
+	 */
 
-		for (File parent : new File(uploadPath).listFiles()) {
+	public List<Gene> getGenesData(File file) {
+		List<Gene> geneList = new ArrayList<>();
+		String geneId = "";
+		String geneSynonym = "";
+		int startBase;
+		int stopBase;
+		boolean complement = false;
+
+		Scanner scanner = null;
+
+		try {
+			scanner = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			logger.error(e.getMessage());
+		}
+
+		while (scanner.hasNextLine()) {
+			String token = scanner.nextLine();
+
+			if (token.matches(GENE_REGEXP)) {
+				if (token.contains("complement"))
+					complement = true;
+				else
+					complement = false;
+
+				token = token.replaceAll("[A-Za-z]|\\(|\\)|<|>", "");
+				String[] tokens = token.split("\\.\\.");
+				startBase = Integer.parseInt(tokens[0].trim());
+				stopBase = Integer.parseInt(tokens[1].trim());
+
+				token = scanner.nextLine();
+
+				if (token.matches(GENEID_REGEXP)) {
+					geneId = token.replaceAll("[^0-9]", "");
+					scanner.nextLine();
+					token = scanner.nextLine();
+
+					if (token.matches(GENESYN_REGEXP)) {
+						geneSynonym = token.substring(token.indexOf('"') + 1, token.length() - 1);
+					}
+				}
+
+				geneList.add(new Gene(geneId, geneSynonym, startBase, stopBase, complement, ""));
+
+			}
+
+		}
+
+		scanner.close();
+		return geneList;
+	}
+
+	/**
+	 * 
+	 * Retrieves the entire cluster sequence from a GBK file.
+	 * 
+	 * @param file the File object associated the BGC
+	 * 
+	 * @return A string with the nucleotide sequence in uppercase letters.
+	 * 
+	 */
+
+	public String getClusterSequence(File file) {
+		Scanner scanner;
+		StringBuilder sb = new StringBuilder();
+
+		try {
+			scanner = new Scanner(file);
+
+			while (scanner.hasNext()) {
+				String nextToken = scanner.next();
+				if (nextToken.equalsIgnoreCase("ORIGIN"))
+					break;
+			}
+
+			scanner.useDelimiter("");
+
+			while (scanner.hasNext()) {
+				String nextToken = scanner.next();
+				if (nextToken.matches(SEQUENCE_REGEXP))
+					sb.append(nextToken);
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return sb.toString().toUpperCase();
+	}
+
+	/**
+	 * 
+	 * Retrieves the Cluster Type from a GBK cluster file.
+	 * 
+	 * @param file the File object associated the BGC
+	 * 
+	 * @return A string containing the type or types splitted by a hyphen
+	 * 
+	 */
+
+	public String getClusterType(File file) {
+		Scanner scanner;
+		StringBuilder sb = new StringBuilder();
+
+		try {
+			scanner = new Scanner(file);
+			String nextToken = "";
+
+			while (scanner.hasNextLine()) {
+				nextToken = scanner.nextLine();
+				if (nextToken.matches(TYPE_REGEXP)) {
+					break;
+				}
+			}
+
+			sb.append(nextToken);
+
+			scanner.useDelimiter("");
+
+			while (scanner.hasNext()) {
+				nextToken = scanner.next();
+				if (!nextToken.equalsIgnoreCase("\""))
+					sb.append(nextToken);
+				else
+					break;
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		String[] tokens = sb.toString().trim().split(":");
+		String type = "";
+
+		for (int i = 1; i < tokens.length - 1; i++) {
+			String[] splitted = tokens[i].split(" ");
+			if (type.equalsIgnoreCase(""))
+				type = splitted[splitted.length - 1];
+			else
+				type = type + "-" + splitted[splitted.length - 1];
+		}
+
+		return type;
+	}
+
+	/**
+	 * 
+	 * Creates the Known Cluster objects scanning all the zip files loaded into
+	 * the application and triggers its population at the end of the function.
+	 * 
+	 */
+
+	public void setKnownClusterData() {
+
+		List<KnownCluster> knownClusterList = new ArrayList<>();
+
+		File root = new File(uploadPath);
+		File[] list;
+		if (!root.exists()) {
+			return;
+		} else {
+			list = root.listFiles();
+			if (list.length == 0) {
+				return;
+			}
+		}
+
+		for (File parent : list) {
 			if (parent.isDirectory()) {
 				File folder = new File(uploadPath + "/" + parent.getName(), FOLDER_NAME_KCB);
 				if (!folder.exists())
@@ -193,7 +382,6 @@ public class ExternalDataService {
 						Scanner scanner = null;
 						try {
 							scanner = new Scanner(file);
-
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 						}
@@ -207,8 +395,31 @@ public class ExternalDataService {
 			}
 		}
 
+		Iterator<KnownCluster> it = knownClusterList.iterator();
+		while (it.hasNext()) {
+			KnownCluster cbe = it.next();
+			boolean found = false;
+			for (BiosyntheticGeneCluster c : appData.getWorkingDataSet()) {
+				if (cbe.getClusterId().equals(c.getClusterId())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				it.remove();
+		}
 		populateKnownClusterData(knownClusterList);
 	}
+
+	/**
+	 * 
+	 * Retrieves the Known Cluster data from the knowncluster folder of each ZIP
+	 * file entry loaded to the application and sets the associated data to each
+	 * respective BGC object
+	 * 
+	 * @param knownClusterList A List of KnownCluster objects that hold the
+	 *            Known Cluster Data of all the BGCs loaded in the application.
+	 */
 
 	public void populateKnownClusterData(List<KnownCluster> knownClusterList) {
 		for (KnownCluster kce : knownClusterList) {
@@ -226,11 +437,13 @@ public class ExternalDataService {
 					break;
 			}
 
+			// SET THE GENES OF THE QUERY CLUSTER (BGC)
+
 			while (scanner.hasNextLine()) {
 				String nextLine = scanner.nextLine();
 				if (!(nextLine.trim()).matches(HITS_REGEXP) && !nextLine.trim().matches("")) {
 					String[] tokens = nextLine.split("\\t");
-					kce.getClusterGenes()
+					kce.getBgcGenes()
 							.add(new Gene(tokens[0], "", Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]),
 									tokens[3].equals("+") ? true : false, tokens.length > 4 ? tokens[4] : ""));
 				} else
@@ -243,10 +456,12 @@ public class ExternalDataService {
 					break;
 			}
 
+			// SET THE CLUSTER HITS FOR THE BGC
+
 			while (scanner.hasNextLine()) {
 				String nextLine = scanner.nextLine();
 				if (nextLine.trim().matches(">>")) {
-					ClusterFw c = new ClusterFw();
+					Cluster c = new Cluster();
 
 					// SET CLUSTER NAME
 					nextLine = scanner.nextLine();
@@ -282,7 +497,7 @@ public class ExternalDataService {
 						nextLine = scanner.nextLine();
 						if (!(nextLine.trim()).matches(HITS_TABLE_REGEXP) && !nextLine.trim().matches("")) {
 							tokens = nextLine.split("\\t");
-							c.getGeneList()
+							c.getQueryClusterGenes()
 									.add(new Gene(tokens[1], "", Integer.parseInt(tokens[2]),
 											Integer.parseInt(tokens[3]), tokens[4].equals("+") ? true : false,
 											tokens.length > 5 ? tokens[5] : ""));
@@ -308,12 +523,31 @@ public class ExternalDataService {
 				}
 
 			}
-
+			appData.getCluster(kce.getClusterId()).setKnownClustersData(kce);
 		}
 	}
 
-	public void setClusterBlastData(List<ClusterBlastEntry> clusterList, List<BiosyntheticGeneCluster> clusterData) {
-		clusterList.clear();
+	/**
+	 * 
+	 * Creates the Cluster Blast objects scanning all the zip files loaded into
+	 * the application and triggers its population at the end of the function.
+	 * 
+	 */
+
+	public void setClusterBlastData() {
+
+		List<ClusterBlast> clusterBlastList = new ArrayList<>();
+
+		File root = new File(uploadPath);
+		File[] list;
+		if (!root.exists()) {
+			return;
+		} else {
+			list = root.listFiles();
+			if (list.length == 0) {
+				return;
+			}
+		}
 
 		for (File parent : new File(uploadPath).listFiles()) {
 			if (parent.isDirectory()) {
@@ -333,7 +567,7 @@ public class ExternalDataService {
 						String[] tokens = scanner.nextLine().split(" ");
 						String origin = tokens[tokens.length - 1];
 						String number = file.getName().replaceAll("[^0-9]", "");
-						clusterList.add(new ClusterBlastEntry(file, origin, number));
+						clusterBlastList.add(new ClusterBlast(file, origin, number));
 					}
 				}
 			}
@@ -341,11 +575,11 @@ public class ExternalDataService {
 
 		// FILTER OUT ONLY THE CLUSTERS THAT ARE NEEDED
 
-		Iterator<ClusterBlastEntry> it = clusterList.iterator();
+		Iterator<ClusterBlast> it = clusterBlastList.iterator();
 		while (it.hasNext()) {
-			ClusterBlastEntry cbe = it.next();
+			ClusterBlast cbe = it.next();
 			boolean found = false;
-			for (BiosyntheticGeneCluster c : clusterData) {
+			for (BiosyntheticGeneCluster c : appData.getWorkingDataSet()) {
 				if (cbe.getClusterId().equals(c.getClusterId())) {
 					found = true;
 					break;
@@ -355,29 +589,35 @@ public class ExternalDataService {
 				it.remove();
 		}
 
-		populateClusterBlastData(clusterList);
+		populateClusterBlastData(clusterBlastList);
 	}
 
-	public void populateClusterBlastData(List<ClusterBlastEntry> clusterList) {
-		for (ClusterBlastEntry cbe : clusterList) {
-			cbe.setCbLin(new ArrayList<>());
+	/**
+	 * 
+	 * Retrieves the Cluster Blast data from the clusterblast folder of each ZIP
+	 * file entry loaded to the application and sets the associated data to each
+	 * respective BGC object
+	 * 
+	 * @param clusterBlastList A List of ClusterBlast objects that hold the
+	 *            Cluster Blast Data of all the BGCs loaded in the application.
+	 */
 
+	public void populateClusterBlastData(List<ClusterBlast> clusterBlastList) {
+
+		for (ClusterBlast cbe : clusterBlastList) {
+			cbe.setCbLin(new ArrayList<>());
 			Scanner scanner = null;
 			try {
 				scanner = new Scanner(cbe.getFile());
-
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-
 			while (scanner.hasNextLine()) {
 				String nextLine = scanner.nextLine();
 				if (nextLine.trim().matches(HITS_REGEXP))
 					break;
 			}
-
 			int counter = 0;
-
 			while (scanner.hasNextLine()) {
 				String nextLine = scanner.nextLine();
 				if (!(nextLine.trim()).matches(DETAILS_REGEXP) && !nextLine.trim().matches("") && counter < 99) {
@@ -387,38 +627,19 @@ public class ExternalDataService {
 				} else
 					break;
 			}
-
-			for (ClusterBlastLineage cbl : cbe.getCbLin()) {
-
-				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-				DocumentBuilder db;
-				try {
-					db = dbf.newDocumentBuilder();
-					Document doc = db.parse(new URL(
-							"http://www.ebi.ac.uk/ena/data/view/" + cbl.getAccNumber() + "&display=xml&header=true")
-									.openStream());
-
-					NodeList taxons = doc.getElementsByTagName("taxon");
-					for (int i = 0; i < taxons.getLength(); i++) {
-						cbl.getLineage().add(
-								filter(taxons.item(i).getAttributes().getNamedItem("scientificName").getTextContent()));
-					}
-				} catch (Exception e) {
-					logger.error(e.getClass() + " - " + e.getMessage());
-				}
-				if (cbl.getLineage().size() > 0)
-					cbl.getLineage().add(cbl.getLineage().remove(0));
-			}
+			ors.getClustersLineage(cbe);
+			appData.getCluster(cbe.getClusterId()).setClusterBlastsData(cbe);
+			logger.info("Tree of Life for Cluster: " + cbe.getClusterId() + " constructed...");
 		}
 	}
 
-	private String filter(String s) {
-		String filtered = s.replaceAll("(?!\\w|\\d|-|_|\\.).", "-");
-		if (filtered.charAt(0) == '-')
-			return filtered.substring(1);
-		else
-			return filtered;
-	}
+	/**
+	 * 
+	 * Deletes the specified file if exists
+	 * 
+	 * @param file the File to delete
+	 * 
+	 */
 
 	public void delete(File file) {
 		if (file.isDirectory()) {

@@ -25,6 +25,20 @@ public class CodonTablesController {
 	@Autowired
 	ApplicationBgcData appData;
 
+	/**
+	 * Handles the URL call to /codonTable specifing a cluster of the
+	 * application. The controller find the cluster in the application data and
+	 * return in the model the codon usage table.
+	 * 
+	 * @param model The backing model object for the codonUsageTable View where
+	 *            the necessary objects are appended.
+	 * 
+	 * @param cluster The cluster requested by the user
+	 * 
+	 * @return The codonUsageTable HTML view showing the Cluster Codon Usage
+	 *         Data.
+	 */
+
 	@RequestMapping(value = "/codonTable/{cluster:.+}", method = RequestMethod.GET)
 	public String getCodonUsageInfo(Model model, @PathVariable("cluster") String cluster) throws IOException {
 		List<BiosyntheticGeneCluster> clusterData = appData.getBgcData();

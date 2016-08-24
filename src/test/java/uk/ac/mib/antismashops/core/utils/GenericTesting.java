@@ -19,7 +19,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -31,15 +30,12 @@ import org.w3c.dom.NodeList;
 
 import uk.ac.mib.antismashoops.AntiSmashOopsApplication;
 import uk.ac.mib.antismashoops.MvcConfiguration;
-import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastData;
 import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastLineage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { AntiSmashOopsApplication.class, MvcConfiguration.class })
 @WebAppConfiguration
 public class GenericTesting {
-	@Autowired
-	private ClusterBlastData cbd;
 
 	private List<Node> leafNodes = new ArrayList<>();
 

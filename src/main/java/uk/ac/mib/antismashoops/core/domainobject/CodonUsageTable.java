@@ -17,6 +17,13 @@ public class CodonUsageTable {
 	private String species;
 	private final LinkedHashMap<String, Detail> usage = new LinkedHashMap<>();
 
+	/**
+	 * 
+	 * Class constructor. Creates a Detail stub for all the codons and
+	 * respective amino acids
+	 * 
+	 */
+
 	public CodonUsageTable() {
 		// ALANINE
 		usage.put("GCG", new Detail("Alanine", "Ala", "A"));
@@ -141,12 +148,27 @@ public class CodonUsageTable {
 		return usage;
 	}
 
+	/**
+	 * 
+	 * Sets the codon frequency data of the codon usage table.
+	 * 
+	 * @param cdsLength The length of the associated sequence
+	 * 
+	 */
+
 	public void setCodonFrequencies(int cdsLength) {
 		for (Entry<String, Detail> codon : this.usage.entrySet()) {
 			Detail d = codon.getValue();
 			d.setFrequency((d.getCodonNumber() * 1000.0) / cdsLength);
 		}
 	}
+
+	/**
+	 * 
+	 * Calculates and sets in the Detail object the usage percentage per amino
+	 * acid
+	 * 
+	 */
 
 	public void setUsagePerAminoacids() {
 
@@ -198,11 +220,33 @@ public class CodonUsageTable {
 		private double frequency = 0.0;
 		private double aminoacidUsage = 0.0;
 
+		/**
+		 * 
+		 * Class constructor.
+		 * 
+		 * @param aminoacid The amino acid full name.
+		 * @param abbr The amino acid abbreviation (3 letters)
+		 * @param letterAbbr The amino acid single letter abbreviation
+		 * 
+		 */
+
 		public Detail(String aminoacid, String abbr, String letterAbbr) {
 			this.aminoacid = aminoacid;
 			this.abbr = abbr;
 			this.letterAbbr = letterAbbr;
 		}
+
+		/**
+		 * 
+		 * Class constructor.
+		 * 
+		 * @param aminoacid The amino acid full name.
+		 * @param abbr The amino acid abbreviation (3 letters)
+		 * @param letterAbbr The amino acid single letter abbreviation
+		 * @param codonNumber Number of this codon in the sequence
+		 * @param frequency of this codon /1000 in the sequence
+		 * 
+		 */
 
 		public Detail(String aminoacid, String abbr, String letterAbbr, int codonNumber, double frequency) {
 			this.aminoacid = aminoacid;

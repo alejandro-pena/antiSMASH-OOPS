@@ -30,6 +30,23 @@ public class CodonUsageChartController {
 	@Autowired
 	OnlineResourceService ors;
 
+	/**
+	 * Handles the URL call to /codonUsageChart specifing a cluster of the
+	 * application and the species to compare it to. The controller find the
+	 * cluster in the application data and gets the codon usage data of the
+	 * species using the Online Resource Service and finally returns the two
+	 * codon usage tables.
+	 * 
+	 * @param model The backing model object for the codonUsageChart View where
+	 *            the necessary objects are appended.
+	 * 
+	 * @param clusterName The cluster requested by the user
+	 * @param species The species name
+	 * 
+	 * @return The codonUsageChart HTML view showing the Cluster Codon Usage
+	 *         Data compared to the Species Codon Usage Data
+	 */
+
 	@RequestMapping(value = "/codonUsageChart/{clusterName:.+}/{species:.+}", method = RequestMethod.GET)
 	public String getCodonUsageChart(ModelMap model, @PathVariable("clusterName") String clusterName,
 			@PathVariable("species") String species) throws IOException {
@@ -55,6 +72,23 @@ public class CodonUsageChartController {
 
 		return "codonUsageChart";
 	}
+
+	/**
+	 * Handles the URL call to /codonUsageMap specifing a cluster of the
+	 * application and the species to compare it to. The controller find the
+	 * cluster in the application data and gets the codon usage data of the
+	 * species using the Online Resource Service and finally returns the two
+	 * codon usage tables.
+	 * 
+	 * @param model The backing model object for the codonUsageChart View where
+	 *            the necessary objects are appended.
+	 * 
+	 * @param clusterName The cluster requested by the user
+	 * @param species The species name
+	 * 
+	 * @return The codonUsageMap HTML view showing the Cluster Codon Usage Data
+	 *         compared to the Species Codon Usage Data
+	 */
 
 	@RequestMapping(value = "/codonUsageMap/{clusterName:.+}/{species:.+}", method = RequestMethod.GET)
 	public String getCodonUsageMap(ModelMap model, @PathVariable("clusterName") String clusterName,

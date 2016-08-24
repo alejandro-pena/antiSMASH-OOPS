@@ -44,9 +44,9 @@
 					<td th:inline="text">[[${#numbers.formatDecimal(cluster.kcScore, 1, 2)}]]%</td>
 					<td th:if="${cluster.selfHomologyScore != -1}" th:text="${cluster.selfHomologyScore}"></td>
 					<td th:if="${cluster.selfHomologyScore == -1}" th:inline="text">N/A</td>
-					<td th:if="${cluster.pdScore == -1}" th:inline="text">N/A</td>
-					<td th:if="${cluster.pdScore != -1}" th:inline="text">
-						<a th:href="@{|/lifeTree/${cluster.origin}.cluster${cluster.number}.xml|}" target="_blank">[[${cluster.pdScore}]]</a>
+					<td th:if="${cluster.diversityScore == -1}" th:inline="text">N/A</td>
+					<td th:if="${cluster.diversityScore != -1}" th:inline="text">
+						<a th:href="@{|/lifeTree/${cluster.origin}.cluster${cluster.number}.xml|}" target="_blank">[[${cluster.diversityScore}]]</a>
 					</td>
 				</tr>
 			</tbody>

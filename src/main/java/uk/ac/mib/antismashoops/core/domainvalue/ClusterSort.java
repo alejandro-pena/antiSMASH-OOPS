@@ -5,6 +5,12 @@ import java.util.Comparator;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 
 public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
+
+	/**
+	 * 
+	 * Compares two BGCs according to the number of genes in descending order.
+	 * 
+	 */
 	NOGSORT {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -14,6 +20,11 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the CDS Length in descending order.
+	 * 
+	 */
 	SLSORT {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -23,6 +34,11 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the GC Content in descending order.
+	 * 
+	 */
 	GCCSORT {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -32,6 +48,12 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the GC Content compared to a reference
+	 * species in ascending order.
+	 * 
+	 */
 	GCCREFSORT {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -41,6 +63,11 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the codon bias score in ascending order.
+	 * 
+	 */
 	CBSORT {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -50,6 +77,12 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the known cluster similarity score in
+	 * ascending order.
+	 * 
+	 */
 	KCSORT {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -59,6 +92,12 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the self homology score in descending
+	 * order.
+	 * 
+	 */
 	SHSORT {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -68,15 +107,26 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the phylogenetic diversity score in
+	 * descending order.
+	 * 
+	 */
 	PDSORT {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
-			if (c1.getPdScore() == c2.getPdScore())
+			if (c1.getDiversityScore() == c2.getDiversityScore())
 				return 0;
-			return c1.getPdScore() > c2.getPdScore() ? 1 : -1;
+			return c1.getDiversityScore() > c2.getDiversityScore() ? 1 : -1;
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the number of genes in ascending order.
+	 * 
+	 */
 	NOGSORTREV {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -86,6 +136,11 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the CDS Length in ascending order.
+	 * 
+	 */
 	SLSORTREV {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -95,6 +150,11 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the GC Content in ascending order.
+	 * 
+	 */
 	GCCSORTREV {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -104,6 +164,12 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the GC Content compared to a reference
+	 * species in descending order.
+	 * 
+	 */
 	GCCREFSORTREV {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -113,6 +179,11 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the codon bias score in descending order.
+	 * 
+	 */
 	CBSORTREV {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -122,6 +193,12 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the known cluster similarity score in
+	 * descending order.
+	 * 
+	 */
 	KCSORTREV {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -131,6 +208,12 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the self homology score in ascending
+	 * order.
+	 * 
+	 */
 	SHSORTREV {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
@@ -140,15 +223,26 @@ public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the phylogenetic diversity score in
+	 * ascending order.
+	 * 
+	 */
 	PDSORTREV {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {
-			if (c1.getPdScore() == c2.getPdScore())
+			if (c1.getDiversityScore() == c2.getDiversityScore())
 				return 0;
-			return c1.getPdScore() < c2.getPdScore() ? 1 : -1;
+			return c1.getDiversityScore() < c2.getDiversityScore() ? 1 : -1;
 		}
 	},
 
+	/**
+	 * 
+	 * Compares two BGCs according to the final score in descending order.
+	 * 
+	 */
 	SCORESORT {
 		@Override
 		public int compare(BiosyntheticGeneCluster c1, BiosyntheticGeneCluster c2) {

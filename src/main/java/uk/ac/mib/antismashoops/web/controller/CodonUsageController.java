@@ -1,13 +1,7 @@
 package uk.ac.mib.antismashoops.web.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable;
-import uk.ac.mib.antismashoops.core.domainobject.Species;
 import uk.ac.mib.antismashoops.core.services.OnlineResourceService;
 
 @Controller
@@ -29,37 +22,50 @@ public class CodonUsageController {
 	@Autowired
 	OnlineResourceService ors;
 
+	/**
+	 * Handles the URL call to /codonUsage
+	 * 
+	 * @return The codonUsage HTML view
+	 */
+
 	@RequestMapping("/codonUsage")
 	public String getSpecies() {
 		return "codonUsage";
 	}
 
+	/**
+	 * Handles the URL call to /codonUsage specifing a species to retrieve the
+	 * Codon Usage Data from.
+	 * 
+	 * @param model The backing model object for the speciesList fragment where
+	 *            the necessary objects are appended.
+	 * 
+	 * @param clusterName The cluster requested by the user
+	 * @param species The species name
+	 * 
+	 * @return The speciesList HTML fragment to be displayed in the results
+	 *         section.
+	 */
+
 	@RequestMapping(value = "/codonUsage/{species}", method = RequestMethod.GET)
 	public String getSpeciesByName(Model model, @PathVariable("species") String species) throws IOException {
-		List<Species> speciesList = new ArrayList<>();
 
-		Document doc = Jsoup.connect("http://www.kazusa.or.jp/codon/cgi-bin/spsearch.cgi?species=" + species + "&c=i")
-				.timeout(15000).get();
-
-		Elements links = doc.select("a[href]");
-
-		if (links.size() == 1) {
-			speciesList.add(new Species("No data found.", "No data found.", "No data found."));
-			model.addAttribute("speciesList", speciesList);
-			return "fragments/speciesList :: speciesList";
-
-		}
-
-		links.remove(links.size() - 1);
-
-		for (Element link : links) {
-			String id = link.attr("href").split("=")[1];
-			speciesList.add(new Species(id, link.text(), "/codonUsage/show/" + id));
-		}
-
-		model.addAttribute("speciesList", speciesList);
+		model.addAttribute("speciesList", ors.getSpeciesByNameForCodonUsage(species));
 		return "fragments/speciesList :: speciesList";
 	}
+
+	/**
+	 * Handles the URL call to /codonUsage/show specifing a species to retrieve
+	 * the Codon Usage Data from.
+	 * 
+	 * @param model The backing model object for the codonUsageTable view where
+	 *            the necessary objects are appended.
+	 * 
+	 * @param species The species requested
+	 * 
+	 * @return The codonUsageTable HTML view showing the Species Codon Usage
+	 *         Data
+	 */
 
 	@RequestMapping(value = "/codonUsage/show/{species:.+}", method = RequestMethod.GET)
 	public String getSpeciesUsageTable(Model model, @PathVariable("species") String species) throws IOException {

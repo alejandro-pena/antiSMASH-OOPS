@@ -18,7 +18,9 @@ import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable.Detail;
 
 public class BiosyntheticGeneCluster implements Cloneable {
 
-	// CLUSTER GENERIC ATTRIBUTES
+	private static final Logger logger = LoggerFactory.getLogger(BiosyntheticGeneCluster.class);
+
+	// BGC GENERIC ATTRIBUTES
 
 	private final String clusterId;
 	private final File file;
@@ -28,27 +30,35 @@ public class BiosyntheticGeneCluster implements Cloneable {
 	private final String number;
 	private String clusterType;
 
-	// CLUSTER SPECIFIC ATTRIBUTES
-
-	private List<Gene> genes;
-
-	private String clusterSequence;
-	private CodonUsageTable codonUsageTable;
-	private double kcScore = 0.0;
-	private int selfHomologyScore = -1;
-	private Map<Integer, Integer> selfHomologyScores = new HashMap<>();
-	private int pdScore = -1;
-	private double score = 0.0;
-
-	// CLUSTER SORTING ATTRIBUTES
+	// CLUSTER SCORING ATTRIBUTES
 
 	private int numberOfGenes;
 	private int cdsLength;
 	private double gcContent;
 	private double gcContentS = -1.0;
 	private double codonBiasS = -1.0;
+	private double kcScore = 0.0;
+	private int selfHomologyScore = -1;
+	private Map<Integer, Integer> selfHomologyScores = new HashMap<>();
+	private int diversityScore = -1;
 
-	private static final Logger logger = LoggerFactory.getLogger(BiosyntheticGeneCluster.class);
+	// FINAL CLUSTER SCORE
+	private double score = 0.0;
+
+	// BGC COMPLEX ATTRIBUTES
+
+	private List<Gene> genes;
+	private String clusterSequence;
+	private CodonUsageTable codonUsageTable;
+	private KnownCluster knownClustersData;
+	private ClusterBlast clusterBlastsData;
+
+	/**
+	 * Class constructor. Assigns 6 attributes for the biosynthetic gene
+	 * cluster: file, name, parent file, origin, number and cluster Id
+	 * 
+	 * @param file The File object the BGC is associated to.
+	 */
 
 	public BiosyntheticGeneCluster(File file) {
 		this.file = file;
@@ -60,6 +70,12 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.number = clusterNo.toString();
 		this.clusterId = this.origin + "-" + this.number;
 	}
+
+	/**
+	 * 
+	 * GETTERS AND SETTERS FOR THE BGC BASIC ATTRIBUTES
+	 * 
+	 */
 
 	public String getClusterId() {
 		return clusterId;
@@ -93,6 +109,24 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.clusterType = clusterType;
 	}
 
+	/**
+	 * 
+	 * GETTERS AND SETTERS FOR THE PARAMETER SCORE HOLDERS
+	 * 
+	 */
+
+	// NUMBER OF GENES
+
+	public int getNumberOfGenes() {
+		return numberOfGenes;
+	}
+
+	public void setNumberOfGenes(int numberOfGenes) {
+		this.numberOfGenes = numberOfGenes;
+	}
+
+	// CDS LENGTH
+
 	public int getCdsLength() {
 		return cdsLength;
 	}
@@ -108,21 +142,7 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.cdsLength = count;
 	}
 
-	public List<Gene> getGenes() {
-		return genes;
-	}
-
-	public void setGenes(List<Gene> genes) {
-		this.genes = genes;
-	}
-
-	public int getNumberOfGenes() {
-		return numberOfGenes;
-	}
-
-	public void setNumberOfGenes(int numberOfGenes) {
-		this.numberOfGenes = numberOfGenes;
-	}
+	// GC CONTENT
 
 	public double getGcContent() {
 		return gcContent;
@@ -140,48 +160,7 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.gcContent = count * 100.0 / this.cdsLength;
 	}
 
-	public CodonUsageTable getCodonUsageTable() {
-		return codonUsageTable;
-	}
-
-	public void setCodonUsageTable() {
-		this.codonUsageTable = this.computeCodonUsageTable();
-	}
-
-	public String getClusterSequence() {
-		return clusterSequence;
-	}
-
-	public void setClusterSequence(String clusterSequence) {
-		this.clusterSequence = clusterSequence;
-	}
-
-	public Set<String> getClusterTypes() {
-		Set<String> clusterTypes = new HashSet<>();
-
-		String[] types = this.clusterType.split("-");
-		for (String s : types) {
-			clusterTypes.add(s.trim());
-		}
-		return clusterTypes;
-	}
-
-	@Override
-	public String toString() {
-		return "Cluster [Cluster=" + origin + number + ", kcScore=" + kcScore + "]";
-	}
-
-	private static String removeExtension(String name) {
-		return name.substring(0, name.lastIndexOf('.'));
-	}
-
-	public double getScore() {
-		return score;
-	}
-
-	public void setScore(double score) {
-		this.score = score;
-	}
+	// GC CONTENT CONSIDERING A REFERENCE SPECIES
 
 	public double getGcContentS() {
 		return gcContentS;
@@ -190,6 +169,8 @@ public class BiosyntheticGeneCluster implements Cloneable {
 	public void setGcContentS(double gcContentRef) {
 		this.gcContentS = Math.abs(this.gcContent - gcContentRef);
 	}
+
+	// CODON BIAS
 
 	public double getCodonBiasS() {
 		return codonBiasS;
@@ -209,6 +190,8 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.codonBiasS = codonBiasScore;
 	}
 
+	// KNOWN CLUSTER SIMILARITY
+
 	public double getKcScore() {
 		return kcScore;
 	}
@@ -216,6 +199,8 @@ public class BiosyntheticGeneCluster implements Cloneable {
 	public void setKcScore(double kcScore) {
 		this.kcScore = kcScore;
 	}
+
+	// SELF-HOMOLOGY
 
 	public int getSelfHomologyScore() {
 		return selfHomologyScore;
@@ -225,6 +210,8 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.selfHomologyScore = selfHomologyScore;
 	}
 
+	// SELF-HOMOLOGY CACHING MAP
+
 	public Map<Integer, Integer> getSelfHomologyScores() {
 		return selfHomologyScores;
 	}
@@ -233,13 +220,110 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.selfHomologyScores = selfHomologyScores;
 	}
 
-	public int getPdScore() {
-		return pdScore;
+	// PHYLOGENETIC DIVERSITY
+
+	public int getDiversityScore() {
+		return diversityScore;
 	}
 
-	public void setPdScore(int pdScore) {
-		this.pdScore = pdScore;
+	public void setDiversityScore(int diversityScore) {
+		this.diversityScore = diversityScore;
 	}
+
+	// BGC FINAL SCORE
+
+	public double getScore() {
+		return score;
+	}
+
+	public void setScore(double score) {
+		this.score = score;
+	}
+
+	/**
+	 * 
+	 * GETTERS AND SETTERS FOR THE BASIC ATTRIBUTES
+	 * 
+	 */
+
+	public List<Gene> getGenes() {
+		return genes;
+	}
+
+	public void setGenes(List<Gene> genes) {
+		this.genes = genes;
+	}
+
+	public String getClusterSequence() {
+		return clusterSequence;
+	}
+
+	public void setClusterSequence(String clusterSequence) {
+		this.clusterSequence = clusterSequence;
+	}
+
+	public CodonUsageTable getCodonUsageTable() {
+		return codonUsageTable;
+	}
+
+	public void setCodonUsageTable() {
+		this.codonUsageTable = this.computeCodonUsageTable();
+	}
+
+	public KnownCluster getKnownClustersData() {
+		return knownClustersData;
+	}
+
+	public void setKnownClustersData(KnownCluster knownClustersData) {
+		this.knownClustersData = knownClustersData;
+	}
+
+	public ClusterBlast getClusterBlastsData() {
+		return clusterBlastsData;
+	}
+
+	public void setClusterBlastsData(ClusterBlast clusterBlastsData) {
+		this.clusterBlastsData = clusterBlastsData;
+	}
+
+	/**
+	 * Provides a set object including the type or types the BGC belongs to
+	 * 
+	 * @return A Set object with the cluster type or types as strings
+	 * 
+	 */
+
+	public Set<String> getClusterTypes() {
+		Set<String> clusterTypes = new HashSet<>();
+
+		String[] types = this.clusterType.split("-");
+		for (String s : types) {
+			clusterTypes.add(s.trim());
+		}
+		return clusterTypes;
+	}
+
+	/**
+	 * Removes the extension of a string
+	 * 
+	 * @param name The String to remove the extension from.
+	 * 
+	 * @return A string with the trimmed extension.
+	 * 
+	 */
+
+	private static String removeExtension(String name) {
+		return name.substring(0, name.lastIndexOf('.'));
+	}
+
+	/**
+	 * 
+	 * Computes a codon usage table using the cluster sequence and genes
+	 * information.
+	 * 
+	 * @return A CodonUsageTable with the BGC information
+	 * 
+	 */
 
 	public CodonUsageTable computeCodonUsageTable() {
 
@@ -276,6 +360,17 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		return cut;
 	}
 
+	/**
+	 * 
+	 * Converts any nucleotide sequence into its complementary sequence
+	 * (Inverting the string and getting the complement)
+	 * 
+	 * @param sequence A nucleotide sequence in a String format
+	 * 
+	 * @return The complementary sequence
+	 * 
+	 */
+
 	public String getComplementSequence(String sequence) {
 		StringBuilder sb = new StringBuilder();
 		String reversedSequence = new StringBuilder(sequence).reverse().toString();
@@ -300,6 +395,15 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		return sb.toString();
 	}
 
+	/**
+	 * Two clusters are considered equal if the share the exact same Cluster Id
+	 * 
+	 * @param obj The Cluster Object to be compared
+	 * 
+	 * @return If the cluster ids are equal returns true, else false.
+	 * 
+	 */
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -316,6 +420,13 @@ public class BiosyntheticGeneCluster implements Cloneable {
 			return false;
 		return true;
 	}
+
+	/**
+	 * Creates a copy of the BGC
+	 * 
+	 * @return A hard copy Biosynthetic Gene Cluster
+	 * 
+	 */
 
 	@Override
 	protected BiosyntheticGeneCluster clone() {

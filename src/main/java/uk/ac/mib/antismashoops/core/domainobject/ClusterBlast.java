@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class ClusterBlastEntry {
+public class ClusterBlast {
 
 	private String clusterId;
 	private File file;
@@ -34,18 +34,47 @@ public class ClusterBlastEntry {
 	private List<ClusterBlastLineage> cbLin = new ArrayList<>();
 	private Document xmlLifeTree;
 
-	private static final Logger logger = LoggerFactory.getLogger(ClusterBlastEntry.class);
+	private static final Logger logger = LoggerFactory.getLogger(ClusterBlast.class);
 
-	public ClusterBlastEntry(File file, String origin, String number) {
+	/**
+	 * 
+	 * Class Constructor. Generates the ClusterBlast object for the BGC setting
+	 * the file source, origin, number and cluster id.
+	 * 
+	 * @param file
+	 * @param origin The cluster family (zip file name)
+	 * @param number The cluster number of the family of BGCs
+	 * 
+	 */
+
+	public ClusterBlast(File file, String origin, String number) {
 		this.file = file;
 		this.origin = origin;
 		this.number = number;
 		this.clusterId = this.origin + "-" + this.number;
 	}
 
+	/**
+	 * 
+	 * Gets the Diversity Score for this ClusterBlast data (xmlLifeTree size)
+	 * 
+	 * @return The size of the associated xmlLifeTree
+	 * 
+	 */
+
 	public int getDiversityScore() {
 		return getTreeSize(this.xmlLifeTree);
 	}
+
+	/**
+	 * 
+	 * Counts the number of nodes of the specified DOM Tree.
+	 * 
+	 * @param root The root node of the DOM Tree.
+	 * 
+	 * @return The number of nodes
+	 * 
+	 */
 
 	public int getTreeSize(Node root) {
 		if (root == null)
@@ -61,6 +90,13 @@ public class ClusterBlastEntry {
 		}
 		return count + 1;
 	}
+
+	/**
+	 * 
+	 * Generates a Document tree object with the Lineage data from the Clusters
+	 * Blasted. Merges all the data in a single Tree of Life
+	 * 
+	 */
 
 	public void generateLineageTree() {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -102,6 +138,15 @@ public class ClusterBlastEntry {
 		}
 	}
 
+	/**
+	 * 
+	 * Generates the Tree of Life data in XML Format as a String and calls the
+	 * function to print it
+	 * 
+	 * @param doc The root node of the Tree of Life data
+	 * 
+	 */
+
 	public void prettyPrint(Document doc) {
 		try {
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -111,15 +156,24 @@ public class ClusterBlastEntry {
 			DOMSource source = new DOMSource(doc);
 			transformer.transform(source, result);
 			String xmlString = result.getWriter().toString();
-			// System.out.println(this.getRecordName() + " " +
-			// this.getRecordNumber());
-			// System.out.println(xmlString);
 			writeToFile(xmlString);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * 
+	 * Writes the specified string to an xml file with the cluster family name
+	 * and number
+	 * 
+	 * @param data The string that is going to be written. This string contains
+	 *            the data in XML format.
+	 * 
+	 * @return The number of nodes
+	 * 
+	 */
 
 	public void writeToFile(String data) {
 		File directory = new File("lifeTreeOutput");

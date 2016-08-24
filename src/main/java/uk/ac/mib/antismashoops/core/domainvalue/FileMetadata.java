@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.domainobject;
+package uk.ac.mib.antismashoops.core.domainvalue;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -6,8 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-public class FileMetadata
-{
+public class FileMetadata {
 	private static final Logger logger = LoggerFactory.getLogger(FileMetadata.class);
 
 	private String fileName;
@@ -15,68 +14,66 @@ public class FileMetadata
 	private String fileType;
 	private byte[] bytes;
 
-	public FileMetadata()
-	{
+	public FileMetadata() {
 
 	}
 
-	public FileMetadata(String fileName, String fileSize, String fileType, byte[] bytes)
-	{
+	/**
+	 * Class constructor.
+	 * 
+	 * @param fileName The name of the file
+	 * @param fileSize The size of the file
+	 * @param fileType The mime type of the file
+	 * @param bytes The content of the file in an array of bytes
+	 * 
+	 */
+
+	public FileMetadata(String fileName, String fileSize, String fileType, byte[] bytes) {
 		this.fileName = fileName;
 		this.fileSize = fileSize;
 		this.fileType = fileType;
 		this.bytes = bytes;
 	}
 
-	public String getFileName()
-	{
+	public String getFileName() {
 		return fileName;
 	}
 
-	public void setFileName(String fileName)
-	{
+	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
 
-	public String getFileSize()
-	{
+	public String getFileSize() {
 		return fileSize;
 	}
 
-	public void setFileSize(String fileSize)
-	{
+	public void setFileSize(String fileSize) {
 		this.fileSize = fileSize;
 	}
 
-	public String getFileType()
-	{
+	public String getFileType() {
 		return fileType;
 	}
 
-	public void setFileType(String fileType)
-	{
+	public void setFileType(String fileType) {
 		this.fileType = fileType;
 	}
 
-	public byte[] getBytes()
-	{
+	public byte[] getBytes() {
 		return bytes;
 	}
 
-	public void setBytes(byte[] bytes)
-	{
+	public void setBytes(byte[] bytes) {
 		this.bytes = bytes;
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "FileMetadata [fileName=" + fileName + ", fileSize=" + fileSize + ", fileType=" + fileType + "]";
 	}
 
 	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception)
-	{
+	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
 		logger.error("Exception thrown: " + exception.getClass());
 		logger.error("Exception message: " + exception.getMessage());

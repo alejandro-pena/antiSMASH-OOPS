@@ -21,7 +21,7 @@ public class ApplicationBgcData {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationBgcData.class);
 	private static final List<BiosyntheticGeneCluster> bgcData;
-	private static final List<BiosyntheticGeneCluster> workingDataSet;
+	private static List<BiosyntheticGeneCluster> workingDataSet;
 
 	static {
 		bgcData = new ArrayList<>();
@@ -36,6 +36,19 @@ public class ApplicationBgcData {
 
 	public ApplicationBgcData() {
 	}
+
+	/**
+	 * 
+	 * Provides the BGC Application Data, if the data is in sync with the files
+	 * uploaded the cached version will be provided. If not, a new scan and
+	 * decompression will be done loading the new files or deleting the erased
+	 * ones. This method clones the Application Data into the workingDataSet
+	 * object to keep an intact copy of the data. The workingDataSet is a
+	 * mutable object that changes according to every prioritisation request.
+	 * 
+	 * @return The workingDataSet cloned from the original data
+	 * 
+	 */
 
 	public List<BiosyntheticGeneCluster> getBgcData() {
 
@@ -57,13 +70,50 @@ public class ApplicationBgcData {
 		return workingDataSet;
 	}
 
-	public List<BiosyntheticGeneCluster> loadBgcDataWithSpecies(Double gcContentRef, CodonUsageTable cutRef) {
+	/**
+	 * 
+	 * Loads the BGC Data scores of the GC Content using a reference species and
+	 * the Codon Bias
+	 * 
+	 * @param gcContentRef The Reference Species GC Content Percentage
+	 * @param cutRef The CodonUsageTable object with the reference species data
+	 * 
+	 */
+
+	public void loadBgcDataWithSpecies(Double gcContentRef, CodonUsageTable cutRef) {
 		eds.populateClusterData(workingDataSet, gcContentRef, cutRef);
-		return workingDataSet;
 	}
+
+	/**
+	 * 
+	 * Finds a specific BGC Object by the Cluster Id specified.
+	 * 
+	 * @param clusterId The BGC Id to look for in the workingDataSet
+	 * 
+	 * @return The Biosynthetic Gene Cluster requested
+	 * 
+	 */
+
+	public BiosyntheticGeneCluster getCluster(String clusterId) {
+		for (BiosyntheticGeneCluster c : workingDataSet) {
+			if (c.getClusterId().equals(clusterId))
+				return c;
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * Getters and setters of the workingDataSet List object
+	 * 
+	 */
 
 	public List<BiosyntheticGeneCluster> getWorkingDataSet() {
 		return ApplicationBgcData.workingDataSet;
+	}
+
+	public void setWorkingDataSet(List<BiosyntheticGeneCluster> workingDataSet) {
+		ApplicationBgcData.workingDataSet = workingDataSet;
 	}
 
 	@ExceptionHandler(Exception.class)
