@@ -53,7 +53,8 @@ public class ExternalDataService {
 	private static final String GENEID_REGEXP = "(.+)\\/db_xref=\"GeneID:\\d+\"";
 	private static final String GENESYN_REGEXP = "(.+)\\/gene_synonym=\"(.+)\"";
 	private static final String SEQUENCE_REGEXP = "a|g|c|t";
-	private static final String TYPE_REGEXP = "(.+)\\/note=\"Detection rule\\(s\\) for this cluster type:(.*)";
+	private static final String TYPE_REGEXP = "(.+)\\/product=\"(.+)\"(.*)";
+	private static final String CLUSTER_REGEXP = "(.+)cluster(.+)(\\d+\\.\\.\\d+)(.*)";
 
 	/**
 	 * Decompresses the ZIP files loaded into the application. If no files are
@@ -313,21 +314,17 @@ public class ExternalDataService {
 
 			while (scanner.hasNextLine()) {
 				nextToken = scanner.nextLine();
-				if (nextToken.matches(TYPE_REGEXP)) {
+				if (nextToken.matches(CLUSTER_REGEXP)) {
 					break;
 				}
 			}
 
-			sb.append(nextToken);
-
-			scanner.useDelimiter("");
-
-			while (scanner.hasNext()) {
-				nextToken = scanner.next();
-				if (!nextToken.equalsIgnoreCase("\""))
+			while (scanner.hasNextLine()) {
+				nextToken = scanner.nextLine();
+				if (nextToken.matches(TYPE_REGEXP)) {
 					sb.append(nextToken);
-				else
 					break;
+				}
 			}
 
 		} catch (FileNotFoundException e) {
@@ -336,16 +333,8 @@ public class ExternalDataService {
 			e.printStackTrace();
 		}
 
-		String[] tokens = sb.toString().trim().split(":");
-		String type = "";
-
-		for (int i = 1; i < tokens.length - 1; i++) {
-			String[] splitted = tokens[i].split(" ");
-			if (type.equalsIgnoreCase(""))
-				type = splitted[splitted.length - 1];
-			else
-				type = type + "-" + splitted[splitted.length - 1];
-		}
+		String type = sb.toString();
+		type = sb.substring(sb.indexOf("\"") + 1, sb.lastIndexOf("\""));
 
 		return type;
 	}
