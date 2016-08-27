@@ -168,54 +168,59 @@ function prioritise() {
 	// REFERENCE SPECIES
 	
 	var refSpecies = $('#selectSpecies').val();
-	if(refSpecies === 'No data found.')
+	if(refSpecies === 'No data found.' || refSpecies === undefined)
 		refSpecies = 'undefined';
+	
 	
 	// CLUSTER TYPE
 	
+	
 	var types = $('#preferredType').val();
+	
 	var ignorePT = $('#ignorePT').is(":checked");
 	
 	// KNOWN CLUSTER SIMILARITY
 	
-	var kcs = $('#knownClustersSimilarity').val();
+	var kcSim = $('#knownClustersSimilarity').val();
 	var pSim = $('#similarityPercentage').val();
 	var kcsOrderValue = $('#kcsOrderValue').val();
 	
 	// SELF-HOMOLOGY
 	
-	var sh = $('#selfHomology').val();
+	var sHom = $('#selfHomology').val();
 	var minM = $('#minimumMatch').val();
 	var shOrderValue = $('#shOrderValue').val();
 	
 	// PHYLOGENETIC DIVERSITY
 	
-	var pd = $('#phylogeneticDiversity').val();
+	var pDiv = $('#phylogeneticDiversity').val();
 	var pdOrderValue = $('#pdOrderValue').val();
 	
 	// BUILDS THE URL FOR THE AJAX CALL
+	
+	var data = {
+			nog : numberOfGenes,
+			nogo : nogOrderValue,
+			sl : sequenceLength,
+			slo : slOrderValue,
+			gcc : gcContent,
+			gcco : gccOrderValue,
+			cb : codonBias,
+			cbo : cbOrderValue,
+			rs : refSpecies,
+			t : types,
+			ipt : ignorePT,
+			kcs : kcSim,
+			psim : pSim, 
+			kcso : kcsOrderValue,
+			sh : sHom,
+			minm : minM,
+			sho : shOrderValue,
+			pd : pDiv,
+			pdo : pdOrderValue 
+		};
 
-	url = '/dashboardUpdate?'
-			+ 'geneCount=' + numberOfGenes
-			+ '&nogOrderValue=' + nogOrderValue
-			+ '&sequenceLength=' + sequenceLength
-			+ '&slOrderValue=' + slOrderValue
-			+ '&gcContent=' + gcContent
-			+ '&gccOrderValue=' + gccOrderValue
-			+ '&codonBias='	+ codonBias
-			+ '&cbOrderValue=' + cbOrderValue
-			+ '&refSpecies=' + refSpecies
-			+ '&types=' + types
-			+ '&ignorePT=' + ignorePT
-			+ '&kcs=' + kcs
-			+ '&pSim=' + pSim 
-			+ '&kcsOrderValue='	+ kcsOrderValue
-			+ '&sh=' + sh
-			+ '&minM=' + minM
-			+ '&shOrderValue=' + shOrderValue
-			+ '&pd=' + pd
-			+ '&pdOrderValue=' + pdOrderValue 
-			;
+	var url = '/dashboardUpdate';
 
 	// CHANGES THE PRIORITISE BUTTON INTO AN ANIMATED REFRESH ICON
 	
@@ -223,12 +228,13 @@ function prioritise() {
 			+ '</span> Prioritising... Please wait...';
 	
 	$('#prioritiseBtn').html(buttonText);
+	$("#outputData").html("");
 	
 	// LOADS THE PRIORITISED DATA INTO THE OUTPUT SECTION
 
-	$("#outputData").load(url, function(response, status, xhr) {
+	$("#outputData").load(url, data, function(response, status, xhr) {
 		if (xhr.status != '200') {
-			var message = 'The Application cannot fulfil your request. Either the Kazusa or the EBI Website are not available or you are not connected to the Internet.';
+			var message = 'The Application cannot fulfill your request.';
 			$('#gaMessage').html(message);
 			$('#genericAlert').show();
 		}

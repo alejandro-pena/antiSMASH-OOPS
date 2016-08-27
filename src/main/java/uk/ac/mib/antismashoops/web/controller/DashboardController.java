@@ -2,9 +2,7 @@ package uk.ac.mib.antismashoops.web.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -106,25 +104,25 @@ public class DashboardController {
 	 */
 
 	@RequestMapping("/dashboardUpdate")
-	public String updateResults(@RequestParam(value = "geneCount", required = true) int geneCount,
-			@RequestParam(value = "nogOrderValue", required = true) String nogOrder,
-			@RequestParam(value = "sequenceLength", required = true) int sequenceLength,
-			@RequestParam(value = "slOrderValue", required = true) String slOrder,
-			@RequestParam(value = "gcContent", required = true) int gcContent,
-			@RequestParam(value = "gccOrderValue", required = true) String gccOrder,
-			@RequestParam(value = "codonBias", required = true) int codonBias,
-			@RequestParam(value = "cbOrderValue", required = true) String cbOrder,
-			@RequestParam(value = "refSpecies", required = true) String refSpecies,
-			@RequestParam(value = "types", required = true) String types,
-			@RequestParam(value = "ignorePT", required = true) String ignorePT,
+	public String updateResults(@RequestParam(value = "nog", required = true) int geneCount,
+			@RequestParam(value = "nogo", required = true) String nogOrder,
+			@RequestParam(value = "sl", required = true) int sequenceLength,
+			@RequestParam(value = "slo", required = true) String slOrder,
+			@RequestParam(value = "gcc", required = true) int gcContent,
+			@RequestParam(value = "gcco", required = true) String gccOrder,
+			@RequestParam(value = "cb", required = true) int codonBias,
+			@RequestParam(value = "cbo", required = true) String cbOrder,
+			@RequestParam(value = "rs", required = true) String refSpecies,
+			@RequestParam(value = "t[]", required = false) Set<String> types,
+			@RequestParam(value = "ipt", required = true) String ignorePT,
 			@RequestParam(value = "kcs", required = true) int knownCluster,
-			@RequestParam(value = "kcsOrderValue", required = true) String kcsOrder,
-			@RequestParam(value = "pSim", required = true) double preferredSimilarity,
+			@RequestParam(value = "kcso", required = true) String kcsOrder,
+			@RequestParam(value = "psim", required = true) double preferredSimilarity,
 			@RequestParam(value = "sh", required = true) int selfHomology,
-			@RequestParam(value = "shOrderValue", required = true) String shOrder,
-			@RequestParam(value = "minM", required = true) int minimumMatch,
+			@RequestParam(value = "sho", required = true) String shOrder,
+			@RequestParam(value = "minm", required = true) int minimumMatch,
 			@RequestParam(value = "pd", required = true) int pDiversity,
-			@RequestParam(value = "pdOrderValue", required = true) String pdOrder, ModelMap model) throws IOException {
+			@RequestParam(value = "pdo", required = true) String pdOrder, ModelMap model) throws IOException {
 
 		logger.info("Reloading Dashboard...");
 
@@ -132,12 +130,10 @@ public class DashboardController {
 
 		// FILTER THE BGC DATA ACCORDING TO THE CLUSTER TYPE IF SPECIFIED
 
-		if (ignorePT.equalsIgnoreCase("false") && !types.equals("null")) {
-
-			Set<String> typesSet = this.getTypesSet(types);
+		if (ignorePT.equalsIgnoreCase("false") && types != null) {
 
 			appData.setWorkingDataSet(
-					workingDataSet.stream().filter(bgc -> typesSet.stream().anyMatch(bgc.getClusterTypes()::contains))
+					workingDataSet.stream().filter(bgc -> types.stream().anyMatch(bgc.getClusterTypes()::contains))
 							.collect(Collectors.toList()));
 			workingDataSet = appData.getWorkingDataSet();
 		}
@@ -229,20 +225,6 @@ public class DashboardController {
 	}
 
 	/**
-	 * Transforms the Cluster Type input data (originally, a comma separated
-	 * String) into a HashSet Collection
-	 *
-	 * @param types The comma separated String with the Cluster Types selected
-	 * 
-	 * @return typesSet A HashSet including all the Cluster Types selected
-	 */
-
-	private Set<String> getTypesSet(String types) {
-		String[] requiredTypes = types.split(",");
-		return new HashSet<String>(Arrays.asList(requiredTypes));
-	}
-
-	/**
 	 * Creates a list with all the Cluster Types found in the BGC Data so that
 	 * it can be shown in the Dashboard Page in the Cluster Type select box.
 	 *
@@ -255,7 +237,7 @@ public class DashboardController {
 		for (BiosyntheticGeneCluster c : bgcData) {
 			String[] type = c.getClusterType().split("-");
 			for (String t : type)
-				types.add(t);
+				types.add(t.trim());
 		}
 		return new ArrayList<>(types);
 	}

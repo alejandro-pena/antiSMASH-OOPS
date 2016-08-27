@@ -334,7 +334,7 @@ public class ExternalDataService {
 		}
 
 		String type = sb.toString();
-		type = sb.substring(sb.indexOf("\"") + 1, sb.lastIndexOf("\""));
+		type = sb.substring(sb.indexOf("\"") + 1, sb.lastIndexOf("\"")).trim();
 
 		return type;
 	}
