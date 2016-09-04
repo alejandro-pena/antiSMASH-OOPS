@@ -45,6 +45,8 @@ public class CodonUsageChartController {
 	 * 
 	 * @return The codonUsageChart HTML view showing the Cluster Codon Usage
 	 *         Data compared to the Species Codon Usage Data
+	 * 
+	 * @throws IOException Throws Input Output Exception
 	 */
 
 	@RequestMapping(value = "/codonUsageChart/{clusterName:.+}/{species:.+}", method = RequestMethod.GET)
@@ -88,6 +90,8 @@ public class CodonUsageChartController {
 	 * 
 	 * @return The codonUsageMap HTML view showing the Cluster Codon Usage Data
 	 *         compared to the Species Codon Usage Data
+	 * 
+	 * @throws IOException Throws Input Output Exception
 	 */
 
 	@RequestMapping(value = "/codonUsageMap/{clusterName:.+}/{species:.+}", method = RequestMethod.GET)

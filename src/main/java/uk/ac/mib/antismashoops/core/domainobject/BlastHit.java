@@ -20,7 +20,7 @@ public class BlastHit {
 	 * @param identityPercentage The percentage of how identical are those
 	 * @param blastScore The Blast score from antiSMASH
 	 * @param coveragePercentage Coverage percentage of the queried gene
-	 * @param eValue
+	 * @param eValue Extra value
 	 * 
 	 */
 

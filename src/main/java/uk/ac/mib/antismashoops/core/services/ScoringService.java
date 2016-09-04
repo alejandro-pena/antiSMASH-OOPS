@@ -25,7 +25,7 @@ public class ScoringService {
 	 * It the Best Match Score calling the method from each KnownCluster object
 	 * associated to the BGCs
 	 * 
-	 * @param preferred Similarity The preferred similarity percentage specified
+	 * @param preferredSimilarity The preferred similarity percentage specified
 	 *            by the user
 	 */
 

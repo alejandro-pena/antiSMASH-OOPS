@@ -56,6 +56,8 @@ public class DashboardController {
 	 * 
 	 * @return The Dashboard HTML View to be rendered by Thymeleaf having as
 	 *         attributes the BGC Data and the BGC Types List
+	 * 
+	 * @throws IOException Throws Input Output Exception
 	 */
 
 	@RequestMapping("/dashboard")
@@ -101,6 +103,8 @@ public class DashboardController {
 	 * 
 	 * @return The Dashboard HTML View to be rendered by Thymeleaf having as
 	 *         attributes the BGC Data and the BGC Types List
+	 * 
+	 * @throws IOException Throws Input Output Exception
 	 */
 
 	@RequestMapping("/dashboardUpdate")

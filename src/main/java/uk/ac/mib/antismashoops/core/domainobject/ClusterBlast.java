@@ -41,7 +41,7 @@ public class ClusterBlast {
 	 * Class Constructor. Generates the ClusterBlast object for the BGC setting
 	 * the file source, origin, number and cluster id.
 	 * 
-	 * @param file
+	 * @param file The File object of the Cluster
 	 * @param origin The cluster family (zip file name)
 	 * @param number The cluster number of the family of BGCs
 	 * 
@@ -170,8 +170,6 @@ public class ClusterBlast {
 	 * 
 	 * @param data The string that is going to be written. This string contains
 	 *            the data in XML format.
-	 * 
-	 * @return The number of nodes
 	 * 
 	 */
 

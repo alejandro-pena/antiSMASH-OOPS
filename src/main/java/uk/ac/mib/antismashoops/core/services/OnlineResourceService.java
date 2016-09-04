@@ -38,6 +38,8 @@ public class OnlineResourceService {
 	 * 
 	 * @return The GC Content percentage of the input species
 	 * 
+	 * @throws IOException Throws Input Output Exception
+	 * 
 	 */
 
 	public double getGcContentBySpecies(String refSpecies) throws IOException {
@@ -61,6 +63,8 @@ public class OnlineResourceService {
 	 * 
 	 * @return The Codon Usage Table object populated with the species
 	 *         information
+	 * 
+	 * @throws IOException Throws Input Output Exception
 	 * 
 	 */
 
@@ -142,6 +146,8 @@ public class OnlineResourceService {
 	 * 
 	 * @return A list of Species object with the matching species
 	 * 
+	 * @throws IOException Throws Input Output Exception
+	 * 
 	 */
 
 	public List<Species> getSpeciesByName(String species) throws IOException {
@@ -172,6 +178,8 @@ public class OnlineResourceService {
 	 * @param species The species requested
 	 * 
 	 * @return A list of Species object with the matching species
+	 * 
+	 * @throws IOException Java Input Output Exception
 	 * 
 	 */
 

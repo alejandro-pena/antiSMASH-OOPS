@@ -49,10 +49,10 @@ public class ExternalDataService {
 	private static final String HITS_REGEXP = "Significant hits:";
 	private static final String DETAILS_REGEXP = "Details:";
 	private static final String HITS_TABLE_REGEXP = "Table of Blast hits (query gene, subject gene, %identity, blast score, %coverage, e-value):";
-	private static final String GENE_REGEXP = "(.+)gene(.+)(\\d+\\.\\.\\d+|complement\\(\\d+\\.\\.\\d+\\))";
+	private static final String GENE_REGEXP = "(.+)CDS(\\s+)(\\d+\\.\\.\\d+|complement\\(\\d+\\.\\.\\d+\\))";
 	private static final String GENEID_REGEXP = "(.+)\\/db_xref=\"GeneID:\\d+\"";
 	private static final String GENESYN_REGEXP = "(.+)\\/gene_synonym=\"(.+)\"";
-	private static final String SEQUENCE_REGEXP = "a|g|c|t";
+	private static final String SEQUENCE_REGEXP = "a|g|c|t|n";
 	private static final String TYPE_REGEXP = "(.+)\\/product=\"(.+)\"(.*)";
 	private static final String CLUSTER_REGEXP = "(.+)cluster(.+)(\\d+\\.\\.\\d+)(.*)";
 
@@ -126,6 +126,7 @@ public class ExternalDataService {
 			c.setGcContent();
 			c.setCodonUsageTable();
 			c.setClusterType(this.getClusterType(c.getFile()));
+			c.setSpecies(this.getClusterSpecies(c.getFile()));
 		}
 	}
 
@@ -133,6 +134,9 @@ public class ExternalDataService {
 	 * Populates the GC Content Score and the Codon Usage Score for the BGC Data
 	 * 
 	 * @param bgcData The populated List of the BGC Objects.
+	 * @param gcContentRef The GC Content of the reference species
+	 * @param cutRef The Codon Usage Table object of the reference species
+	 * 
 	 */
 
 	public void populateClusterData(List<BiosyntheticGeneCluster> bgcData, double gcContentRef,
@@ -227,7 +231,7 @@ public class ExternalDataService {
 				else
 					complement = false;
 
-				token = token.replaceAll("[A-Za-z]|\\(|\\)|<|>", "");
+				token = token.replaceAll("[A-Za-z]|\\(|\\)|<|>|_", "");
 				String[] tokens = token.split("\\.\\.");
 				startBase = Integer.parseInt(tokens[0].trim());
 				stopBase = Integer.parseInt(tokens[1].trim());
@@ -337,6 +341,35 @@ public class ExternalDataService {
 		type = sb.substring(sb.indexOf("\"") + 1, sb.lastIndexOf("\"")).trim();
 
 		return type;
+	}
+
+	/**
+	 * 
+	 * Retrieves the Cluster Species from a GBK cluster file.
+	 * 
+	 * @param file the File object associated the BGC
+	 * 
+	 * @return A string containing species associated with the BGC
+	 * 
+	 */
+
+	public String getClusterSpecies(File file) {
+		Scanner scanner = null;
+		String species = "";
+		try {
+			scanner = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		if (scanner.hasNextLine())
+			scanner.nextLine();
+		if (scanner.hasNextLine()) {
+			String nextLine = scanner.nextLine();
+			String[] tokens = nextLine.split("DEFINITION");
+			if (tokens.length > 0)
+				species = tokens[1].trim();
+		}
+		return species;
 	}
 
 	/**

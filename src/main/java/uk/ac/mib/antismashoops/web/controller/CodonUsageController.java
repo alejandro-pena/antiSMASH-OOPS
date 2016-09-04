@@ -40,11 +40,12 @@ public class CodonUsageController {
 	 * @param model The backing model object for the speciesList fragment where
 	 *            the necessary objects are appended.
 	 * 
-	 * @param clusterName The cluster requested by the user
 	 * @param species The species name
 	 * 
 	 * @return The speciesList HTML fragment to be displayed in the results
 	 *         section.
+	 * 
+	 * @throws IOException Throws Input Output Exception
 	 */
 
 	@RequestMapping(value = "/codonUsage/{species}", method = RequestMethod.GET)
@@ -65,6 +66,8 @@ public class CodonUsageController {
 	 * 
 	 * @return The codonUsageTable HTML view showing the Species Codon Usage
 	 *         Data
+	 * 
+	 * @throws IOException Throws Input Output Exception
 	 */
 
 	@RequestMapping(value = "/codonUsage/show/{species:.+}", method = RequestMethod.GET)

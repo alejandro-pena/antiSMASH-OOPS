@@ -102,7 +102,7 @@ public class ApplicationBgcData {
 		return null;
 	}
 
-	/**
+	/*
 	 * 
 	 * Getters and setters of the workingDataSet List object
 	 * 

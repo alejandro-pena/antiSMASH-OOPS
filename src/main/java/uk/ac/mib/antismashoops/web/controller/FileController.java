@@ -40,7 +40,7 @@ public class FileController {
 	 * application data folder.
 	 * 
 	 * @param request The servlet request object
-	 * @param request The servlet response object
+	 * @param response The servlet response object
 	 * 
 	 * @return The files list uploaded
 	 */
@@ -96,10 +96,9 @@ public class FileController {
 	/**
 	 * Handles the URL call to /get path specifying the file id to download.
 	 * 
-	 * @param request The servlet response object
+	 * @param response The servlet response object
 	 * @param value The file id to download
 	 * 
-	 * @return The files list uploaded
 	 */
 
 	@RequestMapping(value = "/get/{value}", method = RequestMethod.GET)

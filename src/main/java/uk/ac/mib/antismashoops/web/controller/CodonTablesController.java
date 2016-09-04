@@ -37,6 +37,8 @@ public class CodonTablesController {
 	 * 
 	 * @return The codonUsageTable HTML view showing the Cluster Codon Usage
 	 *         Data.
+	 * 
+	 * @throws IOException Throws Input Output Exception
 	 */
 
 	@RequestMapping(value = "/codonTable/{cluster:.+}", method = RequestMethod.GET)

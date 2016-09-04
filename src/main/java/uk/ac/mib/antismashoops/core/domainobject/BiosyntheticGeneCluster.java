@@ -29,6 +29,7 @@ public class BiosyntheticGeneCluster implements Cloneable {
 	private final String origin;
 	private final String number;
 	private String clusterType;
+	private String species;
 
 	// CLUSTER SCORING ATTRIBUTES
 
@@ -71,7 +72,7 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.clusterId = this.origin + "-" + this.number;
 	}
 
-	/**
+	/*
 	 * 
 	 * GETTERS AND SETTERS FOR THE BGC BASIC ATTRIBUTES
 	 * 
@@ -109,7 +110,15 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.clusterType = clusterType;
 	}
 
-	/**
+	public String getSpecies() {
+		return species;
+	}
+
+	public void setSpecies(String species) {
+		this.species = species;
+	}
+
+	/*
 	 * 
 	 * GETTERS AND SETTERS FOR THE PARAMETER SCORE HOLDERS
 	 * 
@@ -240,7 +249,7 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.score = score;
 	}
 
-	/**
+	/*
 	 * 
 	 * GETTERS AND SETTERS FOR THE BASIC ATTRIBUTES
 	 * 

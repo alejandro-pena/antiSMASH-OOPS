@@ -85,6 +85,12 @@
 	text-align: center !important;
 }
 
+.div-ctr-sized {
+	text-align: center !important;
+	width: 700px;
+	margin: auto;
+}
+
 .div-left {
 	text-align: left !important;
 }

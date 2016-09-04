@@ -32,6 +32,8 @@ public class SpeciesDropDownController {
 	 * @param species The species query name to be searched
 	 * 
 	 * @return A DropDown list with the species found
+	 * 
+	 * @throws IOException Throws Input Output Exception
 	 */
 
 	@RequestMapping(value = "/species/{species}", method = RequestMethod.GET)

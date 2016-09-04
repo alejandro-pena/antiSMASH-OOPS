@@ -50,7 +50,7 @@ function loading() {
 
 
 /* --------------------------------------------------------------------------------------------- */
-/* FUNCTIONS FOR THE PRIORITISATION VIEW */
+/*                            FUNCTIONS FOR THE PRIORITISATION VIEW 							 */
 /* --------------------------------------------------------------------------------------------- */
 
 
@@ -189,6 +189,9 @@ function prioritise() {
 	
 	var sHom = $('#selfHomology').val();
 	var minM = $('#minimumMatch').val();
+	if(minM === ""){
+		minM = 0;
+	}
 	var shOrderValue = $('#shOrderValue').val();
 	
 	// PHYLOGENETIC DIVERSITY
@@ -280,7 +283,7 @@ function loadSpecies() {
 
 
 /* --------------------------------------------------------------------------------------------- */
-/* FUNCTIONS FOR THE CODON USAGE */
+/* 									FUNCTIONS FOR THE CODON USAGE 								 */
 /* --------------------------------------------------------------------------------------------- */
 
 /**
@@ -327,4 +330,35 @@ function submitEnter(e) {
 		$("#speciesInput").blur();
 		getSpecies();
 	}
+}
+
+/* --------------------------------------------------------------------------------------------- */
+/* 									FUNCTIONS FOR THE FEEDBACK VIEW								 */
+/* --------------------------------------------------------------------------------------------- */
+
+function validateAndSend(){
+	
+	if($('#name').val().length == 0){
+		alert("Please enter a name...")
+		return;
+	}
+	if(!isEmail($('#email').val())){
+		alert("Please enter a valid email address...")
+		return;
+	}
+	if($('#subject').val().length == 0){
+		alert("Please enter a subject...")
+		return;
+	}
+	if($('#body').val().length == 0){
+		alert("Please enter some feedback...")
+		return;
+	}
+	
+	$('#feedbackForm').submit();
+}
+
+function isEmail(email) {
+	var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+	return regex.test(email);
 }
