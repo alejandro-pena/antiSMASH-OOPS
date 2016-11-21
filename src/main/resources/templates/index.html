@@ -4,7 +4,8 @@
 <meta charset="UTF-8"></meta>
 <title th:inline="text">[[#{app.name}]] :: Home</title>
 
-<link th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}" rel="stylesheet" media="screen" />
+    <link th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen"/>
 <link rel="stylesheet" th:href="@{/css/application.css}" />
 <link rel="icon" th:href="@{/images/oops.ico}" />
 
@@ -23,49 +24,53 @@
 	<div class="container">
 		<h1 align="center" th:inline="text">Welcome to antiSMASH - OOPS</h1>
 		<div class="panel panel-default">
-			<div class="panel-body">
-
-				<h4>Select the antiSMASH output ZIP file or files from your computer</h4>
-				<form>
-					<div class="form-inline">
-						<br />
-						<div class="form-group">
-
-							<input id="fileupload" type="file" name="files[]" data-url="/upload" multiple="multiple" />
-						</div>
-					</div>
-				</form>
+            <div class="panel-body div-ctr">
 				<br />
-				<!-- Drop Zone -->
-				<h4>Or drag and drop the ZIP files below</h4>
-				<div class="upload-drop-zone" id="dropzone">Drag and drop here</div>
-
-				<div class="progress progress-striped">
-					<div id="progress" class="progress-bar" style="width: 0%;"></div>
+                <h4>Please select an existing workspace or create a new one:</h4>
+                <br/>
+                <div id="workspaces" class="div-ctr">
+                    <form id="ws" action="/fileUpload" method="GET">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th class="t-ctr">SELECT</th>
+                                <th class="t-ctr">#</th>
+                                <th class="t-ctr">NAME</th>
+                                <th class="t-ctr">LAST UPDATED DATE</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="workspace, iterStat : ${workspaceData}">
+                                <td class="t-ctr" th:inline="text"><input th:value="${workspace.name}"
+                                                                          name="wsRadio" type="radio"></input></td>
+                                <th class="t-ctr" th:text="${iterStat.count}"></th>
+                                <td class="t-ctr" th:text="${workspace.name}"></td>
+                                <td class="t-ctr" th:text="${workspace.lastModified}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <br/> <br/>
+                        <button id="deleteWS" type="button" class="btn btn-danger btn-lg"
+                                onclick="deleteWs();">DELETE WORKSPACE
+                        </button>
+                        <button id="newWS" type="button" class="btn btn-success btn-lg"
+                                onclick="addNewWs();">NEW WORKSPACE
+                        </button>
+                        <br/>
+                        <br/>
+                        <button id="wsButton" type="button"
+                                class="btn btn-primary btn-lg btn-block"
+                                onclick="continueToFU();">CONTINUE TO FILE UPLOAD
+                        </button>
+                    </form>
 				</div>
-				<div id="percentage" class="div-ctr"></div>
-
-				<table id="uploaded-files" class="table table-striped">
-					<tr>
-						<th>File Name</th>
-						<th>File Size</th>
-						<th>File Type</th>
-						<th>Download</th>
-					</tr>
-				</table>
-
-				<br />
-				<form th:action="@{/dashboard}" action="" method="POST">
-					<input type="hidden" th:value="${fileName}" name="fileName" />
-					<button type="submit" id="submitBtn" class="btn btn-primary btn-lg btn-block" onclick="loading();">GO TO
-						PRIORITISATION DASHBOARD</button>
-				</form>
-
 
 			</div>
 		</div>
 	</div>
 
-	<div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="
+							fragments/footer ::footer">
+    </div>
 </body>
 </html>

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,7 +15,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,14 +25,13 @@ import org.w3c.dom.NodeList;
 
 public class ClusterBlast {
 
-	private String clusterId;
+    private static final Logger logger = LoggerFactory.getLogger(ClusterBlast.class);
+    private String clusterId;
 	private File file;
 	private String origin;
 	private String number;
 	private List<ClusterBlastLineage> cbLin = new ArrayList<>();
 	private Document xmlLifeTree;
-
-	private static final Logger logger = LoggerFactory.getLogger(ClusterBlast.class);
 
 	/**
 	 * 

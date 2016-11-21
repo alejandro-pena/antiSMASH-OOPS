@@ -6,16 +6,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
 import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 import uk.ac.mib.antismashoops.core.domainobject.BlastHit;
@@ -25,22 +22,13 @@ import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastLineage;
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable;
 import uk.ac.mib.antismashoops.core.domainobject.Gene;
 import uk.ac.mib.antismashoops.core.domainobject.KnownCluster;
+import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 import uk.ac.mib.antismashoops.web.utils.ZipFileHandler;
 
 @Component
 public class ExternalDataService {
-	private static final Logger logger = LoggerFactory.getLogger(ExternalDataService.class);
-
-	@Value("${app.files.uploadpath}")
-	private String uploadPath;
-
-	@Autowired
-	private ApplicationBgcData appData;
-
-	@Autowired
-	private OnlineResourceService ors;
-
-	private static final String REGEX = "(.+)(cluster)(.*)(\\.gbk)";
+    private static final Logger LOG = LoggerFactory.getLogger(ExternalDataService.class);
+    private static final String REGEX = "(.+)(cluster)(.*)(\\.gbk)";
 	private static final String ZIP_REGEX = "(.+)(\\.zip)";
 	private static final String FOLDER_NAME_KCB = "knownclusterblast";
 	private static final String FOLDER_NAME_CB = "clusterblast";
@@ -55,6 +43,15 @@ public class ExternalDataService {
 	private static final String SEQUENCE_REGEXP = "a|g|c|t|n";
 	private static final String TYPE_REGEXP = "(.+)\\/product=\"(.+)\"(.*)";
 	private static final String CLUSTER_REGEXP = "(.+)cluster(.+)(\\d+\\.\\.\\d+)(.*)";
+    @Value("${app.files.uploadpath}")
+    private String uploadPath;
+    @Autowired
+    private ApplicationBgcData appData;
+    @Autowired
+    private OnlineResourceService ors;
+    @Autowired
+    private WorkspaceManager wm;
+
 
 	/**
 	 * Decompresses the ZIP files loaded into the application. If no files are
@@ -63,18 +60,18 @@ public class ExternalDataService {
 
 	public void decompressLoadedFiles() {
 
-		File root = new File(uploadPath);
-		if (!root.exists())
+        File root = wm.getCurrentWorkspace();
+        if (!root.exists())
 			return;
 
 		for (File parent : root.listFiles()) {
 			if (parent.isFile() && parent.getName().matches(ZIP_REGEX)) {
-				ZipFileHandler.decompressFile(parent, uploadPath);
-			}
+                ZipFileHandler.decompressFile(parent, uploadPath + wm.getCurrentWorkspace().getName());
+            }
 		}
 
-		File __MACOSX = new File(uploadPath, "__MACOSX");
-		if (__MACOSX.exists())
+        File __MACOSX = new File(uploadPath + wm.getCurrentWorkspace().getName(), "__MACOSX");
+        if (__MACOSX.exists())
 			this.delete(__MACOSX);
 	}
 
@@ -84,20 +81,22 @@ public class ExternalDataService {
 	 * the File object pointing to the GBK source file. If the list contains any
 	 * BGC object it will be cleared. Calls the initial data population.
 	 *
-	 * @param bgcData The empty or populated List of the BGC Objects.
-	 */
+     * @param bgcData
+     *            The empty or populated List of the BGC Objects.
+     */
 
 	public void loadBggData(List<BiosyntheticGeneCluster> bgcData) {
 
 		bgcData.clear();
-		File root = new File(uploadPath);
-		if (!root.exists())
+        File root = wm.getCurrentWorkspace();
+        if (!root.exists())
 			return;
 
-		for (File parent : new File(uploadPath).listFiles()) {
-			if (parent.isDirectory()) {
-				File folder = new File(uploadPath, parent.getName());
-				File[] files = folder.listFiles();
+        for (File parent : wm.getCurrentWorkspace().listFiles())
+        {
+            if (parent.isDirectory()) {
+                File folder = new File(uploadPath + wm.getCurrentWorkspace().getName(), parent.getName());
+                File[] files = folder.listFiles();
 				for (File f : files) {
 					if (f.getName().matches(REGEX)) {
 						bgcData.add(new BiosyntheticGeneCluster(f));
@@ -111,9 +110,10 @@ public class ExternalDataService {
 	/**
 	 * Populates six attributes per BGC: Genes data, cluster sequence, number of
 	 * genes, CDS length, GC Content and Cluster Type.
-	 * 
-	 * @param bgcData The populated List of the BGC Objects having the File
-	 *            attribute set to point their respective GBK file.
+	 *
+     * @param bgcData
+     *            The populated List of the BGC Objects having the File
+     *            attribute set to point their respective GBK file.
 	 */
 
 	private void populateClusterData(List<BiosyntheticGeneCluster> bgcData) {
@@ -132,11 +132,14 @@ public class ExternalDataService {
 
 	/**
 	 * Populates the GC Content Score and the Codon Usage Score for the BGC Data
-	 * 
-	 * @param bgcData The populated List of the BGC Objects.
-	 * @param gcContentRef The GC Content of the reference species
-	 * @param cutRef The Codon Usage Table object of the reference species
-	 * 
+	 *
+     * @param bgcData
+     *            The populated List of the BGC Objects.
+     * @param gcContentRef
+     *            The GC Content of the reference species
+     * @param cutRef
+     *            The Codon Usage Table object of the reference species
+     *
 	 */
 
 	public void populateClusterData(List<BiosyntheticGeneCluster> bgcData, double gcContentRef,
@@ -150,9 +153,10 @@ public class ExternalDataService {
 	/**
 	 * Verifies if the number of GBK files loaded is the same as the number of
 	 * BGC Objects in the Application Data BGC List.
-	 * 
-	 * @param bgcDataSize The number of BGCs in the Application Data.
-	 * @return true if the size is the same and different from zero, if the
+	 *
+     * @param bgcDataSize
+     *            The number of BGCs in the Application Data.
+     * @return true if the size is the same and different from zero, if the
 	 *         cluster list is empty or not in sync returns false.
 	 */
 
@@ -165,8 +169,8 @@ public class ExternalDataService {
 		int directories = 0;
 		int count = 0;
 
-		File root = new File(uploadPath);
-		File[] list;
+        File root = wm.getCurrentWorkspace();
+        File[] list;
 		if (!root.exists()) {
 			return false;
 		} else {
@@ -179,8 +183,8 @@ public class ExternalDataService {
 		for (File parent : list) {
 			if (parent.isDirectory()) {
 				directories++;
-				File folder = new File(uploadPath, parent.getName());
-				File[] files = folder.listFiles();
+                File folder = new File(uploadPath + wm.getCurrentWorkspace().getName(), parent.getName());
+                File[] files = folder.listFiles();
 				for (File f : files) {
 					if (f.getName().matches(REGEX)) {
 						count++;
@@ -199,9 +203,10 @@ public class ExternalDataService {
 	 * 
 	 * Retrieves the Genes Data from a GBK cluster file. The gene data is a list
 	 * of Gene Objects.
-	 * 
-	 * @param file the File object associated the BGC
-	 * 
+	 *
+     * @param file
+     *            the File object associated the BGC
+     *
 	 * @return An ArrayList of Gene objects
 	 * 
 	 */
@@ -219,8 +224,8 @@ public class ExternalDataService {
 		try {
 			scanner = new Scanner(file);
 		} catch (FileNotFoundException e) {
-			logger.error(e.getMessage());
-		}
+            LOG.error(e.getMessage());
+        }
 
 		while (scanner.hasNextLine()) {
 			String token = scanner.nextLine();
@@ -261,9 +266,10 @@ public class ExternalDataService {
 	/**
 	 * 
 	 * Retrieves the entire cluster sequence from a GBK file.
-	 * 
-	 * @param file the File object associated the BGC
-	 * 
+	 *
+     * @param file
+     *            the File object associated the BGC
+     *
 	 * @return A string with the nucleotide sequence in uppercase letters.
 	 * 
 	 */
@@ -301,9 +307,10 @@ public class ExternalDataService {
 	/**
 	 * 
 	 * Retrieves the Cluster Type from a GBK cluster file.
-	 * 
-	 * @param file the File object associated the BGC
-	 * 
+	 *
+     * @param file
+     *            the File object associated the BGC
+     *
 	 * @return A string containing the type or types splitted by a hyphen
 	 * 
 	 */
@@ -346,9 +353,10 @@ public class ExternalDataService {
 	/**
 	 * 
 	 * Retrieves the Cluster Species from a GBK cluster file.
-	 * 
-	 * @param file the File object associated the BGC
-	 * 
+	 *
+     * @param file
+     *            the File object associated the BGC
+     *
 	 * @return A string containing species associated with the BGC
 	 * 
 	 */
@@ -383,8 +391,8 @@ public class ExternalDataService {
 
 		List<KnownCluster> knownClusterList = new ArrayList<>();
 
-		File root = new File(uploadPath);
-		File[] list;
+        File root = wm.getCurrentWorkspace();
+        File[] list;
 		if (!root.exists()) {
 			return;
 		} else {
@@ -396,30 +404,35 @@ public class ExternalDataService {
 
 		for (File parent : list) {
 			if (parent.isDirectory()) {
-				File folder = new File(uploadPath + "/" + parent.getName(), FOLDER_NAME_KCB);
-				if (!folder.exists())
+                String clusterFamily = this.getClusterFamilyName(parent);
+                File folder = new File(
+                    uploadPath + wm.getCurrentWorkspace().getName() + "/" + parent.getName(),
+                    FOLDER_NAME_KCB);
+                if (!folder.exists())
 					return;
 				for (File file : folder.listFiles()) {
 					if (file.getName().matches(FILE_REGEXP)) {
-						Scanner scanner = null;
-						try {
-							scanner = new Scanner(file);
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						}
-
-						String[] tokens = scanner.nextLine().split(" ");
-						String origin = tokens[tokens.length - 1];
-						String number = file.getName().replaceAll("[^0-9]", "");
-						knownClusterList.add(new KnownCluster(file, origin, number));
-					}
+                        //						Scanner scanner = null;
+                        //						try {
+                        //							scanner = new Scanner(file);
+                        //						} catch (FileNotFoundException e) {
+                        //							e.printStackTrace();
+                        //						}
+                        //
+                        //						String[] tokens = scanner.nextLine().split(" ");
+                        //						String origin = tokens[tokens.length - 1];
+                        String number = file.getName().replaceAll("[^0-9]", "");
+                        knownClusterList.add(new KnownCluster(file, clusterFamily, number));
+                    }
 				}
 			}
 		}
 
 		Iterator<KnownCluster> it = knownClusterList.iterator();
 		while (it.hasNext()) {
+
 			KnownCluster cbe = it.next();
+
 			boolean found = false;
 			for (BiosyntheticGeneCluster c : appData.getWorkingDataSet()) {
 				if (cbe.getClusterId().equals(c.getClusterId())) {
@@ -433,15 +446,30 @@ public class ExternalDataService {
 		populateKnownClusterData(knownClusterList);
 	}
 
+
+    private String getClusterFamilyName(File root)
+    {
+        String family = "";
+        for (File f : root.listFiles())
+        {
+            if (f.getName().matches(REGEX))
+            {
+                return f.getName().replaceAll("\\.(cluster)(.*)(\\.gbk)", "");
+            }
+        }
+        return family;
+    }
+
 	/**
 	 * 
 	 * Retrieves the Known Cluster data from the knowncluster folder of each ZIP
 	 * file entry loaded to the application and sets the associated data to each
 	 * respective BGC object
-	 * 
-	 * @param knownClusterList A List of KnownCluster objects that hold the
-	 *            Known Cluster Data of all the BGCs loaded in the application.
-	 */
+	 *
+     * @param knownClusterList
+     *            A List of KnownCluster objects that hold the Known Cluster
+     *            Data of all the BGCs loaded in the application.
+     */
 
 	public void populateKnownClusterData(List<KnownCluster> knownClusterList) {
 		for (KnownCluster kce : knownClusterList) {
@@ -560,8 +588,8 @@ public class ExternalDataService {
 
 		List<ClusterBlast> clusterBlastList = new ArrayList<>();
 
-		File root = new File(uploadPath);
-		File[] list;
+        File root = wm.getCurrentWorkspace();
+        File[] list;
 		if (!root.exists()) {
 			return;
 		} else {
@@ -571,10 +599,13 @@ public class ExternalDataService {
 			}
 		}
 
-		for (File parent : new File(uploadPath).listFiles()) {
-			if (parent.isDirectory()) {
-				File folder = new File(uploadPath + "/" + parent.getName(), FOLDER_NAME_CB);
-				if (!folder.exists())
+        for (File parent : wm.getCurrentWorkspace().listFiles())
+        {
+            if (parent.isDirectory()) {
+                File folder = new File(
+                    uploadPath + wm.getCurrentWorkspace().getName() + "/" + parent.getName(),
+                    FOLDER_NAME_CB);
+                if (!folder.exists())
 					return;
 				for (File file : folder.listFiles()) {
 					if (file.getName().matches(FILE_REGEXP)) {
@@ -619,10 +650,11 @@ public class ExternalDataService {
 	 * Retrieves the Cluster Blast data from the clusterblast folder of each ZIP
 	 * file entry loaded to the application and sets the associated data to each
 	 * respective BGC object
-	 * 
-	 * @param clusterBlastList A List of ClusterBlast objects that hold the
-	 *            Cluster Blast Data of all the BGCs loaded in the application.
-	 */
+	 *
+     * @param clusterBlastList
+     *            A List of ClusterBlast objects that hold the Cluster Blast
+     *            Data of all the BGCs loaded in the application.
+     */
 
 	public void populateClusterBlastData(List<ClusterBlast> clusterBlastList) {
 
@@ -651,16 +683,17 @@ public class ExternalDataService {
 			}
 			ors.getClustersLineage(cbe);
 			appData.getCluster(cbe.getClusterId()).setClusterBlastsData(cbe);
-			logger.info("Tree of Life for Cluster: " + cbe.getClusterId() + " constructed...");
-		}
+            LOG.info("Tree of Life for Cluster: " + cbe.getClusterId() + " constructed...");
+        }
 	}
 
 	/**
 	 * 
 	 * Deletes the specified file if exists
-	 * 
-	 * @param file the File to delete
-	 * 
+	 *
+     * @param file
+     *            the File to delete
+     *
 	 */
 
 	public void delete(File file) {
@@ -683,9 +716,9 @@ public class ExternalDataService {
 	@ExceptionHandler(Exception.class)
 	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
-		logger.error("Exception thrown: " + exception.getClass());
-		logger.error("Exception message: " + exception.getMessage());
-		exception.printStackTrace();
+        LOG.error("Exception thrown: " + exception.getClass());
+        LOG.error("Exception message: " + exception.getMessage());
+        exception.printStackTrace();
 		return "error";
 	}
 }

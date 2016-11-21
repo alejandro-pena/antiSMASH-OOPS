@@ -2,18 +2,17 @@ package uk.ac.mib.antismashoops.core.domainobject;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 @Component
 public class Cluster {
-	private String name;
+    private final List<Gene> queryClusterGenes;
+    private final List<BlastHit> blastHits;
+    private String name;
 	private String source;
 	private String type;
 	private int proteinsBlasted;
 	private int blastScore;
-	private final List<Gene> queryClusterGenes;
-	private final List<BlastHit> blastHits;
 
 	/**
 	 * 

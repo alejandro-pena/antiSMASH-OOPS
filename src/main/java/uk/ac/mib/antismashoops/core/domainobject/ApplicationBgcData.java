@@ -2,25 +2,22 @@ package uk.ac.mib.antismashoops.core.domainobject;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
 import uk.ac.mib.antismashoops.core.services.ExternalDataService;
+import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 
 @Component
 @Scope("singleton")
 public class ApplicationBgcData {
 
-	private static final Logger logger = LoggerFactory.getLogger(ApplicationBgcData.class);
-	private static final List<BiosyntheticGeneCluster> bgcData;
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationBgcData.class);
+    private static final List<BiosyntheticGeneCluster> bgcData;
 	private static List<BiosyntheticGeneCluster> workingDataSet;
 
 	static {
@@ -28,14 +25,11 @@ public class ApplicationBgcData {
 		workingDataSet = new ArrayList<>();
 	}
 
-	@Value("${app.files.uploadpath}")
-	private String uploadPath;
-
 	@Autowired
 	private ExternalDataService eds;
 
-	public ApplicationBgcData() {
-	}
+    @Autowired
+    private WorkspaceManager fm;
 
 	/**
 	 * 
@@ -53,15 +47,17 @@ public class ApplicationBgcData {
 	public List<BiosyntheticGeneCluster> getBgcData() {
 
 		if (eds.isBgcDataInSync(bgcData.size())) {
-			ApplicationBgcData.workingDataSet.clear();
+            //eds.loadBggData(bgcData);
+            ApplicationBgcData.workingDataSet.clear();
 			for (BiosyntheticGeneCluster bgc : bgcData) {
 				ApplicationBgcData.workingDataSet.add(bgc.clone());
 			}
-			logger.info("Cluster Data in sync...");
-			return workingDataSet;
+            LOG.info("Cluster Data in sync...");
+            return workingDataSet;
 		}
-		logger.info("Syncing Cluster Data...");
-		eds.decompressLoadedFiles();
+
+        LOG.info("Syncing Cluster Data...");
+        eds.decompressLoadedFiles();
 		eds.loadBggData(bgcData);
 		ApplicationBgcData.workingDataSet.clear();
 		for (BiosyntheticGeneCluster bgc : bgcData) {
@@ -74,10 +70,12 @@ public class ApplicationBgcData {
 	 * 
 	 * Loads the BGC Data scores of the GC Content using a reference species and
 	 * the Codon Bias
-	 * 
-	 * @param gcContentRef The Reference Species GC Content Percentage
-	 * @param cutRef The CodonUsageTable object with the reference species data
-	 * 
+	 *
+     * @param gcContentRef
+     *            The Reference Species GC Content Percentage
+     * @param cutRef
+     *            The CodonUsageTable object with the reference species data
+     *
 	 */
 
 	public void loadBgcDataWithSpecies(Double gcContentRef, CodonUsageTable cutRef) {
@@ -87,9 +85,10 @@ public class ApplicationBgcData {
 	/**
 	 * 
 	 * Finds a specific BGC Object by the Cluster Id specified.
-	 * 
-	 * @param clusterId The BGC Id to look for in the workingDataSet
-	 * 
+	 *
+     * @param clusterId
+     *            The BGC Id to look for in the workingDataSet
+     *
 	 * @return The Biosynthetic Gene Cluster requested
 	 * 
 	 */
@@ -119,9 +118,9 @@ public class ApplicationBgcData {
 	@ExceptionHandler(Exception.class)
 	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
-		logger.error("Exception thrown: " + exception.getClass());
-		logger.error("Exception message: " + exception.getMessage());
-		exception.printStackTrace();
+        LOG.error("Exception thrown: " + exception.getClass());
+        LOG.error("Exception message: " + exception.getMessage());
+        exception.printStackTrace();
 		return "error";
 	}
 }

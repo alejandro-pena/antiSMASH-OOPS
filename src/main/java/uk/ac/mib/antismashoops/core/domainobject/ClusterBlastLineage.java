@@ -2,7 +2,6 @@ package uk.ac.mib.antismashoops.core.domainobject;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 @Component

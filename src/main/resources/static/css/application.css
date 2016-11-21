@@ -85,6 +85,10 @@
 	text-align: center !important;
 }
 
+.div-right {
+    text-align: right !important;
+}
+
 .div-ctr-sized {
 	text-align: center !important;
 	width: 700px;

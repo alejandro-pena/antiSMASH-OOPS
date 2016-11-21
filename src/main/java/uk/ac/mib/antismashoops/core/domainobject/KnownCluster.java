@@ -28,11 +28,14 @@ public class KnownCluster {
 	 * 
 	 * Class Constructor. Calls the no arguments constructor and sets the file,
 	 * origin, number and cluster id attributes.
-	 * 
-	 * @param file the File object associated to this KnownCluster record
-	 * @param origin the cluster family (zip file name)
-	 * @param number the known cluster number associated to the BGC
-	 * 
+	 *
+     * @param file
+     *            the File object associated to this KnownCluster record
+     * @param origin
+     *            the cluster family (zip file name)
+     * @param number
+     *            the known cluster number associated to the BGC
+     *
 	 */
 
 	public KnownCluster(File file, String origin, String number) {
@@ -47,18 +50,21 @@ public class KnownCluster {
 	 * 
 	 * Iterates over the KnownCluster data finding the most similar cluster to
 	 * the specified similarity percentage
-	 * 
-	 * @param preferredSimilarity The similarity preferred percentage from the
-	 *            user
-	 * 
+	 *
+     * @param preferredSimilarity
+     *            The similarity preferred percentage from the user
+     *
 	 * @return The smallest difference between the Known Clusters and the
 	 *         requested similarity percentage
 	 * 
 	 */
 
 	public double getBestMatchScore(double preferredSimilarity) {
-		if (this.getClusterHits().size() == 0)
-			return 100.0;
+
+        if (this.getClusterHits().size() == 0)
+        {
+            return 100.0;
+        }
 
 		Cluster mostSimilar = getClusterHits().get(0);
 		double score = Math.abs(preferredSimilarity - ((mostSimilar.getBlastHits().size() * 100 / getBgcGenes().size())

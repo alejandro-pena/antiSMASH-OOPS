@@ -211,7 +211,7 @@
 							<output id="shValue">0</output>
 							<br />
 							<label for="minimumMatch">Minimum Match&nbsp;</label>
-							<input class="form-control input-sm" style="width: 70px;" type="number" value="15" min="7" step="2" id="minimumMatch" disabled="disabled"/>
+                            <input class="form-control input-sm" style="width: 70px;" type="number" value="" min="7" step="2" id="minimumMatch" disabled="disabled"/>
 							&nbsp;
 							<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right"
 								title="This input parameter considers a sequence of at least N nucleotides aligned contiguously to be considered for the Self-Homology score."
@@ -304,7 +304,7 @@
 							<tr th:each="cluster, iterStat : ${clusterData}">
 								<th th:text="${iterStat.count}"></th>
 								<td th:inline="text">
-									<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.number}|}" th:title="${cluster.species}" target="_blank">[[${cluster.origin}]]
+                                    <a th:href="@{|/local/${wsName}/${cluster.parent}/index.html#cluster-${cluster.number}|}" th:title="${cluster.species}" target="_blank">[[${cluster.origin}]]
 										- C[[${cluster.number}]]</a>
 								</td>
 								<td th:text="${cluster.clusterType}"></td>

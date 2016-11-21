@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable;
@@ -27,38 +24,46 @@ import uk.ac.mib.antismashoops.core.services.ExternalDataService;
 import uk.ac.mib.antismashoops.core.services.OnlineResourceService;
 import uk.ac.mib.antismashoops.core.services.PrioritisationService;
 import uk.ac.mib.antismashoops.core.services.ScoringService;
+import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 
 @Controller
 public class DashboardController {
-	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DashboardController.class);
 
-	@Autowired
-	private ApplicationBgcData appData;
-
-	@Autowired
+    private ApplicationBgcData appData;
 	private OnlineResourceService ors;
-
-	@Autowired
 	private ScoringService scoreService;
-
-	@Autowired
 	private PrioritisationService prioritisationService;
+    private ExternalDataService eds;
+    private WorkspaceManager wm;
 
 	@Autowired
-	private ExternalDataService eds;
+    public DashboardController(
+        ApplicationBgcData appData, OnlineResourceService ors, ScoringService scoreService,
+        PrioritisationService prioritisationService, ExternalDataService eds, WorkspaceManager wm)
+    {
+        this.appData = appData;
+        this.ors = ors;
+        this.scoreService = scoreService;
+        this.prioritisationService = prioritisationService;
+        this.eds = eds;
+        this.wm = wm;
+    }
 
 	/**
 	 * Responds to the /dashboard URL request coming from the Index Page or a
 	 * page reload. Receives no parameters from the request.
 	 *
-	 * @param model The backing model object for the Dashboard View where the
-	 *            necessary objects are appended.
+     * @param model
+     *            The backing model object for the Dashboard View where the
+     *            necessary objects are appended.
 	 * 
 	 * @return The Dashboard HTML View to be rendered by Thymeleaf having as
 	 *         attributes the BGC Data and the BGC Types List
-	 * 
-	 * @throws IOException Throws Input Output Exception
-	 */
+	 *
+     * @throws IOException
+     *             Throws Input Output Exception
+     */
 
 	@RequestMapping("/dashboard")
 	public String showResults(ModelMap model) throws IOException {
@@ -66,10 +71,11 @@ public class DashboardController {
 		List<BiosyntheticGeneCluster> bgcData = appData.getBgcData();
 		List<String> typesList = this.getClusterTypesList(bgcData);
 
-		logger.info("Dashboard Loaded...");
+        LOG.info("Dashboard Loaded...");
 
 		model.addAttribute("typesList", typesList);
 		model.addAttribute("clusterData", bgcData);
+        model.addAttribute("wsName", wm.getCurrentWorkspace().getName());
 
 		return "dashboard";
 	}
@@ -79,33 +85,54 @@ public class DashboardController {
 	 * prioritisation coming from the AJAX call in the Dashboard View. Receives
 	 * 19 parameters which will define the prioritisation engine logic.
 	 *
-	 * @param geneCount User preference for the parameter
-	 * @param nogOrder pdOrder Ascending or Descending (a or d)
-	 * @param sequenceLength User preference for the parameter
-	 * @param slOrder pdOrder Ascending or Descending (a or d)
-	 * @param gcContent User preference for the parameter
-	 * @param gccOrder pdOrder Ascending or Descending (a or d)
-	 * @param codonBias User preference for the parameter
-	 * @param cbOrder pdOrder Ascending or Descending (a or d)
-	 * @param refSpecies specified by the user, undefined isn't specified
-	 * @param types BGC types selected by the user to show
-	 * @param ignorePT Ignore flag for the Preferred type filtering option
-	 * @param knownCluster User preference for the parameter
-	 * @param kcsOrder pdOrder Ascending or Descending (a or d)
-	 * @param preferredSimilarity The preferred percentage of similarity
-	 * @param selfHomology User preference for the parameter
-	 * @param shOrder pdOrder Ascending or Descending (a or d)
-	 * @param minimumMatch The minimum nucleotide match to be considered
-	 * @param pDiversity User preference for the parameter
-	 * @param pdOrder Ascending or Descending (a or d)
-	 * @param model The backing model object for the Dashboard View where the
-	 *            necessary objects are appended.
+     * @param geneCount
+     *            User preference for the parameter
+     * @param nogOrder
+     *            pdOrder Ascending or Descending (a or d)
+     * @param sequenceLength
+     *            User preference for the parameter
+     * @param slOrder
+     *            pdOrder Ascending or Descending (a or d)
+     * @param gcContent
+     *            User preference for the parameter
+     * @param gccOrder
+     *            pdOrder Ascending or Descending (a or d)
+     * @param codonBias
+     *            User preference for the parameter
+     * @param cbOrder
+     *            pdOrder Ascending or Descending (a or d)
+     * @param refSpecies
+     *            specified by the user, undefined isn't specified
+     * @param types
+     *            BGC types selected by the user to show
+     * @param ignorePT
+     *            Ignore flag for the Preferred type filtering option
+     * @param knownCluster
+     *            User preference for the parameter
+     * @param kcsOrder
+     *            pdOrder Ascending or Descending (a or d)
+     * @param preferredSimilarity
+     *            The preferred percentage of similarity
+     * @param selfHomology
+     *            User preference for the parameter
+     * @param shOrder
+     *            pdOrder Ascending or Descending (a or d)
+     * @param minimumMatch
+     *            The minimum nucleotide match to be considered
+     * @param pDiversity
+     *            User preference for the parameter
+     * @param pdOrder
+     *            Ascending or Descending (a or d)
+     * @param model
+     *            The backing model object for the Dashboard View where the
+     *            necessary objects are appended.
 	 * 
 	 * @return The Dashboard HTML View to be rendered by Thymeleaf having as
 	 *         attributes the BGC Data and the BGC Types List
-	 * 
-	 * @throws IOException Throws Input Output Exception
-	 */
+	 *
+     * @throws IOException
+     *             Throws Input Output Exception
+     */
 
 	@RequestMapping("/dashboardUpdate")
 	public String updateResults(@RequestParam(value = "nog", required = true) int geneCount,
@@ -128,7 +155,7 @@ public class DashboardController {
 			@RequestParam(value = "pd", required = true) int pDiversity,
 			@RequestParam(value = "pdo", required = true) String pdOrder, ModelMap model) throws IOException {
 
-		logger.info("Reloading Dashboard...");
+        LOG.info("Reloading Dashboard...");
 
 		List<BiosyntheticGeneCluster> workingDataSet = appData.getBgcData();
 
@@ -220,10 +247,11 @@ public class DashboardController {
 
 		Collections.sort(workingDataSet, ClusterSort.SCORESORT);
 
-		logger.info("Prioritisation successful!");
+        LOG.info("Prioritisation successful!");
 
 		model.addAttribute("refSpecies", refSpecies);
 		model.addAttribute("clusterData", workingDataSet);
+        model.addAttribute("wsName", wm.getCurrentWorkspace().getName());
 
 		return "fragments/clusterData :: clusterData";
 	}
@@ -232,8 +260,9 @@ public class DashboardController {
 	 * Creates a list with all the Cluster Types found in the BGC Data so that
 	 * it can be shown in the Dashboard Page in the Cluster Type select box.
 	 *
-	 * @param bgcData The List of the BGC Objects loaded to the application.
-	 * @return An ArrayList with all the Cluster Types found in the BGC Data.
+     * @param bgcData
+     *            The List of the BGC Objects loaded to the application.
+     * @return An ArrayList with all the Cluster Types found in the BGC Data.
 	 */
 
 	private List<String> getClusterTypesList(List<BiosyntheticGeneCluster> bgcData) {
@@ -249,9 +278,9 @@ public class DashboardController {
 	@ExceptionHandler(Exception.class)
 	public String exceptionHandler(HttpServletRequest req, Exception exception) {
 		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
-		logger.error("Exception thrown: " + exception.getClass());
-		logger.error("Exception message: " + exception.getMessage());
-		exception.printStackTrace();
+        LOG.error("Exception thrown: " + exception.getClass());
+        LOG.error("Exception message: " + exception.getMessage());
+        exception.printStackTrace();
 		return "error";
 	}
 }

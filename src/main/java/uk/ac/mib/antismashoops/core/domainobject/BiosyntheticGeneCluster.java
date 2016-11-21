@@ -7,13 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable.Detail;
 
 public class BiosyntheticGeneCluster implements Cloneable {
@@ -78,44 +75,62 @@ public class BiosyntheticGeneCluster implements Cloneable {
 	 * 
 	 */
 
+
+    /**
+     * Removes the extension of a string
+     *
+     * @param name The String to remove the extension from.
+     * @return A string with the trimmed extension.
+     */
+
+    private static String removeExtension(String name)
+    {
+        return name.substring(0, name.lastIndexOf('.'));
+    }
+
+
 	public String getClusterId() {
 		return clusterId;
 	}
+
 
 	public File getFile() {
 		return file;
 	}
 
+
 	public String getName() {
 		return name;
 	}
+
 
 	public String getParent() {
 		return parent;
 	}
 
+
 	public String getOrigin() {
 		return origin;
 	}
+
 
 	public String getNumber() {
 		return number;
 	}
 
+
 	public String getClusterType() {
 		return clusterType;
 	}
+
 
 	public void setClusterType(String clusterType) {
 		this.clusterType = clusterType;
 	}
 
+
 	public String getSpecies() {
 		return species;
-	}
-
-	public void setSpecies(String species) {
-		this.species = species;
 	}
 
 	/*
@@ -126,19 +141,31 @@ public class BiosyntheticGeneCluster implements Cloneable {
 
 	// NUMBER OF GENES
 
+
+    public void setSpecies(String species)
+    {
+        this.species = species;
+    }
+
+
 	public int getNumberOfGenes() {
 		return numberOfGenes;
-	}
+    }
+
+    // CDS LENGTH
+
 
 	public void setNumberOfGenes(int numberOfGenes) {
 		this.numberOfGenes = numberOfGenes;
 	}
 
-	// CDS LENGTH
 
 	public int getCdsLength() {
 		return cdsLength;
-	}
+    }
+
+    // GC CONTENT
+
 
 	public void setCdsLength() {
 		int count = 0;
@@ -151,11 +178,13 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.cdsLength = count;
 	}
 
-	// GC CONTENT
 
 	public double getGcContent() {
 		return gcContent;
-	}
+    }
+
+    // GC CONTENT CONSIDERING A REFERENCE SPECIES
+
 
 	public void setGcContent() {
 		int count = 0;
@@ -169,21 +198,25 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.gcContent = count * 100.0 / this.cdsLength;
 	}
 
-	// GC CONTENT CONSIDERING A REFERENCE SPECIES
 
 	public double getGcContentS() {
 		return gcContentS;
-	}
+    }
+
+    // CODON BIAS
+
 
 	public void setGcContentS(double gcContentRef) {
 		this.gcContentS = Math.abs(this.gcContent - gcContentRef);
 	}
 
-	// CODON BIAS
 
 	public double getCodonBiasS() {
 		return codonBiasS;
-	}
+    }
+
+    // KNOWN CLUSTER SIMILARITY
+
 
 	public void setCodonBiasS(CodonUsageTable cutRef) {
 		double codonBiasScore = 0.0;
@@ -199,54 +232,57 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		this.codonBiasS = codonBiasScore;
 	}
 
-	// KNOWN CLUSTER SIMILARITY
 
 	public double getKcScore() {
 		return kcScore;
-	}
+    }
+
+    // SELF-HOMOLOGY
+
 
 	public void setKcScore(double kcScore) {
 		this.kcScore = kcScore;
 	}
 
-	// SELF-HOMOLOGY
 
 	public int getSelfHomologyScore() {
 		return selfHomologyScore;
-	}
+    }
+
+    // SELF-HOMOLOGY CACHING MAP
+
 
 	public void setSelfHomologyScore(int selfHomologyScore) {
 		this.selfHomologyScore = selfHomologyScore;
 	}
 
-	// SELF-HOMOLOGY CACHING MAP
 
 	public Map<Integer, Integer> getSelfHomologyScores() {
 		return selfHomologyScores;
-	}
+    }
+
+    // PHYLOGENETIC DIVERSITY
+
 
 	public void setSelfHomologyScores(Map<Integer, Integer> selfHomologyScores) {
 		this.selfHomologyScores = selfHomologyScores;
 	}
 
-	// PHYLOGENETIC DIVERSITY
 
 	public int getDiversityScore() {
 		return diversityScore;
-	}
+    }
+
+    // BGC FINAL SCORE
+
 
 	public void setDiversityScore(int diversityScore) {
 		this.diversityScore = diversityScore;
 	}
 
-	// BGC FINAL SCORE
 
 	public double getScore() {
 		return score;
-	}
-
-	public void setScore(double score) {
-		this.score = score;
 	}
 
 	/*
@@ -255,51 +291,68 @@ public class BiosyntheticGeneCluster implements Cloneable {
 	 * 
 	 */
 
+
+    public void setScore(double score)
+    {
+        this.score = score;
+    }
+
+
 	public List<Gene> getGenes() {
 		return genes;
 	}
+
 
 	public void setGenes(List<Gene> genes) {
 		this.genes = genes;
 	}
 
+
 	public String getClusterSequence() {
 		return clusterSequence;
 	}
+
 
 	public void setClusterSequence(String clusterSequence) {
 		this.clusterSequence = clusterSequence;
 	}
 
+
 	public CodonUsageTable getCodonUsageTable() {
 		return codonUsageTable;
 	}
+
 
 	public void setCodonUsageTable() {
 		this.codonUsageTable = this.computeCodonUsageTable();
 	}
 
+
 	public KnownCluster getKnownClustersData() {
 		return knownClustersData;
 	}
+
 
 	public void setKnownClustersData(KnownCluster knownClustersData) {
 		this.knownClustersData = knownClustersData;
 	}
 
+
 	public ClusterBlast getClusterBlastsData() {
 		return clusterBlastsData;
 	}
+
 
 	public void setClusterBlastsData(ClusterBlast clusterBlastsData) {
 		this.clusterBlastsData = clusterBlastsData;
 	}
 
+
 	/**
 	 * Provides a set object including the type or types the BGC belongs to
-	 * 
+     *
 	 * @return A Set object with the cluster type or types as strings
-	 * 
+     *
 	 */
 
 	public Set<String> getClusterTypes() {
@@ -312,18 +365,6 @@ public class BiosyntheticGeneCluster implements Cloneable {
 		return clusterTypes;
 	}
 
-	/**
-	 * Removes the extension of a string
-	 * 
-	 * @param name The String to remove the extension from.
-	 * 
-	 * @return A string with the trimmed extension.
-	 * 
-	 */
-
-	private static String removeExtension(String name) {
-		return name.substring(0, name.lastIndexOf('.'));
-	}
 
 	/**
 	 * 

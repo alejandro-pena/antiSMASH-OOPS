@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 import uk.ac.mib.antismashoops.core.domainobject.KnownCluster;

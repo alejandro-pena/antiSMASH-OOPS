@@ -1,7 +1,6 @@
 package uk.ac.mib.antismashoops.core.domainvalue;
 
 import java.util.Comparator;
-
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 
 public enum ClusterSort implements Comparator<BiosyntheticGeneCluster> {

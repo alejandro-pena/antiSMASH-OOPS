@@ -2,38 +2,90 @@
 /* 								FUNCTIONS FOR THE INDEX VIEW 									 */
 /* --------------------------------------------------------------------------------------------- */
 
+function addNewWs() {
+
+    var wsName = prompt("Enter the new Workspace name...", "Workspace name...");
+
+    if (wsName === null || wsName.trim() === "") {
+        alert("Please enter a valid Workspace name...");
+        return;
+    }
+
+    wsName = wsName.trim().split(" ").join("_");
+
+    var url = "/addWorkspace/" + wsName;
+
+    $.ajax({
+        type: "GET",
+        url: url
+    }).done(function () {
+        location.reload();
+    });
+}
+
+function deleteWs() {
+
+    var wsName = $("input[name='wsRadio']:checked").val();
+    if (wsName) {
+        var flag = confirm("Delete the workspace: " + wsName + " ?");
+        if (!flag) {
+            return;
+        }
+        var url = "/deleteWorkspace/" + wsName;
+        $.ajax({
+            type: "GET",
+            url: url
+        }).done(function () {
+            location.reload();
+        });
+
+    } else {
+        alert("Please select a Workspace to delete.");
+    }
+}
+
+function continueToFU() {
+    var wsName = $("input[name='wsRadio']:checked").val();
+
+    if (wsName) {
+
+        $('#ws').submit();
+
+    } else {
+        alert("Please select a Workspace or create a new one.");
+    }
+}
+
+/* --------------------------------------------------------------------------------------------- */
+/* FUNCTIONS FOR THE FILE UPLOAD VIEW */
+/* --------------------------------------------------------------------------------------------- */
+
 /**
  * Handles the zip file load functionality and prints back in a table the loaded
  * files. Updates the progress bar according to the load process progress.
  */
 
 $(function () {
-    $('#fileupload').fileupload({
-    	
-    	dataType: 'json',
- 
-        done: function (e, data) {
-            $("tr:has(td)").remove();
-            $.each(data.result, function (index, file) {
-            	var x = document.getElementById
-                $("#uploaded-files").append(
-                        $('<tr/>')
-                        .append($('<td/>').text(file.fileName))
-                        .append($('<td/>').text(file.fileSize))
-                        .append($('<td/>').text(file.fileType))
-                        .append($('<td/>').html("<a href='get/"+ index +"'>Click</a>"))
-                        )
+    $('#fileupload')
+        .fileupload(
+            {
+
+                dataType: 'json',
+
+                done: function () {
+                    location.reload();
+                },
+
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total
+                        * 100, 10);
+                    $('#progress').css('width', progress + '%');
+                    $('#progress').html(
+                        '<b>' + progress + '% Completed</b>');
+                },
+
+                dropZone: $('#dropzone')
             });
-        },
- 
-        progressall: function (e, data) {
-            var progress = parseInt(data.loaded / data.total * 100, 10);
-            $('#progress').css('width',progress + '%');
-            $('#progress').html('<b>' + progress + '% Completed</b>');
-        },
- 
-        dropZone: $('#dropzone')
-    });
 });
 
 /**
@@ -48,11 +100,9 @@ function loading() {
 	$('#submitBtn').html(buttonText);
 }
 
-
 /* --------------------------------------------------------------------------------------------- */
-/*                            FUNCTIONS FOR THE PRIORITISATION VIEW 							 */
+/* FUNCTIONS FOR THE PRIORITISATION VIEW */
 /* --------------------------------------------------------------------------------------------- */
-
 
 /**
  * This code is executed as soon as the page loads. It enables the Tooltips in
@@ -64,7 +114,6 @@ $(document).ready(function() {
 		$('[data-toggle="tooltip"]').tooltip();
 	}
 });
-
 
 /**
  * This function encapsulates the logic for disabling and enabling the view
@@ -95,7 +144,6 @@ function toggleRangeDisabling(itemId, valueOutput) {
 	$('#' + valueOutput).html(element.value);
 };
 
-
 /**
  * Receives the id of any element in the web page and disables or enables said
  * element depending on its previous state.
@@ -106,7 +154,6 @@ function toggleDisabling(itemId) {
 		return !value;
 	});
 };
-
 
 /**
  * Toggles the class and order value for the specified icon to change the image
@@ -128,7 +175,6 @@ function toggleParameterOrdering(icon) {
 
 };
 
-
 /**
  * Synchronises the Slider Value with its Output Value
  */
@@ -137,103 +183,100 @@ function updateRangeValue(rangeElement, itemId) {
 	$('#' + itemId).html(rangeElement.value);
 };
 
-
 /**
  * Sends the AJAX call to the Dashboard Controller with all the selected
  * parameters to perform the prioritisation.
  */
 
 function prioritise() {
-	
+
 	// NUMBER OF GENES
-	
+
 	var numberOfGenes = $('#numberOfGenes').val();
 	var nogOrderValue = $('#nogOrderValue').val();
-	
+
 	// CDS LENGTH
-	
+
 	var sequenceLength = $('#sequenceLength').val();
 	var slOrderValue = $('#slOrderValue').val();
-	
+
 	// GC CONTENT
-	
+
 	var gcContent = $('#gcContent').val();
 	var gccOrderValue = $('#gccOrderValue').val();
-	
+
 	// CODON BIAS
-	
+
 	var codonBias = $('#codonBias').val();
 	var cbOrderValue = $('#cbOrderValue').val();
-	
+
 	// REFERENCE SPECIES
-	
+
 	var refSpecies = $('#selectSpecies').val();
-	if(refSpecies === 'No data found.' || refSpecies === undefined)
+    if (refSpecies === 'No data found.' || refSpecies === undefined)
 		refSpecies = 'undefined';
-	
-	
-	// CLUSTER TYPE
-	
-	
-	var types = $('#preferredType').val();
-	
-	var ignorePT = $('#ignorePT').is(":checked");
-	
-	// KNOWN CLUSTER SIMILARITY
-	
-	var kcSim = $('#knownClustersSimilarity').val();
+
+    // CLUSTER TYPE
+
+    var types = $('#preferredType').val();
+
+    var ignorePT = $('#ignorePT').is(":checked");
+
+    // KNOWN CLUSTER SIMILARITY
+
+    var kcSim = $('#knownClustersSimilarity').val();
 	var pSim = $('#similarityPercentage').val();
 	var kcsOrderValue = $('#kcsOrderValue').val();
-	
-	// SELF-HOMOLOGY
-	
-	var sHom = $('#selfHomology').val();
+
+    // SELF-HOMOLOGY
+
+    var sHom = $('#selfHomology').val();
 	var minM = $('#minimumMatch').val();
-	if(minM === ""){
+    if (minM === "") {
 		minM = 0;
 	}
 	var shOrderValue = $('#shOrderValue').val();
-	
-	// PHYLOGENETIC DIVERSITY
-	
-	var pDiv = $('#phylogeneticDiversity').val();
+
+    // PHYLOGENETIC DIVERSITY
+
+    var pDiv = $('#phylogeneticDiversity').val();
 	var pdOrderValue = $('#pdOrderValue').val();
-	
-	// BUILDS THE URL FOR THE AJAX CALL
-	
-	var data = {
-			nog : numberOfGenes,
-			nogo : nogOrderValue,
-			sl : sequenceLength,
-			slo : slOrderValue,
-			gcc : gcContent,
-			gcco : gccOrderValue,
-			cb : codonBias,
-			cbo : cbOrderValue,
-			rs : refSpecies,
-			t : types,
-			ipt : ignorePT,
-			kcs : kcSim,
-			psim : pSim, 
-			kcso : kcsOrderValue,
-			sh : sHom,
-			minm : minM,
-			sho : shOrderValue,
-			pd : pDiv,
-			pdo : pdOrderValue 
-		};
+
+    // BUILDS THE URL FOR THE AJAX CALL
+
+    var data = {
+        nog: numberOfGenes,
+        nogo: nogOrderValue,
+        sl: sequenceLength,
+        slo: slOrderValue,
+        gcc: gcContent,
+        gcco: gccOrderValue,
+        cb: codonBias,
+        cbo: cbOrderValue,
+        rs: refSpecies,
+        t: types,
+        ipt: ignorePT,
+        kcs: kcSim,
+        psim: pSim,
+        kcso: kcsOrderValue,
+        sh: sHom,
+        minm: minM,
+        sho: shOrderValue,
+        pd: pDiv,
+        pdo: pdOrderValue
+    };
 
 	var url = '/dashboardUpdate';
 
 	// CHANGES THE PRIORITISE BUTTON INTO AN ANIMATED REFRESH ICON
-	
-	var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
+
+    var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
 			+ '</span> Prioritising... Please wait...';
-	
-	$('#prioritiseBtn').html(buttonText);
+
+    $('#prioritiseBtn').html(buttonText);
 	$("#outputData").html("");
-	
-	// LOADS THE PRIORITISED DATA INTO THE OUTPUT SECTION
+
+    // LOADS THE PRIORITISED DATA INTO THE OUTPUT SECTION
 
 	$("#outputData").load(url, data, function(response, status, xhr) {
 		if (xhr.status != '200') {
@@ -255,7 +298,6 @@ $(document).ajaxComplete(function() {
 	$('#sSpinner').addClass('hidden');
 });
 
-
 /**
  * Creates an AJAX request to load the species list according to the species
  * specified in the text box.
@@ -272,18 +314,20 @@ function loadSpecies() {
 	$('#speciesName').removeClass('error-field');
 	keyword = keyword.trim().replace(/\s+/g, '+');
 	url = '/species/' + keyword;
-	$("#speciesDD").load(url, function(response, status, xhr) {
-		if (xhr.status != '200') {
-			var message = 'The Application cannot fulfil your request. The Kazusa Website is not available or you are not connected to the Internet.';
-			$('#gaMessage').html(message);
-			$('#genericAlert').show();
-		}
-	});
+    $("#speciesDD")
+        .load(
+            url,
+            function (response, status, xhr) {
+                if (xhr.status != '200') {
+                    var message = 'The Application cannot fulfil your request. The Kazusa Website is not available or you are not connected to the Internet.';
+                    $('#gaMessage').html(message);
+                    $('#genericAlert').show();
+                }
+            });
 }
 
-
 /* --------------------------------------------------------------------------------------------- */
-/* 									FUNCTIONS FOR THE CODON USAGE 								 */
+/* FUNCTIONS FOR THE CODON USAGE */
 /* --------------------------------------------------------------------------------------------- */
 
 /**
@@ -309,15 +353,17 @@ function getSpecies() {
 					'<center><h3><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
 							+ '</span> Loading species... Please wait....</h3></center>');
 
-	$("#resultsBlock").load(url, function(response, status, xhr) {
-		if (xhr.status != '200') {
-			var message = 'The Application cannot fulfil your request. The Kazusa Website is not available or you are not connected to the Internet.';
-			$('#gaMessage').html(message);
-			$('#genericAlert').show();
-		}
-	});
+    $("#resultsBlock")
+        .load(
+            url,
+            function (response, status, xhr) {
+                if (xhr.status != '200') {
+                    var message = 'The Application cannot fulfil your request. The Kazusa Website is not available or you are not connected to the Internet.';
+                    $('#gaMessage').html(message);
+                    $('#genericAlert').show();
+                }
+            });
 }
-
 
 /**
  * Calls the getSpecies() function when the enter key is pressed in the Codon
@@ -333,29 +379,29 @@ function submitEnter(e) {
 }
 
 /* --------------------------------------------------------------------------------------------- */
-/* 									FUNCTIONS FOR THE FEEDBACK VIEW								 */
+/* FUNCTIONS FOR THE FEEDBACK VIEW */
 /* --------------------------------------------------------------------------------------------- */
 
-function validateAndSend(){
-	
-	if($('#name').val().length == 0){
+function validateAndSend() {
+
+    if ($('#name').val().length == 0) {
 		alert("Please enter a name...")
 		return;
 	}
-	if(!isEmail($('#email').val())){
+    if (!isEmail($('#email').val())) {
 		alert("Please enter a valid email address...")
 		return;
 	}
-	if($('#subject').val().length == 0){
+    if ($('#subject').val().length == 0) {
 		alert("Please enter a subject...")
 		return;
 	}
-	if($('#body').val().length == 0){
+    if ($('#body').val().length == 0) {
 		alert("Please enter some feedback...")
 		return;
 	}
-	
-	$('#feedbackForm').submit();
+
+    $('#feedbackForm').submit();
 }
 
 function isEmail(email) {

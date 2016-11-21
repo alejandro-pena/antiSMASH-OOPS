@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
 <link rel="stylesheet" th:href="@{/css/application.css}" />
@@ -28,7 +28,7 @@
 				<tr th:if="${not #lists.isEmpty(clusterData)}" th:each="cluster, iterStat : ${clusterData}">
 					<th th:text="${iterStat.count}"></th>
 					<td th:inline="text">
-						<a th:href="@{|/local/${cluster.parent}/index.html#cluster-${cluster.number}|}" th:title="${cluster.species}" target="_blank">[[${cluster.origin}]]
+                        <a th:href="@{|/local/${wsName}/${cluster.parent}/index.html#cluster-${cluster.number}|}" th:title="${cluster.species}" target="_blank">[[${cluster.origin}]]
 							- C[[${cluster.number}]]</a>
 					</td>
 					<td th:text="${cluster.clusterType}"></td>

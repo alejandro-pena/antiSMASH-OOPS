@@ -1,15 +1,12 @@
 package uk.ac.mib.antismashoops.web.utils;
 
 import java.io.File;
-
 import javax.servlet.http.HttpServletRequest;
-
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 public class ZipFileHandler {
 	private static final Logger logger = LoggerFactory.getLogger(ZipFileHandler.class);

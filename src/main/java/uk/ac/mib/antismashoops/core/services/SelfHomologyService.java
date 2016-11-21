@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.util.Stack;
 
 public class SelfHomologyService {
-	public static String seqOne;
+    private static final String directory = "selfhomology";
+    public static String seqOne;
 	public static String seqTwo;
 	public static String[] sequences;
-	private static short match = 2;
+    public static short[][] matrix;
+    private static short match = 2;
 	private static short og = -10;
 	private static short eg = -2;
 	private static short gl = 0;
@@ -18,9 +20,6 @@ public class SelfHomologyService {
 	private static int minMatch;
 	private static int score;
 	private static String fileName;
-	private static final String directory = "selfhomology";
-
-	public static short[][] matrix;
 
 	/**
 	 * 

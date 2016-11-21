@@ -4,18 +4,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 public class CodonUsageTable {
 	private static final Logger logger = LoggerFactory.getLogger(CodonUsageTable.class);
-
-	private String species;
 	private final LinkedHashMap<String, Detail> usage = new LinkedHashMap<>();
+    private String species;
 
 	/**
 	 * 
@@ -212,6 +209,17 @@ public class CodonUsageTable {
 		return "CodonUsage [species=" + species + ", usage=" + usage + "]";
 	}
 
+
+    @ExceptionHandler(Exception.class)
+    public String exceptionHandler(HttpServletRequest req, Exception exception)
+    {
+        req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
+        logger.error("Exception thrown: " + exception.getClass());
+        logger.error("Exception message: " + exception.getMessage());
+        exception.printStackTrace();
+        return "error";
+    }
+
 	public class Detail implements Comparable<Detail> {
 		private String aminoacid;
 		private String abbr;
@@ -221,14 +229,14 @@ public class CodonUsageTable {
 		private double aminoacidUsage = 0.0;
 
 		/**
-		 * 
-		 * Class constructor.
-		 * 
-		 * @param aminoacid The amino acid full name.
+         *
+         * Class constructor.
+         *
+         * @param aminoacid The amino acid full name.
 		 * @param abbr The amino acid abbreviation (3 letters)
 		 * @param letterAbbr The amino acid single letter abbreviation
-		 * 
-		 */
+         *
+         */
 
 		public Detail(String aminoacid, String abbr, String letterAbbr) {
 			this.aminoacid = aminoacid;
@@ -237,16 +245,16 @@ public class CodonUsageTable {
 		}
 
 		/**
-		 * 
-		 * Class constructor.
-		 * 
-		 * @param aminoacid The amino acid full name.
+         *
+         * Class constructor.
+         *
+         * @param aminoacid The amino acid full name.
 		 * @param abbr The amino acid abbreviation (3 letters)
 		 * @param letterAbbr The amino acid single letter abbreviation
 		 * @param codonNumber Number of this codon in the sequence
 		 * @param frequency of this codon /1000 in the sequence
-		 * 
-		 */
+         *
+         */
 
 		public Detail(String aminoacid, String abbr, String letterAbbr, int codonNumber, double frequency) {
 			this.aminoacid = aminoacid;
@@ -307,11 +315,6 @@ public class CodonUsageTable {
 				this.aminoacidUsage = aminoacidUsage;
 		}
 
-		@Override
-		public String toString() {
-			return "Detail [aminoacid=" + aminoacid + ", abbr=" + abbr + ", letterAbbr=" + letterAbbr + ", codonNumber="
-					+ codonNumber + ", frequency=" + frequency + "]";
-		}
 
 		@Override
 		public int compareTo(Detail d) {
@@ -320,15 +323,16 @@ public class CodonUsageTable {
 			if (d == this)
 				return 0;
 			return this.aminoacid.compareTo(d.getAminoacid());
-		}
-	}
+        }
 
-	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception) {
-		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
-		logger.error("Exception thrown: " + exception.getClass());
-		logger.error("Exception message: " + exception.getMessage());
-		exception.printStackTrace();
-		return "error";
-	}
+
+        @Override
+        public String toString()
+        {
+            return "Detail [aminoacid=" + aminoacid + ", abbr=" + abbr + ", letterAbbr=" + letterAbbr + ", codonNumber="
+                + codonNumber + ", frequency=" + frequency + "]";
+        }
+
+
+    }
 }

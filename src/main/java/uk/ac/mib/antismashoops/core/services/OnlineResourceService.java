@@ -5,10 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.NodeList;
-
 import uk.ac.mib.antismashoops.core.domainobject.ClusterBlast;
 import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastLineage;
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable;
