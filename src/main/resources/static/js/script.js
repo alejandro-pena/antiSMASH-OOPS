@@ -69,10 +69,8 @@ $(function () {
     $('#fileupload')
         .fileupload(
             {
-
-                dataType: 'json',
-
-                done: function () {
+				stop: function () {
+					console.log("I finished...");
                     location.reload();
                 },
 

@@ -1,1 +1,4 @@
-/build/
+/appData
+/target
+/.idea
+/antiSMASH-OOPS.iml
