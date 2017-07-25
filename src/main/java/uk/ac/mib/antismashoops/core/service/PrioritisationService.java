@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.services;
+package uk.ac.mib.antismashoops.core.service;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.services;
+package uk.ac.mib.antismashoops.core.service;
 
 import java.io.BufferedWriter;
 import java.io.File;

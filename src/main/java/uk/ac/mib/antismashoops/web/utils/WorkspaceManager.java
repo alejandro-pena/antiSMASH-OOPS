@@ -6,38 +6,38 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Scope("singleton")
-@Component
 @Slf4j
+@Getter
+@Component
 public class WorkspaceManager
 {
     private final File rootDirectory;
-    private final String UPLOADPATH = "appData/";
     private List<Workspace> workspaces;
-    private File currentWorkspace;
+
+    @Setter
+    private Workspace currentWorkspace;
 
 
-    public WorkspaceManager()
+    public WorkspaceManager(@Value("${app.files.uploadpath}") String uploadPath)
     {
-        rootDirectory = new File(UPLOADPATH);
+        rootDirectory = new File(uploadPath);
         workspaces = new ArrayList<>();
     }
 
 
     public Workspace getWorkspace(String wsName)
     {
-        for (Workspace ws : this.workspaces)
+        Optional<Workspace> workspace = this.workspaces.stream().filter(ws -> ws.getName().equalsIgnoreCase(wsName)).findFirst();
+        if (workspace.isPresent())
         {
-            if (ws.getName().equalsIgnoreCase(wsName))
-            {
-                return ws;
-            }
+            return workspace.get();
         }
         return null;
     }
@@ -45,7 +45,6 @@ public class WorkspaceManager
 
     public void populateWorkspaces()
     {
-
         if (!rootDirectory.exists())
         {
             rootDirectory.mkdir();
@@ -92,29 +91,5 @@ public class WorkspaceManager
         {
             throw new FileNotFoundException("Failed to delete file: " + f);
         }
-    }
-
-
-    public File getRootDirectory()
-    {
-        return rootDirectory;
-    }
-
-
-    public List<Workspace> getWorkspaces()
-    {
-        return workspaces;
-    }
-
-
-    public File getCurrentWorkspace()
-    {
-        return currentWorkspace;
-    }
-
-
-    public void setCurrentWorkspace(String currentWorkspace)
-    {
-        this.currentWorkspace = new File(this.getRootDirectory(), currentWorkspace);
     }
 }

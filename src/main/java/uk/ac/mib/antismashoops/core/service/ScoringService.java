@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.services;
+package uk.ac.mib.antismashoops.core.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

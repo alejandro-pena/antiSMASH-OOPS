@@ -69,8 +69,8 @@ $(function () {
     $('#fileupload')
         .fileupload(
             {
-				stop: function () {
-					console.log("I finished...");
+                stop: function () {
+                    console.log("I finished...");
                     location.reload();
                 },
 
@@ -93,9 +93,9 @@ $(function () {
  */
 
 function loading() {
-	var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
-			+ '</span> Decompressing files... Please wait...';
-	$('#submitBtn').html(buttonText);
+    var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
+        + '</span> Decompressing files and processing data... Please wait...';
+    $('#submitBtn').html(buttonText);
 }
 
 /* --------------------------------------------------------------------------------------------- */
@@ -107,10 +107,10 @@ function loading() {
  * the UI. If no tooltips exist nothing it will have no effect.
  */
 
-$(document).ready(function() {
-	if ($('[data-toggle="tooltip"]').length) {
-		$('[data-toggle="tooltip"]').tooltip();
-	}
+$(document).ready(function () {
+    if ($('[data-toggle="tooltip"]').length) {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
 });
 
 /**
@@ -119,27 +119,27 @@ $(document).ready(function() {
  */
 
 function toggleRangeDisabling(itemId, valueOutput) {
-	var element = document.getElementById(itemId);
-	if (element.disabled == true) {
-		element.disabled = false;
-		element.value = 10;
-		if (itemId == 'selfHomology') {
-			$('#shAlert').show();
-			toggleDisabling('minimumMatch');
-		}
-		if (itemId == 'phylogeneticDiversity')
-			$('#pdAlert').show();
-		if (itemId == 'knownClustersSimilarity')
-			toggleDisabling('similarityPercentage');
-	} else {
-		element.disabled = true;
-		element.value = 0;
-		if (itemId == 'selfHomology')
-			toggleDisabling('minimumMatch');
-		if (itemId == 'knownClustersSimilarity')
-			toggleDisabling('similarityPercentage');
-	}
-	$('#' + valueOutput).html(element.value);
+    var element = document.getElementById(itemId);
+    if (element.disabled == true) {
+        element.disabled = false;
+        element.value = 10;
+        if (itemId == 'selfHomology') {
+            $('#shAlert').show();
+            toggleDisabling('minimumMatch');
+        }
+        if (itemId == 'phylogeneticDiversity')
+            $('#pdAlert').show();
+        if (itemId == 'knownClustersSimilarity')
+            toggleDisabling('similarityPercentage');
+    } else {
+        element.disabled = true;
+        element.value = 0;
+        if (itemId == 'selfHomology')
+            toggleDisabling('minimumMatch');
+        if (itemId == 'knownClustersSimilarity')
+            toggleDisabling('similarityPercentage');
+    }
+    $('#' + valueOutput).html(element.value);
 };
 
 /**
@@ -148,9 +148,9 @@ function toggleRangeDisabling(itemId, valueOutput) {
  */
 
 function toggleDisabling(itemId) {
-	$('#' + itemId).prop('disabled', function(i, value) {
-		return !value;
-	});
+    $('#' + itemId).prop('disabled', function (i, value) {
+        return !value;
+    });
 };
 
 /**
@@ -160,16 +160,16 @@ function toggleDisabling(itemId) {
 
 function toggleParameterOrdering(icon) {
 
-	var iconId = '#' + icon;
-	var orderValId = '#' + icon + 'Value';
+    var iconId = '#' + icon;
+    var orderValId = '#' + icon + 'Value';
 
-	if ($(orderValId).attr('value') == 'd') {
-		$(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes');
-		$(orderValId).attr('value', 'a');
-	} else {
-		$(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes-alt');
-		$(orderValId).attr('value', 'd');
-	}
+    if ($(orderValId).attr('value') == 'd') {
+        $(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes');
+        $(orderValId).attr('value', 'a');
+    } else {
+        $(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes-alt');
+        $(orderValId).attr('value', 'd');
+    }
 
 };
 
@@ -178,7 +178,7 @@ function toggleParameterOrdering(icon) {
  */
 
 function updateRangeValue(rangeElement, itemId) {
-	$('#' + itemId).html(rangeElement.value);
+    $('#' + itemId).html(rangeElement.value);
 };
 
 /**
@@ -188,31 +188,31 @@ function updateRangeValue(rangeElement, itemId) {
 
 function prioritise() {
 
-	// NUMBER OF GENES
+    // NUMBER OF GENES
 
-	var numberOfGenes = $('#numberOfGenes').val();
-	var nogOrderValue = $('#nogOrderValue').val();
+    var numberOfGenes = $('#numberOfGenes').val();
+    var nogOrderValue = $('#nogOrderValue').val();
 
-	// CDS LENGTH
+    // CDS LENGTH
 
-	var sequenceLength = $('#sequenceLength').val();
-	var slOrderValue = $('#slOrderValue').val();
+    var sequenceLength = $('#sequenceLength').val();
+    var slOrderValue = $('#slOrderValue').val();
 
-	// GC CONTENT
+    // GC CONTENT
 
-	var gcContent = $('#gcContent').val();
-	var gccOrderValue = $('#gccOrderValue').val();
+    var gcContent = $('#gcContent').val();
+    var gccOrderValue = $('#gccOrderValue').val();
 
-	// CODON BIAS
+    // CODON BIAS
 
-	var codonBias = $('#codonBias').val();
-	var cbOrderValue = $('#cbOrderValue').val();
+    var codonBias = $('#codonBias').val();
+    var cbOrderValue = $('#cbOrderValue').val();
 
-	// REFERENCE SPECIES
+    // REFERENCE SPECIES
 
-	var refSpecies = $('#selectSpecies').val();
+    var refSpecies = $('#selectSpecies').val();
     if (refSpecies === 'No data found.' || refSpecies === undefined)
-		refSpecies = 'undefined';
+        refSpecies = 'undefined';
 
     // CLUSTER TYPE
 
@@ -223,22 +223,22 @@ function prioritise() {
     // KNOWN CLUSTER SIMILARITY
 
     var kcSim = $('#knownClustersSimilarity').val();
-	var pSim = $('#similarityPercentage').val();
-	var kcsOrderValue = $('#kcsOrderValue').val();
+    var pSim = $('#similarityPercentage').val();
+    var kcsOrderValue = $('#kcsOrderValue').val();
 
     // SELF-HOMOLOGY
 
     var sHom = $('#selfHomology').val();
-	var minM = $('#minimumMatch').val();
+    var minM = $('#minimumMatch').val();
     if (minM === "") {
-		minM = 0;
-	}
-	var shOrderValue = $('#shOrderValue').val();
+        minM = 0;
+    }
+    var shOrderValue = $('#shOrderValue').val();
 
     // PHYLOGENETIC DIVERSITY
 
     var pDiv = $('#phylogeneticDiversity').val();
-	var pdOrderValue = $('#pdOrderValue').val();
+    var pdOrderValue = $('#pdOrderValue').val();
 
     // BUILDS THE URL FOR THE AJAX CALL
 
@@ -264,25 +264,25 @@ function prioritise() {
         pdo: pdOrderValue
     };
 
-	var url = '/dashboardUpdate';
+    var url = '/dashboardUpdate';
 
-	// CHANGES THE PRIORITISE BUTTON INTO AN ANIMATED REFRESH ICON
+    // CHANGES THE PRIORITISE BUTTON INTO AN ANIMATED REFRESH ICON
 
     var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
-			+ '</span> Prioritising... Please wait...';
+        + '</span> Prioritising... Please wait...';
 
     $('#prioritiseBtn').html(buttonText);
-	$("#outputData").html("");
+    $("#outputData").html("");
 
     // LOADS THE PRIORITISED DATA INTO THE OUTPUT SECTION
 
-	$("#outputData").load(url, data, function(response, status, xhr) {
-		if (xhr.status != '200') {
-			var message = 'The Application cannot fulfill your request.';
-			$('#gaMessage').html(message);
-			$('#genericAlert').show();
-		}
-	});
+    $("#outputData").load(url, data, function (response, status, xhr) {
+        if (xhr.status != '200') {
+            var message = 'The Application cannot fulfill your request.';
+            $('#gaMessage').html(message);
+            $('#genericAlert').show();
+        }
+    });
 }
 
 /**
@@ -291,9 +291,9 @@ function prioritise() {
  * look up.
  */
 
-$(document).ajaxComplete(function() {
-	$('#prioritiseBtn').html('PRIORITISE');
-	$('#sSpinner').addClass('hidden');
+$(document).ajaxComplete(function () {
+    $('#prioritiseBtn').html('PRIORITISE');
+    $('#sSpinner').addClass('hidden');
 });
 
 /**
@@ -303,15 +303,15 @@ $(document).ajaxComplete(function() {
 
 function loadSpecies() {
 
-	var keyword = $('#speciesName').val();
-	if (keyword == '') {
-		$('#speciesName').addClass('error-field');
-		return;
-	}
-	$('#sSpinner').removeClass('hidden');
-	$('#speciesName').removeClass('error-field');
-	keyword = keyword.trim().replace(/\s+/g, '+');
-	url = '/species/' + keyword;
+    var keyword = $('#speciesName').val();
+    if (keyword == '') {
+        $('#speciesName').addClass('error-field');
+        return;
+    }
+    $('#sSpinner').removeClass('hidden');
+    $('#speciesName').removeClass('error-field');
+    keyword = keyword.trim().replace(/\s+/g, '+');
+    url = '/species/' + keyword;
     $("#speciesDD")
         .load(
             url,
@@ -335,21 +335,21 @@ function loadSpecies() {
 
 function getSpecies() {
 
-	var keyword = $('#speciesInput').val();
-	if (keyword == '') {
-		$('#speciesInput').addClass('error-field');
-		return;
-	}
-	$('#speciesInput').removeClass('error-field');
-	keyword = keyword.trim().replace(/\s+/g, '+');
-	url = '/codonUsage/' + keyword;
+    var keyword = $('#speciesInput').val();
+    if (keyword == '') {
+        $('#speciesInput').addClass('error-field');
+        return;
+    }
+    $('#speciesInput').removeClass('error-field');
+    keyword = keyword.trim().replace(/\s+/g, '+');
+    url = '/codonUsage/' + keyword;
 
-	// CHANGES THE SEARCH BUTTON INTO AN ANIMATED REFRESH ICON FOR LOADING
+    // CHANGES THE SEARCH BUTTON INTO AN ANIMATED REFRESH ICON FOR LOADING
 
-	$("#resultsBlock")
-			.html(
-					'<center><h3><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
-							+ '</span> Loading species... Please wait....</h3></center>');
+    $("#resultsBlock")
+        .html(
+            '<center><h3><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
+            + '</span> Loading species... Please wait....</h3></center>');
 
     $("#resultsBlock")
         .load(
@@ -369,11 +369,11 @@ function getSpecies() {
  */
 
 function submitEnter(e) {
-	if (e.keyCode == 13) {
-		e.preventDefault();
-		$("#speciesInput").blur();
-		getSpecies();
-	}
+    if (e.keyCode == 13) {
+        e.preventDefault();
+        $("#speciesInput").blur();
+        getSpecies();
+    }
 }
 
 /* --------------------------------------------------------------------------------------------- */
@@ -383,26 +383,26 @@ function submitEnter(e) {
 function validateAndSend() {
 
     if ($('#name').val().length == 0) {
-		alert("Please enter a name...")
-		return;
-	}
+        alert("Please enter a name...")
+        return;
+    }
     if (!isEmail($('#email').val())) {
-		alert("Please enter a valid email address...")
-		return;
-	}
+        alert("Please enter a valid email address...")
+        return;
+    }
     if ($('#subject').val().length == 0) {
-		alert("Please enter a subject...")
-		return;
-	}
+        alert("Please enter a subject...")
+        return;
+    }
     if ($('#body').val().length == 0) {
-		alert("Please enter some feedback...")
-		return;
-	}
+        alert("Please enter some feedback...")
+        return;
+    }
 
     $('#feedbackForm').submit();
 }
 
 function isEmail(email) {
-	var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-	return regex.test(email);
+    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    return regex.test(email);
 }

@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.services;
+package uk.ac.mib.antismashoops.core.service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;

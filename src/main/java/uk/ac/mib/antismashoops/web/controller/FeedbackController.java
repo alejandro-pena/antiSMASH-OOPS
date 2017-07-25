@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.ac.mib.antismashoops.core.services.FeedbackService;
+import uk.ac.mib.antismashoops.core.service.FeedbackService;
 
 @Controller
 public class FeedbackController {

@@ -1,44 +1,28 @@
-package uk.ac.mib.antismashoops.core.services.params;
+package uk.ac.mib.antismashoops.core.service.params;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 import uk.ac.mib.antismashoops.core.domainobject.Gene;
 
+@Slf4j
 @Service
-public class NumberOfGenes
+public class NumberOfGenesService
 {
-    private static final Logger LOG = LoggerFactory.getLogger(NumberOfGenes.class);
-
-    private static final String REGEX = "(.+)(cluster)(.*)(\\.gbk)";
-    private static final String ZIP_REGEX = "(.+)(\\.zip)";
-    private static final String FOLDER_NAME_KCB = "knownclusterblast";
-    private static final String FOLDER_NAME_CB = "clusterblast";
-    private static final String FILE_REGEXP = "(cluster)(.*)(\\.txt)";
-    private static final String GENES_REGEXP = "Table of genes, locations, strands and annotations of query cluster:";
-    private static final String HITS_REGEXP = "Significant hits:";
-    private static final String DETAILS_REGEXP = "Details:";
-    private static final String HITS_TABLE_REGEXP = "Table of Blast hits (query gene, subject gene, %identity, blast score, %coverage, e-value):";
     private static final String GENE_REGEXP = "(.+)CDS(\\s+)(\\d+\\.\\.\\d+|complement\\(\\d+\\.\\.\\d+\\))";
     private static final String GENEID_REGEXP = "(.+)\\/db_xref=\"GeneID:\\d+\"";
     private static final String GENESYN_REGEXP = "(.+)\\/gene_synonym=\"(.+)\"";
-    private static final String SEQUENCE_REGEXP = "a|g|c|t|n";
-    private static final String TYPE_REGEXP = "(.+)\\/product=\"(.+)\"(.*)";
-    private static final String CLUSTER_REGEXP = "(.+)cluster(.+)(\\d+\\.\\.\\d+)(.*)";
 
 
     public void setClusterGeneData(List<BiosyntheticGeneCluster> biosyntheticGeneClusterList)
     {
-        for (BiosyntheticGeneCluster bgc : biosyntheticGeneClusterList)
-        {
-            bgc.setGenes(this.getGenesData(bgc.getFile()));
-        }
+        biosyntheticGeneClusterList.forEach(bgc -> bgc.setGenes(this.getGenesData(bgc.getFile())));
+        biosyntheticGeneClusterList.forEach(bgc -> bgc.setNumberOfGenes(bgc.getGenes().size()));
     }
 
 
@@ -50,7 +34,7 @@ public class NumberOfGenes
      * @return An ArrayList of Gene objects
      */
 
-    public List<Gene> getGenesData(File file)
+    private List<Gene> getGenesData(File file)
     {
         List<Gene> geneList = new ArrayList<>();
         String geneId = "";
@@ -67,7 +51,7 @@ public class NumberOfGenes
         }
         catch (FileNotFoundException e)
         {
-            LOG.error(e.getMessage());
+            log.error(e.getMessage());
         }
 
         while (scanner.hasNextLine())

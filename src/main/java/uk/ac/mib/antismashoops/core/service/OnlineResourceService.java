@@ -1,4 +1,4 @@
-package uk.ac.mib.antismashoops.core.services;
+package uk.ac.mib.antismashoops.core.service;
 
 import java.io.IOException;
 import java.net.URL;
@@ -12,8 +12,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.NodeList;
