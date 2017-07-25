@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -13,11 +14,9 @@ import org.springframework.stereotype.Component;
 
 @Scope("singleton")
 @Component
+@Slf4j
 public class WorkspaceManager
 {
-
-    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceManager.class);
-
     private final File rootDirectory;
     private final String UPLOADPATH = "appData/";
     private List<Workspace> workspaces;
@@ -60,7 +59,7 @@ public class WorkspaceManager
                 workspaces.add(new Workspace(f, f.getName(), new Date(f.lastModified())));
             }
         }
-        LOG.info("Workspace size: " + workspaces.size() + " directories.");
+        log.info("Workspace size: " + workspaces.size() + " directories.");
     }
 
 

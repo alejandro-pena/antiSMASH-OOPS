@@ -22,6 +22,7 @@ import uk.ac.mib.antismashoops.core.domainobject.ClusterBlastLineage;
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable;
 import uk.ac.mib.antismashoops.core.domainobject.Gene;
 import uk.ac.mib.antismashoops.core.domainobject.KnownCluster;
+import uk.ac.mib.antismashoops.core.services.params.NumberOfGenes;
 import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 import uk.ac.mib.antismashoops.web.utils.ZipFileHandler;
 
@@ -43,6 +44,7 @@ public class ExternalDataService {
 	private static final String SEQUENCE_REGEXP = "a|g|c|t|n";
 	private static final String TYPE_REGEXP = "(.+)\\/product=\"(.+)\"(.*)";
 	private static final String CLUSTER_REGEXP = "(.+)cluster(.+)(\\d+\\.\\.\\d+)(.*)";
+
     @Value("${app.files.uploadpath}")
     private String uploadPath;
     @Autowired
@@ -51,6 +53,9 @@ public class ExternalDataService {
     private OnlineResourceService ors;
     @Autowired
     private WorkspaceManager wm;
+
+	@Autowired
+	private NumberOfGenes numberOfGenes;
 
 
 	/**
@@ -118,8 +123,9 @@ public class ExternalDataService {
 
 	private void populateClusterData(List<BiosyntheticGeneCluster> bgcData) {
 
+		numberOfGenes.setClusterGeneData(bgcData);
+
 		for (BiosyntheticGeneCluster c : bgcData) {
-			c.setGenes(this.getGenesData(c.getFile()));
 			c.setClusterSequence(this.getClusterSequence(c.getFile()));
 			c.setNumberOfGenes(c.getGenes().size());
 			c.setCdsLength();
@@ -197,70 +203,6 @@ public class ExternalDataService {
 		if (count == bgcDataSize && directories == zipFiles)
 			return true;
 		return false;
-	}
-
-	/**
-	 * 
-	 * Retrieves the Genes Data from a GBK cluster file. The gene data is a list
-	 * of Gene Objects.
-	 *
-     * @param file
-     *            the File object associated the BGC
-     *
-	 * @return An ArrayList of Gene objects
-	 * 
-	 */
-
-	public List<Gene> getGenesData(File file) {
-		List<Gene> geneList = new ArrayList<>();
-		String geneId = "";
-		String geneSynonym = "";
-		int startBase;
-		int stopBase;
-		boolean complement = false;
-
-		Scanner scanner = null;
-
-		try {
-			scanner = new Scanner(file);
-		} catch (FileNotFoundException e) {
-            LOG.error(e.getMessage());
-        }
-
-		while (scanner.hasNextLine()) {
-			String token = scanner.nextLine();
-
-			if (token.matches(GENE_REGEXP)) {
-				if (token.contains("complement"))
-					complement = true;
-				else
-					complement = false;
-
-				token = token.replaceAll("[A-Za-z]|\\(|\\)|<|>|_", "");
-				String[] tokens = token.split("\\.\\.");
-				startBase = Integer.parseInt(tokens[0].trim());
-				stopBase = Integer.parseInt(tokens[1].trim());
-
-				token = scanner.nextLine();
-
-				if (token.matches(GENEID_REGEXP)) {
-					geneId = token.replaceAll("[^0-9]", "");
-					scanner.nextLine();
-					token = scanner.nextLine();
-
-					if (token.matches(GENESYN_REGEXP)) {
-						geneSynonym = token.substring(token.indexOf('"') + 1, token.length() - 1);
-					}
-				}
-
-				geneList.add(new Gene(geneId, geneSynonym, startBase, stopBase, complement, ""));
-
-			}
-
-		}
-
-		scanner.close();
-		return geneList;
 	}
 
 	/**

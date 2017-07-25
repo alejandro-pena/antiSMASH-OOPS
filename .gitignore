@@ -1,4 +1,5 @@
-/appData
-/target
-/.idea
-/antiSMASH-OOPS.iml
+appData
+target
+.idea
+antiSMASH-OOPS.iml
+lifeTreeOutput/
