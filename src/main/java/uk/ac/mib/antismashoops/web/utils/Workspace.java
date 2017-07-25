@@ -4,10 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@Setter
+@Getter
 public class Workspace
 {
-
     private File root;
     private String name;
     private Date lastModified;
@@ -33,41 +38,5 @@ public class Workspace
             }
         }
         return files;
-    }
-
-
-    public File getRoot()
-    {
-        return root;
-    }
-
-
-    public void setRoot(File root)
-    {
-        this.root = root;
-    }
-
-
-    public String getName()
-    {
-        return name;
-    }
-
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-
-    public Date getLastModified()
-    {
-        return lastModified;
-    }
-
-
-    public void setLastModified(Date lastModified)
-    {
-        this.lastModified = lastModified;
     }
 }
