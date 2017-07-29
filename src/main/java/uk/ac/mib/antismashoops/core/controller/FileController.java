@@ -1,21 +1,25 @@
 package uk.ac.mib.antismashoops.core.controller;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 
 @Slf4j
-@RestController
+@Controller
 public class FileController
 {
     private final WorkspaceManager workspaceManager;
@@ -57,6 +61,19 @@ public class FileController
         }
 
         return "fileUpload";
+    }
+
+
+    @GetMapping(value = "/delete/{fileName:.+}")
+    public String deleteFile(@PathVariable("fileName") String fileName) throws FileNotFoundException
+    {
+        File f = new File(workspaceManager.getCurrentWorkspace().getRoot(), fileName);
+        log.info("Deleting file: {}", fileName);
+        if (!f.delete())
+        {
+            throw new FileNotFoundException("Failed to delete file: " + f);
+        }
+        return "redirect:/fileUpload?wsRadio=" + workspaceManager.getCurrentWorkspace().getName();
     }
 
 

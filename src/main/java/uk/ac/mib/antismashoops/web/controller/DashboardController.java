@@ -23,18 +23,20 @@ import uk.ac.mib.antismashoops.core.service.ExternalDataService;
 import uk.ac.mib.antismashoops.core.service.OnlineResourceService;
 import uk.ac.mib.antismashoops.core.service.PrioritisationService;
 import uk.ac.mib.antismashoops.core.service.ScoringService;
+import uk.ac.mib.antismashoops.core.service.params.KnownClustersService;
 import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 
 @Slf4j
 @Controller
 public class DashboardController
 {
-    private ApplicationBgcData applicationBgcData;
-    private OnlineResourceService onlineResourceService;
-    private ScoringService scoreService;
-    private PrioritisationService prioritisationService;
-    private ExternalDataService externalDataService;
-    private WorkspaceManager workspaceManager;
+    private final ApplicationBgcData applicationBgcData;
+    private final OnlineResourceService onlineResourceService;
+    private final ScoringService scoreService;
+    private final PrioritisationService prioritisationService;
+    private final ExternalDataService externalDataService;
+    private final KnownClustersService knownClustersService;
+    private final WorkspaceManager workspaceManager;
 
 
     @Autowired
@@ -44,6 +46,7 @@ public class DashboardController
         ScoringService scoreService,
         PrioritisationService prioritisationService,
         ExternalDataService externalDataService,
+        KnownClustersService knownClustersService,
         WorkspaceManager workspaceManager)
     {
         this.applicationBgcData = applicationBgcData;
@@ -51,6 +54,7 @@ public class DashboardController
         this.scoreService = scoreService;
         this.prioritisationService = prioritisationService;
         this.externalDataService = externalDataService;
+        this.knownClustersService = knownClustersService;
         this.workspaceManager = workspaceManager;
     }
 
@@ -145,7 +149,6 @@ public class DashboardController
 
         if (ignorePT.equalsIgnoreCase("false") && types != null)
         {
-
             applicationBgcData.setWorkingDataSet(
                 workingDataSet.stream().filter(bgc -> types.stream().anyMatch(bgc.getClusterTypes()::contains))
                     .collect(Collectors.toList()));
@@ -154,8 +157,8 @@ public class DashboardController
 
         // SET THE KNOWN CLUSTER DATA
 
-        externalDataService.setKnownClusterData(applicationBgcData, workspaceManager.getCurrentWorkspace());
-        scoreService.setKnownClusterSimilarityScore(preferrexternalDataServiceimilarity);
+        knownClustersService.setKnownClusterData(applicationBgcData, workspaceManager.getCurrentWorkspace());
+        knownClustersService.setKnownClusterSimilarityScore(applicationBgcData, preferrexternalDataServiceimilarity);
 
         // SORT BY ONLY THE BASIC FOUR PARAMETERS WITHOUT A REFERENCE SPECIES
 

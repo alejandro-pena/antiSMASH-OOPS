@@ -1,5 +1,6 @@
 package uk.ac.mib.antismashoops.core.domainobject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -43,7 +44,7 @@ public class ApplicationBgcData
      * @return The workingDataSet cloned from the original data
      */
 
-    public List<BiosyntheticGeneCluster> getBgcData(Workspace workspace)
+    public List<BiosyntheticGeneCluster> getBgcData(Workspace workspace) throws IOException
     {
         if (externalDataService.isBgcDataInSync(bgcData.size(), workspace))
         {
@@ -54,6 +55,7 @@ public class ApplicationBgcData
         }
 
         log.info("Syncing Cluster Data...");
+        externalDataService.deleteExistingWorkspaceFolders(workspace);
         externalDataService.decompressLoadedFiles(workspace);
         externalDataService.loadBggData(bgcData, workspace);
         this.workingDataSet.clear();
