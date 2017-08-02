@@ -62,7 +62,7 @@
                             Ignore
                         </label>
                         &nbsp;
-                        <a href="#" onclick="toggleParameterOrdering('nogOrder');">
+                        <a href="#/" onclick="toggleParameterOrdering('nogOrder');">
                             <span id="nogOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                         </a>
                         <input type="hidden" id="nogOrderValue" value="d"/>
@@ -82,7 +82,7 @@
                             Ignore
                         </label>
                         &nbsp;
-                        <a href="#" onclick="toggleParameterOrdering('slOrder');">
+                        <a href="#/" onclick="toggleParameterOrdering('slOrder');">
                             <span id="slOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                         </a>
                         <input type="hidden" id="slOrderValue" value="d"/>
@@ -102,7 +102,7 @@
                             Ignore
                         </label>
                         &nbsp;
-                        <a href="#" onclick="toggleParameterOrdering('gccOrder');">
+                        <a href="#/" onclick="toggleParameterOrdering('gccOrder');">
                             <span id="gccOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                         </a>
                         <input type="hidden" id="gccOrderValue" value="d"/>
@@ -122,7 +122,7 @@
                             Ignore
                         </label>
                         &nbsp;
-                        <a href="#" onclick="toggleParameterOrdering('cbOrder');">
+                        <a href="#/" onclick="toggleParameterOrdering('cbOrder');">
                             <span id="cbOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
                         </a>
                         <input type="hidden" id="cbOrderValue" value="a"/>
@@ -138,7 +138,7 @@
                         <label for="speciesName">Search&nbsp;</label>
                         <input class="form-control input-sm" type="text" size="42" id="speciesName" placeholder="Reference species name..."/>
                         &nbsp;
-                        <a href="#" onclick="loadSpecies();">
+                        <a href="#/" onclick="loadSpecies();">
                             <span class="glyphicon glyphicon-search"></span>
                         </a>
                         <span id="sSpinner" class="hidden glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
@@ -195,7 +195,7 @@
                             Ignore
                         </label>
                         &nbsp;
-                        <a href="#" onclick="toggleParameterOrdering('kcsOrder');">
+                        <a href="#/" onclick="toggleParameterOrdering('kcsOrder');">
                             <span id="kcsOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
                         </a>
                         <input type="hidden" id="kcsOrderValue" value="a"/>
@@ -203,31 +203,31 @@
 
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<div class="form-group div-ctr">
-							<label for="selfHomology">BGC Self-Homology</label>
-							<input type="range" class="sld-lg" value="0" min="0" max="10" step="1" id="selfHomology"
-								onInput="updateRangeValue(this, 'shValue')" disabled="disabled"
-							/>
-							<output id="shValue">0</output>
-							<br />
-                            <label for="minimumMatch">Minimum Match (bp)&nbsp;</label>
-                            <input class="form-control input-sm" style="width: 70px;" type="number" value="" min="7" step="2" id="minimumMatch" disabled="disabled"/>
-							&nbsp;
-							<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right"
-								title="This input parameter considers a sequence of at least N nucleotides aligned contiguously to be considered for the Self-Homology score."
-							></span>
-							<br />
-							<br />
-							<label>
-								<input type="checkbox" checked="checked" id="ignoreSH" onClick="toggleRangeDisabling('selfHomology', 'shValue');" />
-								Ignore
-							</label>
-							&nbsp;
-							<a href="#" onclick="toggleParameterOrdering('shOrder');">
-                                <span id="shOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
-							</a>
-                            <input type="hidden" id="shOrderValue" value="a"/>
-						</div>
+                    <div class="form-group div-ctr">
+                        <label for="selfHomology">BGC Self-Homology</label>
+                        <input type="range" class="sld-lg" value="0" min="0" max="10" step="1" id="selfHomology"
+                               onInput="updateRangeValue(this, 'shValue')" disabled="disabled"
+                        />
+                        <output id="shValue">0</output>
+                        <br/>
+                        <label for="minimumMatch">Minimum Match (bp)&nbsp;</label>
+                        <input class="form-control input-sm" style="width: 70px;" type="number" value="" min="7" step="2" id="minimumMatch" disabled="disabled"/>
+                        &nbsp;
+                        <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right"
+                              title="This input parameter considers a sequence of at least N nucleotides aligned contiguously to be considered for the Self-Homology score."
+                        ></span>
+                        <br/>
+                        <br/>
+                        <label>
+                            <input type="checkbox" checked="checked" id="ignoreSH" onClick="toggleRangeDisabling('selfHomology', 'shValue');"/>
+                            Ignore
+                        </label>
+                        &nbsp;
+                        <a href="#/" onclick="toggleParameterOrdering('shOrder');">
+                            <span id="shOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
+                        </a>
+                        <input type="hidden" id="shOrderValue" value="a"/>
+                    </div>
 
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
@@ -243,7 +243,7 @@
                             Ignore
                         </label>
                         &nbsp;
-                        <a href="#" onclick="toggleParameterOrdering('pdOrder');">
+                        <a href="#/" onclick="toggleParameterOrdering('pdOrder');">
                             <span id="pdOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                         </a>
                         <input type="hidden" id="pdOrderValue" value="d"/>

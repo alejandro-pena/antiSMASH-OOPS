@@ -113,6 +113,11 @@ $(document).ready(function () {
     }
 });
 
+function removeSpecies() {
+    $('#results-block').remove();
+    $('#speciesName').val('');
+}
+
 /**
  * This function encapsulates the logic for disabling and enabling the view
  * elements when the Ignore checkbox of each parameter is clicked
@@ -211,7 +216,7 @@ function prioritise() {
     // REFERENCE SPECIES
 
     var refSpecies = $('#selectSpecies').val();
-    if (refSpecies === 'No data found.' || refSpecies === undefined)
+    if (refSpecies === undefined || refSpecies === 'No data found.')
         refSpecies = 'undefined';
 
     // CLUSTER TYPE

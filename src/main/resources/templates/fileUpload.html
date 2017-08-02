@@ -68,7 +68,7 @@
                     <td class="t-ctr" th:text="${file.name}"></td>
                     <td class="t-ctr">ZIP File</td>
                     <td class="t-ctr">
-                        <a th:href="@{'/delete/' + ${file.name}}" th:method="delete">
+                        <a th:href="@{'/delete/' + ${file.name}}">
                             <span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </td>

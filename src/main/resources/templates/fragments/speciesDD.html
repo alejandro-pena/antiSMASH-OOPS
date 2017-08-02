@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <body>
-	<div th:fragment="speciesDD" id="results-block">
-		<label for="selectSpecies">Select&nbsp;&nbsp;</label>
-		<select class="form-control input-sm" id="selectSpecies" th:field="*{species}">
-			<option th:each="species : ${speciesList}" th:value="${species.speciesId}" th:text="${species.speciesName}"></option>
-		</select>
-	</div>
+<div th:fragment="speciesDD" id="results-block">
+    <label for="selectSpecies">Select&nbsp;&nbsp;</label>
+    <select class="form-control input-sm" id="selectSpecies" th:field="*{species}">
+        <option th:each="species : ${speciesList}" th:value="${species.speciesId}" th:text="${species.speciesName}"></option>
+    </select>
+    <a href="#/">
+        <span class="glyphicon glyphicon-remove" onclick="removeSpecies()"></span>
+    </a>
+</div>
 </body>
 </html>
