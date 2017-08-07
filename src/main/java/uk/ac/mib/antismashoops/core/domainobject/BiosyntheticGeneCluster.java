@@ -29,6 +29,7 @@ public class BiosyntheticGeneCluster implements Cloneable
     private String clusterType;
     private String species;
     private boolean ttaCluster;
+    private int selfHomologyMaximumScore = -1;
 
     // CLUSTER SCORING ATTRIBUTES
 
@@ -156,6 +157,18 @@ public class BiosyntheticGeneCluster implements Cloneable
     public void setTtaCluster(final boolean ttaCluster)
     {
         this.ttaCluster = ttaCluster;
+    }
+
+
+    public int getSelfHomologyMaximumScore()
+    {
+        return selfHomologyMaximumScore;
+    }
+
+
+    public void setSelfHomologyMaximumScore(final int selfHomologyMaximumScore)
+    {
+        this.selfHomologyMaximumScore = selfHomologyMaximumScore;
     }
 
     /*

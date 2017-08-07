@@ -232,7 +232,7 @@ public class ExternalDataService
 
         for (File parent : list)
         {
-            if (parent.isDirectory())
+            if (parent.isDirectory() && !parent.getName().equalsIgnoreCase("selfHomology"))
             {
                 directories++;
                 File folder = new File(uploadPath + workspace.getName(), parent.getName());
@@ -250,6 +250,7 @@ public class ExternalDataService
                 zipFiles++;
             }
         }
+        log.info("GbkFiles: {} BgcDataSize: {} Directories: {} ZipFiles: {}", gbk_files, bgcDataSize, directories, zipFiles);
         if (gbk_files == bgcDataSize && directories == zipFiles)
         {
             return true;

@@ -187,7 +187,7 @@ public class DashboardController
             }
             if (selfHomology > 0)
             {
-                scoreService.setSelfHomologyScore(minimumMatch);
+                scoreService.setSelfHomologyScore(workspaceManager.getCurrentWorkspace(), applicationBgcData, minimumMatch);
                 prioritisationService.prioritiseParameterAndAddScore(
                     shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
             }
@@ -195,7 +195,7 @@ public class DashboardController
             {
                 // SET THE CLUSTER BLAST DATA
                 externalDataService.setClusterBlastData(applicationBgcData, workspaceManager.getCurrentWorkspace());
-                scoreService.setPhylogeneticDiversityScore();
+                scoreService.setPhylogeneticDiversityScore(applicationBgcData);
 
                 prioritisationService.prioritiseParameterAndAddScore(
                     pdOrder.equalsIgnoreCase("d") ? ClusterSort.PDSORT : ClusterSort.PDSORTREV, pDiversity);
@@ -237,7 +237,7 @@ public class DashboardController
             }
             if (selfHomology > 0)
             {
-                scoreService.setSelfHomologyScore(minimumMatch);
+                scoreService.setSelfHomologyScore(workspaceManager.getCurrentWorkspace(), applicationBgcData, minimumMatch);
                 prioritisationService.prioritiseParameterAndAddScore(
                     shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
             }
@@ -245,7 +245,7 @@ public class DashboardController
             {
                 // SET THE CLUSTER BLAST DATA
                 externalDataService.setClusterBlastData(applicationBgcData, workspaceManager.getCurrentWorkspace());
-                scoreService.setPhylogeneticDiversityScore();
+                scoreService.setPhylogeneticDiversityScore(applicationBgcData);
 
                 prioritisationService.prioritiseParameterAndAddScore(
                     pdOrder.equalsIgnoreCase("d") ? ClusterSort.PDSORT : ClusterSort.PDSORTREV, pDiversity);

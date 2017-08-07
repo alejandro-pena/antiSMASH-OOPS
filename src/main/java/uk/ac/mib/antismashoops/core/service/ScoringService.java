@@ -1,20 +1,17 @@
 package uk.ac.mib.antismashoops.core.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.ac.mib.antismashoops.core.datatransferobject.SelfHomologyDTO;
 import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
+import uk.ac.mib.antismashoops.core.service.params.SelfHomologyService;
+import uk.ac.mib.antismashoops.web.utils.Workspace;
 
 @Slf4j
 @Component
 public class ScoringService
 {
-
-    @Autowired
-    ApplicationBgcData appData;
-
-
     /**
      * Calls the Self-Homology Score function for each cluster. If the Homology
      * for a determined minimum match paramter is already calculated then it
@@ -24,20 +21,24 @@ public class ScoringService
      *                     order to be considered for the final score.
      */
 
-    public void setSelfHomologyScore(int minimumMatch)
+    public void setSelfHomologyScore(Workspace workspace, ApplicationBgcData appData, int minimumMatch)
     {
+        SelfHomologyService.DIRECTORY = workspace.getRoot().getAbsolutePath() + "/selfHomology";
+
         for (BiosyntheticGeneCluster bgc : appData.getWorkingDataSet())
         {
             if (bgc.getSelfHomologyScores().containsKey(minimumMatch))
             {
-                bgc.setSelfHomologyScore(bgc.getSelfHomologyScores().get(minimumMatch));
+                bgc.setSelfHomologyMaximumScore(bgc.getSelfHomologyScores().get(minimumMatch));
             }
             else
             {
                 log.info("Self-Homology calculation for Cluster " + bgc.getClusterId() + " started...");
-                bgc.setSelfHomologyScore(SelfHomologyService.calculateScore(bgc.getClusterSequence(), minimumMatch,
-                    bgc.getOrigin(), bgc.getNumber()));
-                bgc.getSelfHomologyScores().put(minimumMatch, bgc.getSelfHomologyScore());
+                SelfHomologyDTO selfHomologyDTO = SelfHomologyService.calculateScore(bgc.getClusterSequence(), minimumMatch,
+                    bgc.getOrigin(), bgc.getNumber());
+                bgc.setSelfHomologyScore(selfHomologyDTO.getSelfHomologyScore());
+                bgc.setSelfHomologyMaximumScore(selfHomologyDTO.getMaximumMatchScore());
+                bgc.getSelfHomologyScores().put(minimumMatch, bgc.getSelfHomologyMaximumScore());
                 log.info("...self-Homology calculation finished.");
             }
         }
@@ -50,7 +51,7 @@ public class ScoringService
      * tree of life.
      */
 
-    public void setPhylogeneticDiversityScore()
+    public void setPhylogeneticDiversityScore(ApplicationBgcData appData)
     {
         for (BiosyntheticGeneCluster bgc : appData.getWorkingDataSet())
         {
