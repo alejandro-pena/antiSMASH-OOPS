@@ -78,7 +78,7 @@ public class ExternalDataService
      * loaded no action is taken by the function.
      */
 
-    public void decompressLoadedFiles(Workspace workspace)
+    public void decompressLoadedFiles(Workspace workspace) throws IOException
     {
 
         File root = workspace.getRoot();
@@ -94,6 +94,8 @@ public class ExternalDataService
             log.info("Skipping file decompression in Workspace: {}", workspace.getName());
             return;
         }
+
+        deleteExistingWorkspaceFolders(workspace);
 
         for (File parent : root.listFiles())
         {

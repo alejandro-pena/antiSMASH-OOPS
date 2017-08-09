@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import uk.ac.mib.antismashoops.core.datatransferobject.SelfHomologyDTO;
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable.Detail;
 
 public class BiosyntheticGeneCluster implements Cloneable
@@ -40,7 +41,7 @@ public class BiosyntheticGeneCluster implements Cloneable
     private double codonBiasS = -1.0;
     private double kcScore = 0.0;
     private int selfHomologyScore = -1;
-    private Map<Integer, Integer> selfHomologyScores = new HashMap<>();
+    private Map<Integer, SelfHomologyDTO> selfHomologyScores = new HashMap<>();
     private int diversityScore = -1;
 
     // FINAL CLUSTER SCORE
@@ -316,7 +317,7 @@ public class BiosyntheticGeneCluster implements Cloneable
     }
 
 
-    public Map<Integer, Integer> getSelfHomologyScores()
+    public Map<Integer, SelfHomologyDTO> getSelfHomologyScores()
     {
         return selfHomologyScores;
     }
@@ -324,7 +325,7 @@ public class BiosyntheticGeneCluster implements Cloneable
     // PHYLOGENETIC DIVERSITY
 
 
-    public void setSelfHomologyScores(Map<Integer, Integer> selfHomologyScores)
+    public void setSelfHomologyScores(Map<Integer, SelfHomologyDTO> selfHomologyScores)
     {
         this.selfHomologyScores = selfHomologyScores;
     }

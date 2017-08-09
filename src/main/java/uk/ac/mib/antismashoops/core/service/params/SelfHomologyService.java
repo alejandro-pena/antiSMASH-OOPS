@@ -14,11 +14,11 @@ public class SelfHomologyService
     private static String seqTwo;
     private static String[] sequences;
     public static short[][] matrix;
-    private static short match = 2;
-    private static short og = -10;
-    private static short eg = -2;
-    private static short gl = 0;
-    private static short g;
+    private static int match = 2;
+    private static int og = -10;
+    private static int eg = -2;
+    private static long gl = 0;
+    private static long g;
     private static int minMatch;
     private static int score;
     private static String fileName;
@@ -123,12 +123,11 @@ public class SelfHomologyService
                     continue;
                 }
 
-                g = (short) (og + (gl * eg));
-                if (seqTwo.charAt(i) == seqOne.charAt(j))
+                g = og + (gl * eg);
+                if (seqTwo.charAt(i) == seqOne.charAt(j) && seqOne.charAt(j) != 'n' && seqTwo.charAt(i) != 'n')
                 {
                     gl = 0;
                     matrix[i][j] = max(score(i, j, g), matrix[i - 1][j] + g, matrix[i][j - 1] + g);
-
                 }
                 else
                 {
@@ -278,20 +277,25 @@ public class SelfHomologyService
     }
 
 
-    private static short score(int i, int j, short g)
+    private static short score(int i, int j, long g)
     {
-        if (seqTwo.charAt(i) == seqOne.charAt(j))
+        if (seqTwo.charAt(i) == seqOne.charAt(j) && seqOne.charAt(j) != 'n' && seqTwo.charAt(i) != 'n')
         {
             return (short) (matrix[i - 1][j - 1] + match);
         }
         else
         {
+            long score = (matrix[i - 1][j - 1] + g);
+            if (score <= 0)
+            {
+                return 0;
+            }
             return (short) (matrix[i - 1][j - 1] + g);
         }
     }
 
 
-    private static short max(int scoreA, int scoreB, int scoreC)
+    private static short max(long scoreA, long scoreB, long scoreC)
     {
         short score = (short) ((scoreA > scoreB ? scoreA : scoreB) > scoreC ? (scoreA > scoreB ? scoreA : scoreB)
             : scoreC);

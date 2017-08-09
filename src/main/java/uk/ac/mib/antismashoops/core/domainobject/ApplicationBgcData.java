@@ -55,7 +55,6 @@ public class ApplicationBgcData
         }
 
         log.info("Syncing Cluster Data...");
-        externalDataService.deleteExistingWorkspaceFolders(workspace);
         externalDataService.decompressLoadedFiles(workspace);
         externalDataService.loadBggData(bgcData, workspace);
         this.workingDataSet.clear();

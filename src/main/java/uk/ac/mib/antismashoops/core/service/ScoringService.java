@@ -29,7 +29,8 @@ public class ScoringService
         {
             if (bgc.getSelfHomologyScores().containsKey(minimumMatch))
             {
-                bgc.setSelfHomologyMaximumScore(bgc.getSelfHomologyScores().get(minimumMatch));
+                bgc.setSelfHomologyScore(bgc.getSelfHomologyScores().get(minimumMatch).getSelfHomologyScore());
+                bgc.setSelfHomologyMaximumScore(bgc.getSelfHomologyScores().get(minimumMatch).getMaximumMatchScore());
             }
             else
             {
@@ -38,7 +39,8 @@ public class ScoringService
                     bgc.getOrigin(), bgc.getNumber());
                 bgc.setSelfHomologyScore(selfHomologyDTO.getSelfHomologyScore());
                 bgc.setSelfHomologyMaximumScore(selfHomologyDTO.getMaximumMatchScore());
-                bgc.getSelfHomologyScores().put(minimumMatch, bgc.getSelfHomologyMaximumScore());
+                bgc.getSelfHomologyScores().put(minimumMatch, selfHomologyDTO);
+                log.info("Cluster: {} Score: {}", bgc.getName(), bgc.getSelfHomologyScore());
                 log.info("...self-Homology calculation finished.");
             }
         }
