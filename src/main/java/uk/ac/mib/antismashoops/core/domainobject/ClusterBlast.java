@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -18,11 +17,11 @@ import javax.xml.transform.stream.StreamResult;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import uk.ac.mib.antismashoops.web.utils.Workspace;
 
 @Slf4j
 @Getter
@@ -35,6 +34,12 @@ public class ClusterBlast
     private String number;
     private List<ClusterBlastLineage> cbLin = new ArrayList<>();
     private Document xmlLifeTree;
+
+
+    public ClusterBlast()
+    {
+
+    }
 
 
     /**
@@ -63,7 +68,7 @@ public class ClusterBlast
 
     public int getDiversityScore()
     {
-        return getTreeSize(this.xmlLifeTree);
+        return getTreeSize(this.xmlLifeTree) > 0 ? getTreeSize(this.xmlLifeTree) : -1;
     }
 
 
@@ -101,7 +106,7 @@ public class ClusterBlast
      * Blasted. Merges all the data in a single Tree of Life
      */
 
-    public void generateLineageTree()
+    public void generateLineageTree(Workspace workspace)
     {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -114,6 +119,11 @@ public class ClusterBlast
             doc.appendChild(element);
 
             Node root = doc.getFirstChild();
+
+            if (this.getCbLin() == null || this.cbLin.isEmpty())
+            {
+                return;
+            }
 
             for (ClusterBlastLineage item : this.getCbLin())
             {
@@ -139,9 +149,8 @@ public class ClusterBlast
                     }
                 }
             }
-
             this.xmlLifeTree = doc;
-            prettyPrint(doc);
+            prettyPrint(workspace, doc);
 
         }
         catch (Exception e)
@@ -158,7 +167,7 @@ public class ClusterBlast
      * @param doc The root node of the Tree of Life data
      */
 
-    public void prettyPrint(Document doc)
+    public void prettyPrint(Workspace workspace, Document doc)
     {
         try
         {
@@ -169,7 +178,7 @@ public class ClusterBlast
             DOMSource source = new DOMSource(doc);
             transformer.transform(source, result);
             String xmlString = result.getWriter().toString();
-            writeToFile(xmlString);
+            writeToFile(workspace, xmlString);
 
         }
         catch (Exception e)
@@ -187,9 +196,9 @@ public class ClusterBlast
      *             the data in XML format.
      */
 
-    public void writeToFile(String data)
+    public void writeToFile(Workspace workspace, String data)
     {
-        File directory = new File("lifeTreeOutput");
+        File directory = new File(workspace.getRoot().getAbsoluteFile(), "lifeTreeOutput");
         File file = new File(directory, this.origin + ".cluster" + this.number + ".xml");
 
         if (!directory.exists())
@@ -214,14 +223,5 @@ public class ClusterBlast
         {
             e.printStackTrace();
         }
-    }
-
-
-    @ExceptionHandler(Exception.class)
-    public String exceptionHandler(HttpServletRequest req, Exception e)
-    {
-        req.setAttribute("message", e.getClass() + " - " + e.getMessage());
-        log.error("Unexpected exception", e);
-        return "error";
     }
 }

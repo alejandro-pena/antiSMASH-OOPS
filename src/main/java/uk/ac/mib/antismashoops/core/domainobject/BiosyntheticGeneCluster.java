@@ -41,8 +41,9 @@ public class BiosyntheticGeneCluster implements Cloneable
     private double codonBiasS = -1.0;
     private double kcScore = 0.0;
     private int selfHomologyScore = -1;
-    private Map<Integer, SelfHomologyDTO> selfHomologyScores = new HashMap<>();
+    private Map<String, SelfHomologyDTO> selfHomologyScores = new HashMap<>();
     private int diversityScore = -1;
+    private Map<String, Integer> diversityScores = new HashMap<>();
 
     // FINAL CLUSTER SCORE
     private double score = 0.0;
@@ -53,7 +54,7 @@ public class BiosyntheticGeneCluster implements Cloneable
     private String clusterSequence;
     private CodonUsageTable codonUsageTable;
     private KnownCluster knownClustersData;
-    private ClusterBlast clusterBlastsData;
+    private ClusterBlast clusterBlastsData = new ClusterBlast();
 
 
     /**
@@ -172,27 +173,24 @@ public class BiosyntheticGeneCluster implements Cloneable
         this.selfHomologyMaximumScore = selfHomologyMaximumScore;
     }
 
-    /*
-     *
-	 * GETTERS AND SETTERS FOR THE PARAMETER SCORE HOLDERS
-	 * 
-	 */
-
-    // NUMBER OF GENES
-
 
     public void setSpecies(String species)
     {
         this.species = species;
     }
 
+    /*
+     *
+	 * GETTERS AND SETTERS FOR THE PARAMETER SCORE HOLDERS
+	 *
+	 */
 
+
+    // NUMBER OF GENES
     public int getNumberOfGenes()
     {
         return numberOfGenes;
     }
-
-    // CDS LENGTH
 
 
     public void setNumberOfGenes(int numberOfGenes)
@@ -201,12 +199,11 @@ public class BiosyntheticGeneCluster implements Cloneable
     }
 
 
+    // CDS LENGTH
     public int getCdsLength()
     {
         return cdsLength;
     }
-
-    // GC CONTENT
 
 
     public void setCdsLength()
@@ -224,12 +221,11 @@ public class BiosyntheticGeneCluster implements Cloneable
     }
 
 
+    // GC CONTENT
     public double getGcContent()
     {
         return gcContent;
     }
-
-    // GC CONTENT CONSIDERING A REFERENCE SPECIES
 
 
     public void setGcContent()
@@ -250,12 +246,11 @@ public class BiosyntheticGeneCluster implements Cloneable
     }
 
 
+    // GC CONTENT CONSIDERING A REFERENCE SPECIES
     public double getGcContentS()
     {
         return gcContentS;
     }
-
-    // CODON BIAS
 
 
     public void setGcContentS(double gcContentRef)
@@ -264,12 +259,11 @@ public class BiosyntheticGeneCluster implements Cloneable
     }
 
 
+    // CODON BIAS
     public double getCodonBiasS()
     {
         return codonBiasS;
     }
-
-    // KNOWN CLUSTER SIMILARITY
 
 
     public void setCodonBiasS(CodonUsageTable cutRef)
@@ -289,12 +283,11 @@ public class BiosyntheticGeneCluster implements Cloneable
     }
 
 
+    // KNOWN CLUSTER SIMILARITY
     public double getKcScore()
     {
         return kcScore;
     }
-
-    // SELF-HOMOLOGY
 
 
     public void setKcScore(double kcScore)
@@ -303,12 +296,11 @@ public class BiosyntheticGeneCluster implements Cloneable
     }
 
 
+    // SELF-HOMOLOGY
     public int getSelfHomologyScore()
     {
         return selfHomologyScore;
     }
-
-    // SELF-HOMOLOGY CACHING MAP
 
 
     public void setSelfHomologyScore(int selfHomologyScore)
@@ -317,26 +309,24 @@ public class BiosyntheticGeneCluster implements Cloneable
     }
 
 
-    public Map<Integer, SelfHomologyDTO> getSelfHomologyScores()
+    // SELF-HOMOLOGY CACHING MAP
+    public Map<String, SelfHomologyDTO> getSelfHomologyScores()
     {
         return selfHomologyScores;
     }
 
-    // PHYLOGENETIC DIVERSITY
 
-
-    public void setSelfHomologyScores(Map<Integer, SelfHomologyDTO> selfHomologyScores)
+    public void setSelfHomologyScores(Map<String, SelfHomologyDTO> selfHomologyScores)
     {
         this.selfHomologyScores = selfHomologyScores;
     }
 
 
+    // PHYLOGENETIC DIVERSITY
     public int getDiversityScore()
     {
         return diversityScore;
     }
-
-    // BGC FINAL SCORE
 
 
     public void setDiversityScore(int diversityScore)
@@ -345,6 +335,20 @@ public class BiosyntheticGeneCluster implements Cloneable
     }
 
 
+    // PHYLOGENETIC DIVERSITY CACHING MAP
+    public Map<String, Integer> getDiversityScores()
+    {
+        return diversityScores;
+    }
+
+
+    public void setDiversityScores(final Map<String, Integer> diversityScores)
+    {
+        this.diversityScores = diversityScores;
+    }
+
+
+    // BGC FINAL SCORE
     public double getScore()
     {
         return score;

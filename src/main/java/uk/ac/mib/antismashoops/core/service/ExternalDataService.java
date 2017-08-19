@@ -234,7 +234,9 @@ public class ExternalDataService
 
         for (File parent : list)
         {
-            if (parent.isDirectory() && !parent.getName().equalsIgnoreCase("selfHomology"))
+            if (parent.isDirectory()
+                && !parent.getName().equalsIgnoreCase("selfHomology")
+                && !parent.getName().equalsIgnoreCase("lifeTreeOutput"))
             {
                 directories++;
                 File folder = new File(uploadPath + workspace.getName(), parent.getName());
@@ -268,7 +270,6 @@ public class ExternalDataService
 
     public void setClusterBlastData(ApplicationBgcData appData, Workspace workspace)
     {
-
         List<ClusterBlast> clusterBlastList = new ArrayList<>();
 
         File root = workspace.getRoot();
@@ -285,10 +286,9 @@ public class ExternalDataService
                 return;
             }
         }
-
         for (File parent : workspace.getRoot().listFiles())
         {
-            if (parent.isDirectory())
+            if (parent.isDirectory() && !"selfHomology".equals(parent.getName()) && !"lifeTreeOutput".equals(parent.getName()))
             {
                 File folder = new File(
                     uploadPath + workspace.getName() + "/" + parent.getName(),
@@ -341,7 +341,6 @@ public class ExternalDataService
                 it.remove();
             }
         }
-
         populateClusterBlastData(clusterBlastList, appData);
     }
 
@@ -357,7 +356,10 @@ public class ExternalDataService
 
     public void populateClusterBlastData(List<ClusterBlast> clusterBlastList, ApplicationBgcData appData)
     {
-
+        if (clusterBlastList.isEmpty())
+        {
+            return;
+        }
         for (ClusterBlast cbe : clusterBlastList)
         {
             cbe.setCbLin(new ArrayList<>());

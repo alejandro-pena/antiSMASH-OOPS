@@ -40,14 +40,14 @@ public class KnownClustersService
      *                            by the user
      */
 
-    public void setKnownClusterSimilarityScore(ApplicationBgcData appData, double preferredSimilarity)
+    public void setKnownClusterSimilarityScore(ApplicationBgcData appData, double preferredSimilarity, int plusMinusValue)
     {
         for (BiosyntheticGeneCluster bgc : appData.getWorkingDataSet())
         {
             KnownCluster kc = bgc.getKnownClustersData();
             if (kc != null)
             {
-                bgc.setKcScore(kc.getBestMatchScore(preferredSimilarity));
+                bgc.setKcScore(kc.getBestMatchScore(preferredSimilarity, plusMinusValue));
             }
         }
     }

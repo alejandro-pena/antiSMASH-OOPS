@@ -92,27 +92,28 @@ public class DashboardController
      * prioritisation coming from the AJAX call in the Dashboard View. Receives
      * 19 parameters which will define the prioritisation engine logic.
      *
-     * @param geneCount                           User preference for the parameter
-     * @param nogOrder                            pdOrder Ascending or Descending (a or d)
-     * @param sequenceLength                      User preference for the parameter
-     * @param slOrder                             pdOrder Ascending or Descending (a or d)
-     * @param gcContent                           User preference for the parameter
-     * @param gccOrder                            pdOrder Ascending or Descending (a or d)
-     * @param codonBias                           User preference for the parameter
-     * @param cbOrder                             pdOrder Ascending or Descending (a or d)
-     * @param refSpecies                          specified by the user, undefined isn't specified
-     * @param types                               BGC types selected by the user to show
-     * @param ignorePT                            Ignore flag for the Preferred type filtering option
-     * @param knownCluster                        User preference for the parameter
-     * @param kcsOrder                            pdOrder Ascending or Descending (a or d)
-     * @param preferrexternalDataServiceimilarity The preferred percentage of similarity
-     * @param selfHomology                        User preference for the parameter
-     * @param shOrder                             pdOrder Ascending or Descending (a or d)
-     * @param minimumMatch                        The minimum nucleotide match to be considered
-     * @param pDiversity                          User preference for the parameter
-     * @param pdOrder                             Ascending or Descending (a or d)
-     * @param model                               The backing model object for the Dashboard View where the
-     *                                            necessary objects are appended.
+     * @param geneCount           User preference for the parameter
+     * @param nogOrder            pdOrder Ascending or Descending (a or d)
+     * @param sequenceLength      User preference for the parameter
+     * @param slOrder             pdOrder Ascending or Descending (a or d)
+     * @param gcContent           User preference for the parameter
+     * @param gccOrder            pdOrder Ascending or Descending (a or d)
+     * @param codonBias           User preference for the parameter
+     * @param cbOrder             pdOrder Ascending or Descending (a or d)
+     * @param refSpecies          specified by the user, undefined isn't specified
+     * @param types               BGC types selected by the user to show
+     * @param ignorePT            Ignore flag for the Preferred type filtering option
+     * @param knownCluster        User preference for the parameter
+     * @param kcsOrder            pdOrder Ascending or Descending (a or d)
+     * @param preferredSimilarity The preferred percentage of similarity
+     * @param plusMinusValue      The range value for similarity
+     * @param selfHomology        User preference for the parameter
+     * @param shOrder             pdOrder Ascending or Descending (a or d)
+     * @param minimumMatch        The minimum nucleotide match to be considered
+     * @param pDiversity          User preference for the parameter
+     * @param pdOrder             Ascending or Descending (a or d)
+     * @param model               The backing model object for the Dashboard View where the
+     *                            necessary objects are appended.
      * @return The Dashboard HTML View to be rendered by Thymeleaf having as
      * attributes the BGC Data and the BGC Types List
      * @throws IOException Throws Input Output Exception
@@ -133,7 +134,8 @@ public class DashboardController
         @RequestParam(value = "ipt") String ignorePT,
         @RequestParam(value = "kcs") int knownCluster,
         @RequestParam(value = "kcso") String kcsOrder,
-        @RequestParam(value = "psim") double preferrexternalDataServiceimilarity,
+        @RequestParam(value = "psim") double preferredSimilarity,
+        @RequestParam(value = "pm") int plusMinusValue,
         @RequestParam(value = "sh") int selfHomology,
         @RequestParam(value = "sho") String shOrder,
         @RequestParam(value = "minm") int minimumMatch,
@@ -158,7 +160,7 @@ public class DashboardController
         // SET THE KNOWN CLUSTER DATA
 
         knownClustersService.setKnownClusterData(applicationBgcData, workspaceManager.getCurrentWorkspace());
-        knownClustersService.setKnownClusterSimilarityScore(applicationBgcData, preferrexternalDataServiceimilarity);
+        knownClustersService.setKnownClusterSimilarityScore(applicationBgcData, preferredSimilarity, plusMinusValue);
 
         // SORT BY ONLY THE BASIC FOUR PARAMETERS WITHOUT A REFERENCE SPECIES
 
@@ -194,8 +196,9 @@ public class DashboardController
             if (pDiversity > 0)
             {
                 // SET THE CLUSTER BLAST DATA
+
                 externalDataService.setClusterBlastData(applicationBgcData, workspaceManager.getCurrentWorkspace());
-                scoreService.setPhylogeneticDiversityScore(applicationBgcData);
+                scoreService.setPhylogeneticDiversityScore(workspaceManager.getCurrentWorkspace(), applicationBgcData);
 
                 prioritisationService.prioritiseParameterAndAddScore(
                     pdOrder.equalsIgnoreCase("d") ? ClusterSort.PDSORT : ClusterSort.PDSORTREV, pDiversity);
@@ -245,7 +248,7 @@ public class DashboardController
             {
                 // SET THE CLUSTER BLAST DATA
                 externalDataService.setClusterBlastData(applicationBgcData, workspaceManager.getCurrentWorkspace());
-                scoreService.setPhylogeneticDiversityScore(applicationBgcData);
+                scoreService.setPhylogeneticDiversityScore(workspaceManager.getCurrentWorkspace(), applicationBgcData);
 
                 prioritisationService.prioritiseParameterAndAddScore(
                     pdOrder.equalsIgnoreCase("d") ? ClusterSort.PDSORT : ClusterSort.PDSORTREV, pDiversity);

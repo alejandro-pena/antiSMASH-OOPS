@@ -27,19 +27,20 @@ public class ScoringService
 
         for (BiosyntheticGeneCluster bgc : appData.getWorkingDataSet())
         {
-            if (bgc.getSelfHomologyScores().containsKey(minimumMatch))
+            SelfHomologyDTO selfHomologyDTO = bgc.getSelfHomologyScores().get(minimumMatch + bgc.getClusterId());
+            if (selfHomologyDTO != null)
             {
-                bgc.setSelfHomologyScore(bgc.getSelfHomologyScores().get(minimumMatch).getSelfHomologyScore());
-                bgc.setSelfHomologyMaximumScore(bgc.getSelfHomologyScores().get(minimumMatch).getMaximumMatchScore());
+                bgc.setSelfHomologyScore(selfHomologyDTO.getSelfHomologyScore());
+                bgc.setSelfHomologyMaximumScore(selfHomologyDTO.getMaximumMatchScore());
             }
             else
             {
                 log.info("Self-Homology calculation for Cluster " + bgc.getClusterId() + " started...");
-                SelfHomologyDTO selfHomologyDTO = SelfHomologyService.calculateScore(bgc.getClusterSequence(), minimumMatch,
+                selfHomologyDTO = SelfHomologyService.calculateScore(bgc.getClusterSequence(), minimumMatch,
                     bgc.getOrigin(), bgc.getNumber());
                 bgc.setSelfHomologyScore(selfHomologyDTO.getSelfHomologyScore());
                 bgc.setSelfHomologyMaximumScore(selfHomologyDTO.getMaximumMatchScore());
-                bgc.getSelfHomologyScores().put(minimumMatch, selfHomologyDTO);
+                bgc.getSelfHomologyScores().put(minimumMatch + bgc.getClusterId(), selfHomologyDTO);
                 log.info("Cluster: {} Score: {}", bgc.getName(), bgc.getSelfHomologyScore());
                 log.info("...self-Homology calculation finished.");
             }
@@ -53,12 +54,20 @@ public class ScoringService
      * tree of life.
      */
 
-    public void setPhylogeneticDiversityScore(ApplicationBgcData appData)
+    public void setPhylogeneticDiversityScore(Workspace workspace, ApplicationBgcData appData)
     {
         for (BiosyntheticGeneCluster bgc : appData.getWorkingDataSet())
         {
-            bgc.getClusterBlastsData().generateLineageTree();
-            bgc.setDiversityScore(bgc.getClusterBlastsData().getDiversityScore());
+            try
+            {
+                bgc.getClusterBlastsData().generateLineageTree(workspace);
+                bgc.setDiversityScore(bgc.getClusterBlastsData().getDiversityScore());
+                bgc.getDiversityScores().put(bgc.getClusterId(), bgc.getDiversityScore());
+            }
+            catch (Exception e)
+            {
+                log.error("Exception while generating Linage Tree for Cluster: {}", bgc.getName(), e);
+            }
         }
     }
 }

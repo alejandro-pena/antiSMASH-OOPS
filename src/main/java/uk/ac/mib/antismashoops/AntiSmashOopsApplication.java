@@ -24,8 +24,6 @@ public class AntiSmashOopsApplication
             public void addResourceHandlers(ResourceHandlerRegistry registry)
             {
                 registry.addResourceHandler("/local/**").addResourceLocations("file:appData/");
-                registry.addResourceHandler("/lifeTree/**").addResourceLocations("file:lifeTreeOutput/");
-
                 super.addResourceHandlers(registry);
             }
         };

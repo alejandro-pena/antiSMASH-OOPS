@@ -134,15 +134,19 @@ function toggleRangeDisabling(itemId, valueOutput) {
         }
         if (itemId == 'phylogeneticDiversity')
             $('#pdAlert').show();
-        if (itemId == 'knownClustersSimilarity')
+        if (itemId == 'knownClustersSimilarity') {
             toggleDisabling('similarityPercentage');
+            toggleDisabling('plusMinus');
+        }
     } else {
         element.disabled = true;
         element.value = 0;
         if (itemId == 'selfHomology')
             toggleDisabling('minimumMatch');
-        if (itemId == 'knownClustersSimilarity')
+        if (itemId == 'knownClustersSimilarity') {
             toggleDisabling('similarityPercentage');
+            toggleDisabling('plusMinus');
+        }
     }
     $('#' + valueOutput).html(element.value);
 };
@@ -229,6 +233,7 @@ function prioritise() {
 
     var kcSim = $('#knownClustersSimilarity').val();
     var pSim = $('#similarityPercentage').val();
+    var plusMinus = $('#plusMinus').val();
     var kcsOrderValue = $('#kcsOrderValue').val();
 
     // SELF-HOMOLOGY
@@ -261,6 +266,7 @@ function prioritise() {
         ipt: ignorePT,
         kcs: kcSim,
         psim: pSim,
+        pm: plusMinus,
         kcso: kcsOrderValue,
         sh: sHom,
         minm: minM,

@@ -48,7 +48,7 @@
             <td th:if="${cluster.selfHomologyMaximumScore == -1}" th:inline="text">N/A</td>
             <td th:if="${cluster.diversityScore == -1}" th:inline="text">N/A</td>
             <td th:if="${cluster.diversityScore != -1}" th:inline="text">
-                <a th:href="@{|/lifeTree/${cluster.origin}.cluster${cluster.number}.xml|}" target="_blank">[[${cluster.diversityScore}]]</a>
+                <a th:href="@{|/local/${wsName}/lifeTreeOutput/${cluster.origin}.cluster${cluster.number}.xml|}" target="_blank">[[${cluster.diversityScore}]]</a>
             </td>
         </tr>
         </tbody>

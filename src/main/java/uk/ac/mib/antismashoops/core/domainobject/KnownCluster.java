@@ -57,7 +57,7 @@ public class KnownCluster
      * requested similarity percentage
      */
 
-    public double getBestMatchScore(double preferredSimilarity)
+    public double getBestMatchScore(double preferredSimilarity, int plusMinusValue)
     {
 
         if (this.getClusterHits().size() == 0)
