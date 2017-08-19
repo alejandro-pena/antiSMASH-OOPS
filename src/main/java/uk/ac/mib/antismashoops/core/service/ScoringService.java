@@ -32,6 +32,7 @@ public class ScoringService
             {
                 bgc.setSelfHomologyScore(selfHomologyDTO.getSelfHomologyScore());
                 bgc.setSelfHomologyMaximumScore(selfHomologyDTO.getMaximumMatchScore());
+                log.info("Loaded Self Homology score from cache for Cluster: {}", bgc.getClusterId());
             }
             else
             {
@@ -60,9 +61,17 @@ public class ScoringService
         {
             try
             {
-                bgc.getClusterBlastsData().generateLineageTree(workspace);
-                bgc.setDiversityScore(bgc.getClusterBlastsData().getDiversityScore());
-                bgc.getDiversityScores().put(bgc.getClusterId(), bgc.getDiversityScore());
+                if (bgc.getDiversityScores().get(bgc.getClusterId()) != null)
+                {
+                    bgc.setDiversityScore(bgc.getDiversityScores().get(bgc.getClusterId()));
+                    log.info("Loaded Diversity score from cache for Cluster: {}", bgc.getClusterId());
+                }
+                else
+                {
+                    bgc.getClusterBlastsData().generateLineageTree(workspace);
+                    bgc.setDiversityScore(bgc.getClusterBlastsData().getDiversityScore());
+                    bgc.getDiversityScores().put(bgc.getClusterId(), bgc.getDiversityScore());
+                }
             }
             catch (Exception e)
             {

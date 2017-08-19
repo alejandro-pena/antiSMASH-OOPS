@@ -7,18 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.mib.antismashoops.core.datatransferobject.SelfHomologyDTO;
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable.Detail;
 
+@Slf4j
+@ToString
 public class BiosyntheticGeneCluster implements Cloneable
 {
-
-    private static final Logger logger = LoggerFactory.getLogger(BiosyntheticGeneCluster.class);
-
     // BGC GENERIC ATTRIBUTES
 
     private final String clusterId;
@@ -478,7 +475,10 @@ public class BiosyntheticGeneCluster implements Cloneable
             for (int i = 1; i <= codonTotal; i++)
             {
                 CodonUsageTable.Detail d = cut.getUsage().get(sequence.substring(i * 3 - 3, i * 3));
-                d.setCodonNumber(d.getCodonNumber() + 1);
+                if (d != null)
+                {
+                    d.setCodonNumber(d.getCodonNumber() + 1);
+                }
             }
         }
 
@@ -587,16 +587,5 @@ public class BiosyntheticGeneCluster implements Cloneable
             throw new RuntimeException(e);
         }
         return clone;
-    }
-
-
-    @ExceptionHandler(Exception.class)
-    public String exceptionHandler(HttpServletRequest req, Exception exception)
-    {
-        req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
-        logger.error("Exception thrown: " + exception.getClass());
-        logger.error("Exception message: " + exception.getMessage());
-        exception.printStackTrace();
-        return "error";
     }
 }

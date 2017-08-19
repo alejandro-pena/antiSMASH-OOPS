@@ -362,6 +362,11 @@ public class ExternalDataService
         }
         for (ClusterBlast cbe : clusterBlastList)
         {
+            BiosyntheticGeneCluster cluster = appData.getCluster(cbe.getClusterId());
+            if (cluster != null && cluster.getDiversityScores().get(cluster.getClusterId()) != null)
+            {
+                continue;
+            }
             cbe.setCbLin(new ArrayList<>());
             Scanner scanner = null;
             try
