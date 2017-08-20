@@ -1,76 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8"></meta>
-<title th:inline="text">[[#{app.name}]] :: Home</title>
+    <meta charset="UTF-8"></meta>
+    <title th:inline="text">[[#{app.name}]] :: Home</title>
 
     <link th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
           rel="stylesheet" media="screen"/>
-<link rel="stylesheet" th:href="@{/css/application.css}" />
-<link rel="icon" th:href="@{/images/oops.ico}" />
+    <link rel="stylesheet" th:href="@{/css/application.css}"/>
+    <link rel="icon" th:href="@{/images/oops.ico}"/>
+    <link rel="stylesheet" href="bower_components/sweetalert2/dist/sweetalert2.min.css"/>
 
-<script th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"></script>
-<script th:src="@{/js/jquery.ui.widget.js}"></script>
-<script th:src="@{/js/jquery.iframe-transport.js}"></script>
-<script th:src="@{/js/jquery.fileupload.js}"></script>
-<script th:src="@{/js/bootstrap.min.js}"></script>
-<script th:src="@{/js/script.js}"></script>
+    <script th:src="@{/bower_components/sweetalert2/dist/sweetalert2.min.js"></script>
+    <script th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"></script>
+    <script th:src="@{/js/jquery.ui.widget.js}"></script>
+    <script th:src="@{/js/jquery.iframe-transport.js}"></script>
+    <script th:src="@{/js/jquery.fileupload.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/script.js}"></script>
 
 </head>
 
 <body>
-	<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/header :: header"></div>
 
-	<div class="container">
-		<h1 align="center" th:inline="text">Welcome to antiSMASH - OOPS</h1>
-		<div class="panel panel-default">
-            <div class="panel-body div-ctr">
-				<br />
-                <h4>Please select an existing workspace or create a new one:</h4>
-                <br/>
-                <div id="workspaces" class="div-ctr">
-                    <form id="ws" action="/fileUpload" method="GET">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th class="t-ctr">SELECT</th>
-                                <th class="t-ctr">#</th>
-                                <th class="t-ctr">NAME</th>
-                                <th class="t-ctr">LAST UPDATED DATE</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="workspace, iterStat : ${workspaceData}">
-                                <td class="t-ctr" th:inline="text"><input th:value="${workspace.name}"
-                                                                          name="wsRadio" type="radio"></input></td>
-                                <th class="t-ctr" th:text="${iterStat.count}"></th>
-                                <td class="t-ctr" th:text="${workspace.name}"></td>
-                                <td class="t-ctr" th:text="${workspace.lastModified}"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <br/> <br/>
-                        <button id="deleteWS" type="button" class="btn btn-danger btn-lg"
-                                onclick="deleteWs();">DELETE WORKSPACE
-                        </button>
-                        <button id="newWS" type="button" class="btn btn-success btn-lg"
-                                onclick="addNewWs();">NEW WORKSPACE
-                        </button>
-                        <br/>
-                        <br/>
-                        <button id="wsButton" type="button"
-                                class="btn btn-primary btn-lg btn-block"
-                                onclick="continueToFU();">CONTINUE TO FILE UPLOAD
-                        </button>
-                    </form>
-				</div>
+<div class="container">
+    <h1 align="center" th:inline="text">Welcome to antiSMASH - OOPS</h1>
+    <div class="panel panel-default">
+        <div class="panel-body div-ctr">
+            <br/>
+            <h4>Please select an existing workspace or create a new one:</h4>
+            <br/>
+            <div id="workspaces" class="div-ctr">
+                <form id="ws" action="/fileUpload" method="GET">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th class="t-ctr">SELECT</th>
+                            <th class="t-ctr">#</th>
+                            <th class="t-ctr">NAME</th>
+                            <th class="t-ctr">LAST UPDATED DATE</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="workspace, iterStat : ${workspaceData}">
+                            <td class="t-ctr" th:inline="text"><input th:value="${workspace.name}"
+                                                                      name="wsRadio" type="radio"></input></td>
+                            <th class="t-ctr" th:text="${iterStat.count}"></th>
+                            <td class="t-ctr" th:text="${workspace.name}"></td>
+                            <td class="t-ctr" th:text="${workspace.lastModified}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br/> <br/>
+                    <button id="deleteWS" type="button" class="btn btn-danger btn-lg"
+                            onclick="deleteWs();">DELETE WORKSPACE
+                    </button>
+                    <button id="newWS" type="button" class="btn btn-success btn-lg"
+                            onclick="addNewWs();">NEW WORKSPACE
+                    </button>
+                    <br/>
+                    <br/>
+                    <button id="wsButton" type="button"
+                            class="btn btn-primary btn-lg btn-block"
+                            onclick="continueToFU();">CONTINUE TO FILE UPLOAD
+                    </button>
+                </form>
+            </div>
 
-			</div>
-		</div>
-	</div>
-
-    <div th:replace="
-							fragments/footer ::footer">
+        </div>
     </div>
+</div>
+
+<div th:replace="
+							fragments/footer ::footer">
+</div>
 </body>
 </html>
