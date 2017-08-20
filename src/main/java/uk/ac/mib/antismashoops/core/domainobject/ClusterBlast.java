@@ -33,7 +33,7 @@ public class ClusterBlast
     private String origin;
     private String number;
     private List<ClusterBlastLineage> cbLin = new ArrayList<>();
-    private Document xmlLifeTree;
+    private transient Document xmlLifeTree = null;
 
 
     public ClusterBlast()
@@ -68,6 +68,10 @@ public class ClusterBlast
 
     public int getDiversityScore()
     {
+        if (this.xmlLifeTree == null)
+        {
+            return -1;
+        }
         return getTreeSize(this.xmlLifeTree) > 0 ? getTreeSize(this.xmlLifeTree) : -1;
     }
 
@@ -217,7 +221,7 @@ public class ClusterBlast
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(data);
             bw.close();
-
+            fw.close();
         }
         catch (IOException e)
         {

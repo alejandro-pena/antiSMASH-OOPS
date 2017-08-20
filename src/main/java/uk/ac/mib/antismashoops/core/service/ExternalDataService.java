@@ -1,7 +1,9 @@
 package uk.ac.mib.antismashoops.core.service;
 
+import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,6 +34,7 @@ public class ExternalDataService
 {
     private static final String GBK_FILE_REGEX = "(.+)(cluster)(.*)(\\.gbk)";
     private static final String ZIP_FILE_REGEX = "(.+)(\\.zip)";
+    private static final String JSON_FILE_REGEX = "(.+)(\\.json)";
 
     private static final String FOLDER_NAME_CB = "clusterblast";
     private static final String FILE_REGEXP = "(cluster)(.*)(\\.txt)";
@@ -70,6 +73,34 @@ public class ExternalDataService
         this.codonBiasService = codonBiasService;
         this.clusterTypeService = clusterTypeService;
         this.fileParserService = fileParserService;
+    }
+
+
+    public void loadPreprocessedBgcData(List<BiosyntheticGeneCluster> bgcData, Workspace workspace) throws IOException
+    {
+        File jsonOutputDirectory = new File(workspace.getRoot().getAbsolutePath(), "bgcJsonOutput");
+        if (!jsonOutputDirectory.exists())
+        {
+            return;
+        }
+        else
+        {
+            File[] files = jsonOutputDirectory.listFiles();
+            if (files == null || files.length == 0)
+            {
+                return;
+            }
+            Gson gson = new Gson();
+            for (File f : files)
+            {
+                if (f.getName().matches(JSON_FILE_REGEX))
+                {
+                    BiosyntheticGeneCluster bgc = gson.fromJson(new FileReader(f), BiosyntheticGeneCluster.class);
+                    bgcData.add(bgc);
+                    log.info("Loaded Cluster: {} successfully!", bgc.getClusterId());
+                }
+            }
+        }
     }
 
 
@@ -197,6 +228,33 @@ public class ExternalDataService
     }
 
 
+    public boolean isPreprocessedDataInSync(int dataSize, Workspace workspace)
+    {
+        if (dataSize == 0)
+        {
+            return false;
+        }
+
+        int jsonFiles = 0;
+
+        File root = new File(workspace.getRoot().getAbsolutePath(), "bgcJsonOutput");
+        if (!root.exists())
+        {
+            return false;
+        }
+        File[] files = root.listFiles();
+        for (File f : files)
+        {
+            if (f.getName().matches(JSON_FILE_REGEX))
+            {
+                jsonFiles++;
+            }
+        }
+        log.info("JsonFiles: {} BgcDataSize: {}", jsonFiles, dataSize);
+        return jsonFiles == dataSize;
+    }
+
+
     /**
      * Verifies if the number of GBK files loaded is the same as the number of
      * BGC Objects in the Application Data BGC List.
@@ -236,7 +294,8 @@ public class ExternalDataService
         {
             if (parent.isDirectory()
                 && !parent.getName().equalsIgnoreCase("selfHomology")
-                && !parent.getName().equalsIgnoreCase("lifeTreeOutput"))
+                && !parent.getName().equalsIgnoreCase("lifeTreeOutput")
+                && !parent.getName().equalsIgnoreCase("bgcJsonOutput"))
             {
                 directories++;
                 File folder = new File(uploadPath + workspace.getName(), parent.getName());
@@ -255,11 +314,7 @@ public class ExternalDataService
             }
         }
         log.info("GbkFiles: {} BgcDataSize: {} Directories: {} ZipFiles: {}", gbk_files, bgcDataSize, directories, zipFiles);
-        if (gbk_files == bgcDataSize && directories == zipFiles)
-        {
-            return true;
-        }
-        return false;
+        return gbk_files == bgcDataSize && directories == zipFiles;
     }
 
 
@@ -288,7 +343,9 @@ public class ExternalDataService
         }
         for (File parent : workspace.getRoot().listFiles())
         {
-            if (parent.isDirectory() && !"selfHomology".equals(parent.getName()) && !"lifeTreeOutput".equals(parent.getName()))
+            if (parent.isDirectory() && !"selfHomology".equals(parent.getName())
+                && !"lifeTreeOutput".equals(parent.getName())
+                && !"bgcJsonOutput".equals(parent.getName()))
             {
                 File folder = new File(
                     uploadPath + workspace.getName() + "/" + parent.getName(),

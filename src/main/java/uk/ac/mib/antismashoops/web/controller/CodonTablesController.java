@@ -12,13 +12,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
+import uk.ac.mib.antismashoops.web.utils.Workspace;
+import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 
 @Slf4j
 @Controller
 public class CodonTablesController
 {
-    @Autowired
     private ApplicationBgcData appData;
+    private WorkspaceManager workspaceManager;
+
+
+    @Autowired
+    public CodonTablesController(ApplicationBgcData appData, WorkspaceManager workspaceManager)
+    {
+        this.appData = appData;
+        this.workspaceManager = workspaceManager;
+    }
 
 
     /**
@@ -37,7 +47,16 @@ public class CodonTablesController
     @GetMapping(value = "/codonTable/{cluster:.+}")
     public String getCodonUsageInfo(Model model, @PathVariable("cluster") String cluster) throws IOException
     {
-        List<BiosyntheticGeneCluster> clusterData = appData.getWorkingDataSet();
+        Workspace workspace = workspaceManager.getCurrentWorkspace();
+        List<BiosyntheticGeneCluster> clusterData;
+        if ("antiSMASH_Actinobacterial_BGCs".equals(workspace.getName()))
+        {
+            clusterData = appData.getPreprocessedBgcData();
+        }
+        else
+        {
+            clusterData = appData.getWorkingDataSet();
+        }
 
         BiosyntheticGeneCluster requested = null;
         for (BiosyntheticGeneCluster c : clusterData)

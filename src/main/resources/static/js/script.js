@@ -5,54 +5,92 @@
 
 function addNewWs() {
 
-    var wsName = prompt("Enter the new Workspace name...", "Workspace name...");
+    swal({
+            title: "New Workspace",
+            text: "Enter the new Workspace name...",
+            type: "input",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            closeOnCancel: true,
+            animation: "slide-from-top",
+            inputPlaceholder: "Workspace name..."
+        },
+        function (inputValue) {
+            if (inputValue === false) {
+                return false;
+            }
 
-    if (wsName === null || wsName.trim() === "") {
-        alert("Please enter a valid Workspace name...");
-        return;
-    }
+            if (inputValue === "") {
+                swal.showInputError("Please enter a valid Workspace name!");
+                return false
+            }
 
-    wsName = wsName.trim().split(" ").join("_");
+            wsName = inputValue.trim().split(" ").join("_");
 
-    var url = "/addWorkspace/" + wsName;
+            var url = "/addWorkspace/" + wsName;
 
-    $.ajax({
-        type: "GET",
-        url: url
-    }).done(function () {
-        location.reload();
-    });
+            $.ajax({
+                type: "GET",
+                url: url
+            }).done(swal({
+                    title: 'Created!',
+                    text: 'The Workspace has been created.',
+                    type: 'success'
+                }
+                , function (isConfirm) {
+                    if (isConfirm) {
+                        location.reload();
+                    }
+                }
+            ));
+        });
 }
 
 function deleteWs() {
 
     var wsName = $("input[name='wsRadio']:checked").val();
     if (wsName) {
-        var flag = confirm("Delete the workspace: " + wsName + " ?");
-        if (!flag) {
-            return;
-        }
-        var url = "/deleteWorkspace/" + wsName;
-        $.ajax({
-            type: "GET",
-            url: url
-        }).done(function () {
-            location.reload();
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Delete',
+            closeOnConfirm: false,
+            closeOnCancel: true
+        }, function (isConfirm) {
+            if (isConfirm) {
+                var url = "/deleteWorkspace/" + wsName;
+                $.ajax({
+                    type: "GET",
+                    url: url
+                }).done(swal({
+                        title: 'Deleted!',
+                        text: 'The Workspace has been deleted.',
+                        type: 'success'
+                    },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    }
+                ));
+            }
         });
-
-    } else {
-        alert("Please select a Workspace to delete.");
+    }
+    else {
+        swal({
+            title: 'Error!',
+            text: 'Please select a Workspace to delete.',
+            type: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
 function continueToFU() {
-
-    swal({
-        title: 'Error!',
-        text: 'Do you want to continue',
-        type: 'error',
-        confirmButtonText: 'Cool'
-    });
 
     var wsName = $("input[name='wsRadio']:checked").val();
 
@@ -61,7 +99,13 @@ function continueToFU() {
         $('#ws').submit();
 
     } else {
-        alert("Please select a Workspace or create a new one.");
+        swal({
+            title: 'Error!',
+            text: 'Please select a Workspace or create a new one.',
+            type: 'error',
+            confirmButtonText: 'OK'
+        });
+        ;
     }
 }
 
@@ -132,17 +176,24 @@ function removeSpecies() {
  * elements when the Ignore checkbox of each parameter is clicked
  */
 
-function toggleRangeDisabling(itemId, valueOutput) {
+function toggleRangeDisabling(itemId, valueOutput, workspace) {
     var element = document.getElementById(itemId);
     if (element.disabled == true) {
         element.disabled = false;
         element.value = 10;
         if (itemId == 'selfHomology') {
-            $('#shAlert').show();
-            toggleDisabling('minimumMatch');
+            if (workspace != null && workspace == 'antiSMASH_Actinobacterial_BGCs') {
+                $('#minumumMatch').prop('disabled', true);
+            }
+            else {
+                $('#shAlert').show();
+                toggleDisabling('minimumMatch');
+            }
         }
         if (itemId == 'phylogeneticDiversity')
-            $('#pdAlert').show();
+            if (workspace == null || workspace != 'antiSMASH_Actinobacterial_BGCs') {
+                $('#pdAlert').show();
+            }
         if (itemId == 'knownClustersSimilarity') {
             toggleDisabling('similarityPercentage');
             toggleDisabling('plusMinus');
@@ -151,7 +202,12 @@ function toggleRangeDisabling(itemId, valueOutput) {
         element.disabled = true;
         element.value = 0;
         if (itemId == 'selfHomology')
-            toggleDisabling('minimumMatch');
+            if (workspace != null && workspace == 'antiSMASH_Actinobacterial_BGCs') {
+                $('#minumumMatch').prop('disabled', true);
+            }
+            else {
+                toggleDisabling('minimumMatch');
+            }
         if (itemId == 'knownClustersSimilarity') {
             toggleDisabling('similarityPercentage');
             toggleDisabling('plusMinus');

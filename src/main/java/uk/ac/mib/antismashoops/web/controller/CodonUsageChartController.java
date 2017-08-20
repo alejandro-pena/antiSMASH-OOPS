@@ -15,20 +15,24 @@ import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
 import uk.ac.mib.antismashoops.core.domainobject.BiosyntheticGeneCluster;
 import uk.ac.mib.antismashoops.core.domainobject.CodonUsageTable;
 import uk.ac.mib.antismashoops.core.service.OnlineResourceService;
+import uk.ac.mib.antismashoops.web.utils.Workspace;
+import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 
 @Slf4j
 @Controller
 public class CodonUsageChartController
 {
-    ApplicationBgcData appData;
-    OnlineResourceService onlineResourceService;
+    private ApplicationBgcData appData;
+    private OnlineResourceService onlineResourceService;
+    private WorkspaceManager workspaceManager;
 
 
     @Autowired
-    public CodonUsageChartController(ApplicationBgcData appData, OnlineResourceService onlineResourceService)
+    public CodonUsageChartController(ApplicationBgcData appData, OnlineResourceService onlineResourceService, WorkspaceManager workspaceManager)
     {
         this.appData = appData;
         this.onlineResourceService = onlineResourceService;
+        this.workspaceManager = workspaceManager;
     }
 
 
@@ -100,8 +104,16 @@ public class CodonUsageChartController
         ModelMap model, @PathVariable("clusterName") String clusterName,
         @PathVariable("species") String species) throws IOException
     {
-
-        List<BiosyntheticGeneCluster> bgcData = appData.getWorkingDataSet();
+        Workspace workspace = workspaceManager.getCurrentWorkspace();
+        List<BiosyntheticGeneCluster> bgcData;
+        if ("antiSMASH_Actinobacterial_BGCs".equals(workspace.getName()))
+        {
+            bgcData = appData.getPreprocessedBgcData();
+        }
+        else
+        {
+            bgcData = appData.getWorkingDataSet();
+        }
 
         BiosyntheticGeneCluster requested = null;
         for (BiosyntheticGeneCluster c : bgcData)

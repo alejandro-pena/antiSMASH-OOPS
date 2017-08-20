@@ -135,12 +135,20 @@
                             <b>Reference Species</b>
                         </div>
                         <br/>
-                        <label for="speciesName">Search&nbsp;</label>
-                        <input class="form-control input-sm" type="text" size="42" id="speciesName" placeholder="Reference species name..."/>
+                        <span th:if="${wsName != 'antiSMASH_Actinobacterial_BGCs'}">
+                            <label for="speciesName">Search&nbsp;</label>
+                            <input class="form-control input-sm" type="text" size="42" id="speciesName" placeholder="Reference species name..."/>
+                        </span>
+                        <span th:if="${wsName == 'antiSMASH_Actinobacterial_BGCs'}">
+                            <label for="speciesName">Species&nbsp;</label>
+                            <input class="form-control input-sm" disabled="disabled" type="text" size="30" id="speciesName" value="Streptomyces coelicolor A3(2)"/>
+                        </span>
                         &nbsp;
-                        <a href="#/" onclick="loadSpecies();">
-                            <span class="glyphicon glyphicon-search"></span>
-                        </a>
+                        <span th:if="${wsName != 'antiSMASH_Actinobacterial_BGCs'}">
+                            <a href="#/" onclick="loadSpecies();">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </a>
+                        </span>
                         <span id="sSpinner" class="hidden glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
                         <br/>
                         <br/>
@@ -220,8 +228,14 @@
                         />
                         <output id="shValue">0</output>
                         <br/>
-                        <label for="minimumMatch">Minimum Match (bp)&nbsp;</label>
-                        <input class="form-control input-sm" style="width: 70px;" type="number" value="" min="7" step="2" id="minimumMatch" disabled="disabled"/>
+                        <span th:if="${wsName != 'antiSMASH_Actinobacterial_BGCs'}">
+                            <label for="minimumMatch">Minimum Match (bp)&nbsp;</label>
+                            <input class="form-control input-sm" style="width: 70px;" type="number" value="" min="7" step="2" id="minimumMatch" disabled="disabled"/>
+                        </span>
+                        <span th:if="${wsName == 'antiSMASH_Actinobacterial_BGCs'}">
+                            <label for="minimumMatch">Minimum Match (bp)&nbsp;</label>
+                            <input class="form-control input-sm" style="width: 50px;" type="number" value="30" id="minimumMatch" disabled="disabled"/>
+                        </span>
                         &nbsp;
                         <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right"
                               title="This input parameter considers a sequence of at least N nucleotides aligned contiguously to be considered for the Self-Homology score."
@@ -229,7 +243,7 @@
                         <br/>
                         <br/>
                         <label>
-                            <input type="checkbox" checked="checked" id="ignoreSH" onClick="toggleRangeDisabling('selfHomology', 'shValue');"/>
+                            <input type="checkbox" checked="checked" id="ignoreSH" th:onClick="'javascript:toggleRangeDisabling(\'selfHomology\', \'shValue\',\'' +${wsName}+ '\');'"/>
                             Ignore
                         </label>
                         &nbsp;
@@ -249,7 +263,7 @@
                         <output id="pdValue">0</output>
                         <br/>
                         <label>
-                            <input type="checkbox" checked="checked" id="ignorePD" onClick="toggleRangeDisabling('phylogeneticDiversity', 'pdValue');"/>
+                            <input type="checkbox" checked="checked" id="ignorePD" th:onClick="'javascript:toggleRangeDisabling(\'phylogeneticDiversity\', \'pdValue\',\'' +${wsName}+ '\');'"/>
                             Ignore
                         </label>
                         &nbsp;

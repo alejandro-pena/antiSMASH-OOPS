@@ -1,5 +1,8 @@
 package uk.ac.mib.antismashoops.web.controller;
 
+import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +27,8 @@ import uk.ac.mib.antismashoops.core.service.OnlineResourceService;
 import uk.ac.mib.antismashoops.core.service.PrioritisationService;
 import uk.ac.mib.antismashoops.core.service.ScoringService;
 import uk.ac.mib.antismashoops.core.service.params.KnownClustersService;
+import uk.ac.mib.antismashoops.web.utils.FileUtils;
+import uk.ac.mib.antismashoops.web.utils.Workspace;
 import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 
 @Slf4j
@@ -73,6 +78,10 @@ public class DashboardController
     @RequestMapping("/dashboard")
     public String showDashboard(ModelMap model) throws IOException
     {
+        if ("antiSMASH_Actinobacterial_BGCs".equals(workspaceManager.getCurrentWorkspace().getName()))
+        {
+            return loadReadOnlyBgcData(model);
+        }
 
         List<BiosyntheticGeneCluster> bgcData = applicationBgcData.getBgcData(workspaceManager.getCurrentWorkspace());
         List<String> typesList = this.getClusterTypesList(bgcData);
@@ -144,6 +153,30 @@ public class DashboardController
     {
 
         log.info("Reloading Dashboard...");
+
+        if ("antiSMASH_Actinobacterial_BGCs".equals(workspaceManager.getCurrentWorkspace().getName()))
+        {
+            return prioritiseReadOnlyBgcData(
+                geneCount,
+                nogOrder,
+                sequenceLength,
+                slOrder,
+                gcContent,
+                gccOrder,
+                codonBias,
+                cbOrder,
+                types,
+                ignorePT,
+                knownCluster,
+                kcsOrder,
+                preferredSimilarity,
+                plusMinusValue,
+                selfHomology,
+                shOrder,
+                pDiversity,
+                pdOrder,
+                model);
+        }
 
         List<BiosyntheticGeneCluster> workingDataSet = applicationBgcData.getBgcData(workspaceManager.getCurrentWorkspace());
 
@@ -255,6 +288,9 @@ public class DashboardController
             }
         }
 
+        File outputDirectory = this.createOrReplaceJsonOutputDirectory();
+        applicationBgcData.getWorkingDataSet().forEach(bgc -> this.writeBgcToJsonFile(bgc, outputDirectory));
+
         // SORT THE FINAL SCORE RESULT
 
         Collections.sort(workingDataSet, ClusterSort.SCORESORT);
@@ -265,6 +301,157 @@ public class DashboardController
         model.addAttribute("clusterData", workingDataSet);
         model.addAttribute("wsName", workspaceManager.getCurrentWorkspace().getName());
 
+        return "fragments/clusterData :: clusterData";
+    }
+
+
+    private File createOrReplaceJsonOutputDirectory()
+    {
+        try
+        {
+            File jsonOutputDirectory = new File(
+                workspaceManager.getCurrentWorkspace().getRoot().getAbsolutePath() + "/bgcJsonOutput");
+            if (jsonOutputDirectory.exists())
+            {
+                FileUtils.delete(jsonOutputDirectory);
+            }
+            jsonOutputDirectory.mkdir();
+            return jsonOutputDirectory;
+        }
+        catch (Exception e)
+        {
+            log.error("Exception while deleting/creating JSON Output Folder...");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    private void writeBgcToJsonFile(BiosyntheticGeneCluster bgc, File outputDirectory)
+    {
+        Gson gson = new Gson();
+        FileWriter writer = null;
+        try
+        {
+            writer = new FileWriter(outputDirectory.getAbsolutePath() + "/" + bgc.getClusterId() + ".json");
+            gson.toJson(bgc, writer);
+            log.info("Cluster: {} serialised successfully!", bgc.getClusterId());
+        }
+        catch (IOException e)
+        {
+            log.error("Exception creating JSON file for Cluster: {}", bgc.getClusterId());
+            e.printStackTrace();
+        }
+        finally
+        {
+            if (writer != null)
+            {
+                try
+                {
+                    writer.close();
+                }
+                catch (IOException e)
+                {
+                    log.error("Error closing writer...");
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+
+    private String loadReadOnlyBgcData(ModelMap model) throws IOException
+    {
+        log.info("Loading preprocessed data...");
+        Workspace currentWorkspace = workspaceManager.getCurrentWorkspace();
+        List<BiosyntheticGeneCluster> bgcData = applicationBgcData.getBgcData(currentWorkspace);
+        List<String> typesList = this.getClusterTypesList(bgcData);
+
+        if (!bgcData.isEmpty())
+        {
+            model.addAttribute("typesList", typesList);
+            model.addAttribute("clusterData", bgcData);
+            model.addAttribute("wsName", currentWorkspace.getName());
+            return "dashboard";
+        }
+
+        model.addAttribute("typesList", typesList);
+        model.addAttribute("clusterData", bgcData);
+        model.addAttribute("wsName", currentWorkspace.getName());
+
+        return "dashboard";
+    }
+
+
+    private String prioritiseReadOnlyBgcData(
+        int geneCount, String nogOrder, int sequenceLength, String slOrder, int gcContent, String gccOrder, int codonBias, String cbOrder,
+        Set<String> types, String ignorePT, int knownCluster, String kcsOrder, double preferredSimilarity, int plusMinusValue, int selfHomology,
+        String shOrder, int pDiversity, String pdOrder, ModelMap model) throws IOException
+    {
+        log.info("Prioritising preprocessed data...");
+        Workspace currentWorkspace = workspaceManager.getCurrentWorkspace();
+        List<BiosyntheticGeneCluster> workingDataSet = applicationBgcData.getBgcData(currentWorkspace);
+
+        // FILTER THE BGC DATA ACCORDING TO THE CLUSTER TYPE IF SPECIFIED
+
+        if (ignorePT.equalsIgnoreCase("false") && types != null)
+        {
+            applicationBgcData.setPreprocessedWorkingDataSet(
+                workingDataSet.stream().filter(bgc -> types.stream().anyMatch(bgc.getClusterTypes()::contains))
+                    .collect(Collectors.toList()));
+            workingDataSet = applicationBgcData.getPreprocessedWorkingDataSet();
+        }
+
+        // SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
+
+        if (geneCount > 0)
+        {
+            prioritisationService.prioritiseParameterAndAddScore(
+                nogOrder.equalsIgnoreCase("d") ? ClusterSort.NOGSORT : ClusterSort.NOGSORTREV, geneCount);
+        }
+        if (sequenceLength > 0)
+        {
+            prioritisationService.prioritiseParameterAndAddScore(
+                slOrder.equalsIgnoreCase("d") ? ClusterSort.SLSORT : ClusterSort.SLSORTREV, sequenceLength);
+        }
+        if (gcContent > 0)
+        {
+            prioritisationService.prioritiseParameterAndAddScore(
+                gccOrder.equalsIgnoreCase("d") ? ClusterSort.GCCREFSORTREV : ClusterSort.GCCREFSORT, gcContent);
+        }
+        if (codonBias > 0)
+        {
+            prioritisationService.prioritiseParameterAndAddScore(
+                cbOrder.equalsIgnoreCase("a") ? ClusterSort.CBSORT : ClusterSort.CBSORTREV, codonBias);
+        }
+        if (knownCluster > 0)
+        {
+            prioritisationService.prioritiseParameterAndAddScore(
+                kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
+        }
+        if (selfHomology > 0)
+        {
+            prioritisationService.prioritiseParameterAndAddScore(
+                shOrder.equalsIgnoreCase("d") ? ClusterSort.SHSORT : ClusterSort.SHSORTREV, selfHomology);
+        }
+        if (pDiversity > 0)
+        {
+            prioritisationService.prioritiseParameterAndAddScore(
+                pdOrder.equalsIgnoreCase("d") ? ClusterSort.PDSORT : ClusterSort.PDSORTREV, pDiversity);
+        }
+
+        // SORT THE FINAL SCORE RESULT
+
+        workingDataSet.forEach(bgc -> log.info("Score {}: {}", bgc.getClusterId(), bgc.getScore()));
+
+        Collections.sort(workingDataSet, ClusterSort.SCORESORT);
+
+        log.info("Prioritisation successful!");
+
+        model.addAttribute("refSpecies", "100226");
+        model.addAttribute("clusterData", workingDataSet);
+        model.addAttribute("wsName", currentWorkspace.getName());
         return "fragments/clusterData :: clusterData";
     }
 

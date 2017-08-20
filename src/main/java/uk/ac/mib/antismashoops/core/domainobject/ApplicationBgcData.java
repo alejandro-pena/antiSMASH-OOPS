@@ -21,6 +21,14 @@ public class ApplicationBgcData
 
     @Getter
     @Setter
+    private List<BiosyntheticGeneCluster> preprocessedBgcData;
+
+    @Getter
+    @Setter
+    private List<BiosyntheticGeneCluster> preprocessedWorkingDataSet;
+
+    @Getter
+    @Setter
     private List<BiosyntheticGeneCluster> workingDataSet;
 
 
@@ -30,6 +38,8 @@ public class ApplicationBgcData
         this.externalDataService = externalDataService;
         this.bgcData = new ArrayList<>();
         this.workingDataSet = new ArrayList<>();
+        this.preprocessedBgcData = new ArrayList<>();
+        this.preprocessedWorkingDataSet = new ArrayList<>();
     }
 
 
@@ -46,6 +56,25 @@ public class ApplicationBgcData
 
     public List<BiosyntheticGeneCluster> getBgcData(Workspace workspace) throws IOException
     {
+        if ("antiSMASH_Actinobacterial_BGCs".equals(workspace.getName()))
+        {
+            if (externalDataService.isPreprocessedDataInSync(preprocessedBgcData.size(), workspace))
+            {
+                this.preprocessedWorkingDataSet.clear();
+                this.preprocessedWorkingDataSet.addAll(preprocessedBgcData);
+                log.info("Preprocessed Data in sync...");
+                return preprocessedWorkingDataSet;
+            }
+            else
+            {
+                log.info("Syncing Preprocessed Data...");
+                externalDataService.loadPreprocessedBgcData(preprocessedBgcData, workspace);
+                preprocessedWorkingDataSet.clear();
+                this.preprocessedWorkingDataSet.addAll(preprocessedBgcData);
+                return preprocessedWorkingDataSet;
+            }
+        }
+
         if (externalDataService.isBgcDataInSync(bgcData.size(), workspace))
         {
             this.workingDataSet.clear();

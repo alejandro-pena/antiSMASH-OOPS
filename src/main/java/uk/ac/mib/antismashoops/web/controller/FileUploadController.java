@@ -35,13 +35,18 @@ public class FileUploadController
      */
 
     @RequestMapping("/fileUpload")
-    public String fileUplaod(@RequestParam(value = "wsRadio") String workspace, ModelMap model)
+    public String fileUpload(@RequestParam(value = "wsRadio") String workspace, ModelMap model)
     {
-        log.info("Loading File Upload View...");
-
         File workspaceRoot = new File(workspaceManager.getRootDirectory(), workspace);
-
         workspaceManager.setCurrentWorkspace(new Workspace(workspaceRoot, workspace, new Date(workspaceRoot.lastModified())));
+
+        if ("antiSMASH_Actinobacterial_BGCs".equals(workspaceManager.getCurrentWorkspace().getName()))
+        {
+            log.info("This is a read-only workspace. Redirecting to main Dashboard...");
+            return "redirect:/dashboard";
+        }
+
+        log.info("Loading File Upload View...");
 
         model.addAttribute("fileData", workspaceManager.getWorkspace(workspace).getWorkspaceFiles());
         model.addAttribute("workspace", workspace);
