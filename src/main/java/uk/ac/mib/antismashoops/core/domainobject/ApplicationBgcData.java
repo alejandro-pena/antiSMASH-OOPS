@@ -68,8 +68,9 @@ public class ApplicationBgcData
             else
             {
                 log.info("Syncing Preprocessed Data...");
-                externalDataService.loadPreprocessedBgcData(preprocessedBgcData, workspace);
+                preprocessedBgcData.clear();
                 preprocessedWorkingDataSet.clear();
+                externalDataService.loadPreprocessedBgcData(preprocessedBgcData, workspace);
                 this.preprocessedWorkingDataSet.addAll(preprocessedBgcData);
                 return preprocessedWorkingDataSet;
             }
