@@ -55,6 +55,19 @@ public class KnownClustersService
     }
 
 
+    public void setPreprocessedKnownClusterSimilarityScore(ApplicationBgcData appData, double preferredSimilarity, int plusMinusValue)
+    {
+        for (BiosyntheticGeneCluster bgc : appData.getPreprocessedWorkingDataSet())
+        {
+            KnownCluster kc = bgc.getKnownClustersData();
+            if (kc != null)
+            {
+                bgc.setKcScore(kc.getBestMatchScore(preferredSimilarity, plusMinusValue));
+            }
+        }
+    }
+
+
     /**
      * Creates the Known Cluster objects scanning all the zip files loaded into
      * the application and triggers its population at the end of the function.

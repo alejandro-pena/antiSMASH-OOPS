@@ -427,6 +427,7 @@ public class DashboardController
         }
         if (knownCluster > 0)
         {
+            knownClustersService.setPreprocessedKnownClusterSimilarityScore(applicationBgcData, preferredSimilarity, plusMinusValue);
             prioritisationService.prioritiseParameterAndAddScore(
                 kcsOrder.equalsIgnoreCase("a") ? ClusterSort.KCSORT : ClusterSort.KCSORTREV, knownCluster);
         }
