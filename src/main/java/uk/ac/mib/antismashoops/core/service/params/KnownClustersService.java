@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.ac.mib.antismashoops.core.domainobject.ApplicationBgcData;
@@ -16,6 +17,7 @@ import uk.ac.mib.antismashoops.core.domainobject.Gene;
 import uk.ac.mib.antismashoops.core.domainobject.KnownCluster;
 import uk.ac.mib.antismashoops.web.utils.Workspace;
 
+@Slf4j
 @Service
 public class KnownClustersService
 {
@@ -82,12 +84,10 @@ public class KnownClustersService
             if (parent.isDirectory())
             {
                 String clusterFamily = this.getClusterFamilyName(parent);
-                File folder = new File(
-                    uploadPath + workspace.getName() + "/" + parent.getName(),
-                    FOLDER_NAME_KCB);
+                File folder = new File(uploadPath + workspace.getName() + "/" + parent.getName(), FOLDER_NAME_KCB);
                 if (!folder.exists())
                 {
-                    return;
+                    continue;
                 }
                 for (File file : folder.listFiles())
                 {

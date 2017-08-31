@@ -92,7 +92,14 @@ public class ClusterBlast
 
         if (!root.hasChildNodes())
         {
-            return 1;
+            if (!root.getNodeName().contains("-"))
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         int count = 0;
