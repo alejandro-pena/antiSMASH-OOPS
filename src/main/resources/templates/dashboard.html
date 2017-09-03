@@ -1,331 +1,355 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8"></meta>
-<title th:inline="text">[[#{app.name}]] :: Dashboard</title>
+    <meta charset="UTF-8"></meta>
+    <title th:inline="text">[[#{app.name}]] :: Dashboard</title>
 
-<link th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}" rel="stylesheet" media="screen" />
-<link rel="stylesheet" th:href="@{/css/application.css}" />
-<link rel="icon" th:href="@{/images/oops.ico}" />
+    <link th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}" rel="stylesheet" media="screen"/>
+    <link rel="stylesheet" th:href="@{/css/application.css}"/>
+    <link rel="icon" th:href="@{/images/oops.ico}"/>
 
-<script th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"></script>
-<script th:src="@{/js/jquery.ui.widget.js}"></script>
-<script th:src="@{/js/jquery.iframe-transport.js}"></script>
-<script th:src="@{/js/jquery.fileupload.js}"></script>
-<script th:src="@{/js/bootstrap.min.js}"></script>
-<script th:src="@{/js/script.js}"></script>
+    <script th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"></script>
+    <script th:src="@{/js/jquery.ui.widget.js}"></script>
+    <script th:src="@{/js/jquery.iframe-transport.js}"></script>
+    <script th:src="@{/js/jquery.fileupload.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/script.js}"></script>
 
 </head>
 
 <body>
-	<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/header :: header"></div>
 
-	<div class="container">
+<div class="container">
 
-		<div th:if="${#lists.isEmpty(clusterData)}" class="alert alert-warning alert-dismissible" role="alert">
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-			<strong>Warning!</strong>
-			There are no antiSMASH Zip Files uploaded in this session. Click
-			<a th:href="@{/}" class="alert-link">here</a>
-			to upload your files...
-		</div>
+    <div th:if="${#lists.isEmpty(clusterData)}" class="alert alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <strong>Warning!</strong>
+        There are no antiSMASH Zip Files uploaded in this session. Click
+        <a th:href="@{/}" class="alert-link">here</a>
+        to upload your files...
+    </div>
 
-		<div id="genericAlert" style="display: none" class="alert alert-danger alert-dismissible" role="alert">
-			<button type="button" class="close" onclick="$('#genericAlert').hide()" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-			<strong>Error!</strong>
-			<span id='gaMessage'></span>
-		</div>
+    <div id="genericAlert" style="display: none" class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" onclick="$('#genericAlert').hide()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <strong>Error!</strong>
+        <span id='gaMessage'></span>
+    </div>
 
-		<h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
-		<div class="panel panel-default">
-			<div class="panel-body">
+    <h1 align="center" th:inline="text">Prioritisation Dashboard</h1>
+    <div class="panel panel-default">
+        <div class="panel-body">
 
-				<div id="parameters" class="div-ctr div-border">
-					<span>Select the parameter weight based on your desired output interests:</span>
-					<br />
-					<br />
+            <div id="parameters" class="div-ctr div-border">
+                <span>Select the parameter weight based on your desired output interests:</span>
+                <br/>
+                <br/>
 
-					<form class="form-inline">
-						<div class="form-group div-ctr">
-							<label for="numberOfGenes">Number of Genes</label>
-							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="numberOfGenes"
-								onInput="updateRangeValue(this, 'nogValue')"
-							/>
-							<output id="nogValue">10</output>
-							<br />
-							<label>
-								<input type="checkbox" id="ignoreNOG" onClick="toggleRangeDisabling('numberOfGenes', 'nogValue');" />
-								Ignore
-							</label>
-							&nbsp;
-							<a href="#" onclick="toggleParameterOrdering('nogOrder');">
-								<span id="nogOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-							</a>
-							<input type="hidden" id="nogOrderValue" value="d" />
-						</div>
+                <form class="form-inline">
+                    <div class="form-group div-ctr">
+                        <label for="numberOfGenes">Number of Genes</label>
+                        <input type="range" class="sld" value="10" min="0" max="10" step="1" id="numberOfGenes"
+                               onInput="updateRangeValue(this, 'nogValue')"
+                        />
+                        <output id="nogValue">10</output>
+                        <br/>
+                        <label>
+                            <input type="checkbox" id="ignoreNOG" onClick="toggleRangeDisabling('numberOfGenes', 'nogValue');"/>
+                            Ignore
+                        </label>
+                        &nbsp;
+                        <a href="#/" onclick="toggleParameterOrdering('nogOrder');">
+                            <span id="nogOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                        </a>
+                        <input type="hidden" id="nogOrderValue" value="d"/>
+                    </div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<div class="form-group div-ctr">
-							<label for="sequenceLength">CDS Length</label>
-							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="sequenceLength"
-								onInput="updateRangeValue(this, 'slValue')"
-							/>
-							<output id="slValue">10</output>
-							<br />
-							<label>
-								<input type="checkbox" id="ignoreSL" onClick="toggleRangeDisabling('sequenceLength', 'slValue');" />
-								Ignore
-							</label>
-							&nbsp;
-							<a href="#" onclick="toggleParameterOrdering('slOrder');">
-								<span id="slOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-							</a>
-							<input type="hidden" id="slOrderValue" value="d" />
-						</div>
+                    <div class="form-group div-ctr">
+                        <label for="sequenceLength">CDS Length</label>
+                        <input type="range" class="sld" value="10" min="0" max="10" step="1" id="sequenceLength"
+                               onInput="updateRangeValue(this, 'slValue')"
+                        />
+                        <output id="slValue">10</output>
+                        <br/>
+                        <label>
+                            <input type="checkbox" id="ignoreSL" onClick="toggleRangeDisabling('sequenceLength', 'slValue');"/>
+                            Ignore
+                        </label>
+                        &nbsp;
+                        <a href="#/" onclick="toggleParameterOrdering('slOrder');">
+                            <span id="slOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                        </a>
+                        <input type="hidden" id="slOrderValue" value="d"/>
+                    </div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<div class="form-group div-ctr">
-							<label for="gcContent">GC Content</label>
-							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="gcContent"
-								onInput="updateRangeValue(this, 'gccValue')"
-							/>
-							<output id="gccValue">10</output>
-							<br />
-							<label>
-								<input type="checkbox" id="ignoreGCC" onClick="toggleRangeDisabling('gcContent', 'gccValue');" />
-								Ignore
-							</label>
-							&nbsp;
-							<a href="#" onclick="toggleParameterOrdering('gccOrder');">
-								<span id="gccOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-							</a>
-							<input type="hidden" id="gccOrderValue" value="d" />
-						</div>
+                    <div class="form-group div-ctr">
+                        <label for="gcContent">GC Content</label>
+                        <input type="range" class="sld" value="10" min="0" max="10" step="1" id="gcContent"
+                               onInput="updateRangeValue(this, 'gccValue')"
+                        />
+                        <output id="gccValue">10</output>
+                        <br/>
+                        <label>
+                            <input type="checkbox" id="ignoreGCC" onClick="toggleRangeDisabling('gcContent', 'gccValue');"/>
+                            Ignore
+                        </label>
+                        &nbsp;
+                        <a href="#/" onclick="toggleParameterOrdering('gccOrder');">
+                            <span id="gccOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                        </a>
+                        <input type="hidden" id="gccOrderValue" value="d"/>
+                    </div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<div class="form-group div-ctr">
-							<label for="codonBias">Codon Bias</label>
-							<input type="range" class="sld" value="10" min="0" max="10" step="1" id="codonBias"
-								onInput="updateRangeValue(this, 'cbValue')"
-							/>
-							<output id="cbValue">10</output>
-							<br />
-							<label>
-								<input type="checkbox" id="ignoreCB" onClick="toggleRangeDisabling('codonBias', 'cbValue');" />
-								Ignore
-							</label>
-							&nbsp;
-							<a href="#" onclick="toggleParameterOrdering('cbOrder');">
-								<span id="cbOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
-							</a>
-							<input type="hidden" id="cbOrderValue" value="a" />
-						</div>
+                    <div class="form-group div-ctr">
+                        <label for="codonBias">Codon Bias</label>
+                        <input type="range" class="sld" value="10" min="0" max="10" step="1" id="codonBias"
+                               onInput="updateRangeValue(this, 'cbValue')"
+                        />
+                        <output id="cbValue">10</output>
+                        <br/>
+                        <label>
+                            <input type="checkbox" id="ignoreCB" onClick="toggleRangeDisabling('codonBias', 'cbValue');"/>
+                            Ignore
+                        </label>
+                        &nbsp;
+                        <a href="#/" onclick="toggleParameterOrdering('cbOrder');">
+                            <span id="cbOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
+                        </a>
+                        <input type="hidden" id="cbOrderValue" value="a"/>
+                    </div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<div class="form-group div-left">
-							<div class="div-ctr">
-								<b>Reference Species</b>
-							</div>
-							<br />
-							<label for="speciesName">Search&nbsp;</label>
-							<input class="form-control input-sm" type="text" size="42" id="speciesName" placeholder="Reference species name..." />
-							&nbsp;
-							<a href="#" onclick="loadSpecies();">
-								<span class="glyphicon glyphicon-search"></span>
-							</a>
-							<span id="sSpinner" class="hidden glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
-							<br />
-							<br />
-							<div id="speciesDD"></div>
-						</div>
+                    <div class="form-group div-left">
+                        <div class="div-ctr">
+                            <b>Reference Species</b>
+                        </div>
+                        <br/>
+                        <span th:if="${wsName != 'antiSMASH_Actinobacterial_BGCs'}">
+                            <label for="speciesName">Search&nbsp;</label>
+                            <input class="form-control input-sm" type="text" size="42" id="speciesName" placeholder="Reference species name..."/>
+                        </span>
+                        <span th:if="${wsName == 'antiSMASH_Actinobacterial_BGCs'}">
+                            <label for="speciesName">Species&nbsp;</label>
+                            <input class="form-control input-sm" disabled="disabled" type="text" size="30" id="speciesName" value="Streptomyces coelicolor A3(2)"/>
+                        </span>
+                        &nbsp;
+                        <span th:if="${wsName != 'antiSMASH_Actinobacterial_BGCs'}">
+                            <a href="#/" onclick="loadSpecies();">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </a>
+                        </span>
+                        <span id="sSpinner" class="hidden glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                        <br/>
+                        <br/>
+                        <div id="speciesDD"></div>
+                    </div>
 
-						<br />
-						<br />
-						<br />
+                    <br/>
+                    <br/>
+                    <br/>
 
-						<div class="form-group div-ctr">
-							<label for="preferredType">Preferred Cluster Type</label>
-							<br />
-							<select multiple="multiple" style="width: 150px" class="form-control" size="5" id="preferredType" th:field="*{typesList}">
-								<option th:each="type : ${typesList}" th:value="${type}" th:text="${#strings.capitalize(type)}"></option>
-							</select>
-							<br />
-							<br />
-							<label>
-								<input type="checkbox" id="ignorePT" onclick="toggleDisabling('preferredType')" />
-								Ignore
-							</label>
-						</div>
+                    <div class="form-group div-ctr">
+                        <label for="preferredType">Preferred Cluster Type</label>
+                        <br/>
+                        <select multiple="multiple" style="width: 150px" class="form-control" size="5" id="preferredType" th:field="*{typesList}">
+                            <option th:each="type : ${typesList}" th:value="${type}" th:text="${#strings.capitalize(type)}"></option>
+                        </select>
+                        <br/>
+                        <br/>
+                        <label>
+                            <input type="checkbox" id="ignorePT" onclick="toggleDisabling('preferredType')"/>
+                            Ignore
+                        </label>
+                    </div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<div class="form-group div-ctr">
-							<label for="knownClustersSimilarity">Known Clusters Similarity</label>
-							<input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="knownClustersSimilarity"
-								onInput="updateRangeValue(this, 'kcsValue')"
-							/>
-							<output id="kcsValue">10</output>
-							<br />
-							<label for="similarityPercentage">Preferred Similarity&nbsp;</label>
-							<select class="form-control input-sm" id="similarityPercentage">
-								<option value="0">0%</option>
-								<option value="10">10%</option>
-								<option value="20">20%</option>
-								<option value="30">30%</option>
-								<option value="40">40%</option>
-								<option value="50">50%</option>
-								<option value="60">60%</option>
-								<option value="70">70%</option>
-								<option value="80">80%</option>
-								<option value="90">90%</option>
-								<option selected="selected" value="100">100%</option>
-							</select>
-							<br />
-							<br />
-							<label>
-								<input type="checkbox" id="ignoreKCS" onClick="toggleRangeDisabling('knownClustersSimilarity', 'kcsValue');" />
-								Ignore
-							</label>
-							&nbsp;
-							<a href="#" onclick="toggleParameterOrdering('kcsOrder');">
-								<span id="kcsOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
-							</a>
-							<input type="hidden" id="kcsOrderValue" value="a" />
-						</div>
+                    <div class="form-group div-ctr">
+                        <label for="knownClustersSimilarity">Known Clusters Similarity</label>
+                        <input type="range" class="sld-lg" value="10" min="0" max="10" step="1" id="knownClustersSimilarity"
+                               onInput="updateRangeValue(this, 'kcsValue')"
+                        />
+                        <output id="kcsValue">10</output>
+                        <br/>
+                        <label for="similarityPercentage">Preferred Similarity&nbsp;</label>
+                        <select class="form-control input-sm" id="similarityPercentage">
+                            <option value="0">0%</option>
+                            <option value="10">10%</option>
+                            <option value="20">20%</option>
+                            <option value="30">30%</option>
+                            <option value="40">40%</option>
+                            <option value="50">50%</option>
+                            <option value="60">60%</option>
+                            <option value="70">70%</option>
+                            <option value="80">80%</option>
+                            <option value="90">90%</option>
+                            <option selected="selected" value="100">100%</option>
+                        </select>
+                        <label for="plusMinus">+/-</label>
+                        <select class="form-control input-sm" id="plusMinus">
+                            <option selected="selected" value="0">0%</option>
+                            <option value="5">5%</option>
+                            <option value="10">10%</option>
+                            <option value="15">15%</option>
+                            <option value="20">20%</option>
+                            <option value="25">25%</option>
+                            <option value="30">30%</option>
+                        </select>
+                        <br/>
+                        <br/>
+                        <label>
+                            <input type="checkbox" id="ignoreKCS" onClick="toggleRangeDisabling('knownClustersSimilarity', 'kcsValue');"/>
+                            Ignore
+                        </label>
+                        &nbsp;
+                        <a href="#/" onclick="toggleParameterOrdering('kcsOrder');">
+                            <span id="kcsOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
+                        </a>
+                        <input type="hidden" id="kcsOrderValue" value="a"/>
+                    </div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<div class="form-group div-ctr">
-							<label for="selfHomology">BGC Self-Homology</label>
-							<input type="range" class="sld-lg" value="0" min="0" max="10" step="1" id="selfHomology"
-								onInput="updateRangeValue(this, 'shValue')" disabled="disabled"
-							/>
-							<output id="shValue">0</output>
-							<br />
-							<label for="minimumMatch">Minimum Match&nbsp;</label>
+                    <div class="form-group div-ctr">
+                        <label for="selfHomology">BGC Self-Homology</label>
+                        <input type="range" class="sld-lg" value="0" min="0" max="10" step="1" id="selfHomology"
+                               onInput="updateRangeValue(this, 'shValue')" disabled="disabled"
+                        />
+                        <output id="shValue">0</output>
+                        <br/>
+                        <span th:if="${wsName != 'antiSMASH_Actinobacterial_BGCs'}">
+                            <label for="minimumMatch">Minimum Match (bp)&nbsp;</label>
                             <input class="form-control input-sm" style="width: 70px;" type="number" value="" min="7" step="2" id="minimumMatch" disabled="disabled"/>
-							&nbsp;
-							<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right"
-								title="This input parameter considers a sequence of at least N nucleotides aligned contiguously to be considered for the Self-Homology score."
-							></span>
-							<br />
-							<br />
-							<label>
-								<input type="checkbox" checked="checked" id="ignoreSH" onClick="toggleRangeDisabling('selfHomology', 'shValue');" />
-								Ignore
-							</label>
-							&nbsp;
-							<a href="#" onclick="toggleParameterOrdering('shOrder');">
-								<span id="shOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-							</a>
-							<input type="hidden" id="shOrderValue" value="d" />
-						</div>
+                        </span>
+                        <span th:if="${wsName == 'antiSMASH_Actinobacterial_BGCs'}">
+                            <label for="minimumMatch">Minimum Match (bp)&nbsp;</label>
+                            <input class="form-control input-sm" style="width: 50px;" type="number" value="30" id="minimumMatch" disabled="disabled"/>
+                        </span>
+                        &nbsp;
+                        <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right"
+                              title="This input parameter considers a sequence of at least N nucleotides aligned contiguously to be considered for the Self-Homology score."
+                        ></span>
+                        <br/>
+                        <br/>
+                        <label>
+                            <input type="checkbox" checked="checked" id="ignoreSH" th:onClick="'javascript:toggleRangeDisabling(\'selfHomology\', \'shValue\',\'' +${wsName}+ '\');'"/>
+                            Ignore
+                        </label>
+                        &nbsp;
+                        <a href="#/" onclick="toggleParameterOrdering('shOrder');">
+                            <span id="shOrder" class="glyphicon glyphicon-sort-by-attributes"></span>
+                        </a>
+                        <input type="hidden" id="shOrderValue" value="a"/>
+                    </div>
 
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<div class="form-group div-ctr" style="margin-bottom: 10px;">
-							<label for="phylogeneticDiversity">Phylogenetic Diversity</label>
-							<input type="range" disabled="disabled" class="sld-lg" value="0" min="0" max="10" step="1" id="phylogeneticDiversity"
-								onInput="updateRangeValue(this, 'pdValue')"
-							/>
-							<output id="pdValue">0</output>
-							<br />
-							<label>
-								<input type="checkbox" checked="checked" id="ignorePD" onClick="toggleRangeDisabling('phylogeneticDiversity', 'pdValue');" />
-								Ignore
-							</label>
-							&nbsp;
-							<a href="#" onclick="toggleParameterOrdering('pdOrder');">
-								<span id="pdOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-							</a>
-							<input type="hidden" id="pdOrderValue" value="d" />
-							<br />
-							<br />
-							&nbsp;
-						</div>
+                    <div class="form-group div-ctr" style="margin-bottom: 10px;">
+                        <label for="phylogeneticDiversity">Phylogenetic Diversity</label>
+                        <input type="range" disabled="disabled" class="sld-lg" value="0" min="0" max="10" step="1" id="phylogeneticDiversity"
+                               onInput="updateRangeValue(this, 'pdValue')"
+                        />
+                        <output id="pdValue">0</output>
+                        <br/>
+                        <label>
+                            <input type="checkbox" checked="checked" id="ignorePD" th:onClick="'javascript:toggleRangeDisabling(\'phylogeneticDiversity\', \'pdValue\',\'' +${wsName}+ '\');'"/>
+                            Ignore
+                        </label>
+                        &nbsp;
+                        <a href="#/" onclick="toggleParameterOrdering('pdOrder');">
+                            <span id="pdOrder" class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                        </a>
+                        <input type="hidden" id="pdOrderValue" value="d"/>
+                        <br/>
+                        <br/>
+                        &nbsp;
+                    </div>
 
-						<br />
-						<br />
-						<div id="shAlert" style="display: none" class="alert alert-warning alert-dismissible" role="alert">
-							<button type="button" class="close" onclick="$('#shAlert').hide()" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-							<div style="text-align: center">
-								<strong>Warning!</strong>
-								The BGC Self-Homology parameter triggers long running processes.
-								<br />
-								In order to minimise the prioritisation time it's strongly advised to use it in conjunction with the Preferred Cluster
-								Type parameter.
-							</div>
-						</div>
-						<div id="pdAlert" style="display: none" class="alert alert-warning alert-dismissible" role="alert">
-							<button type="button" class="close" onclick="$('#pdAlert').hide()" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-							<div style="text-align: center">
-								<strong>Warning!</strong>
-								The Phylogenetic Diversity parameter triggers long running processes.
-								<br />
-								In order to minimise the prioritisation time it's strongly advised to use it in conjunction with the Preferred Cluster
-								Type parameter.
-							</div>
-						</div>
+                    <br/>
+                    <br/>
+                    <div id="shAlert" style="display: none" class="alert alert-warning alert-dismissible" role="alert">
+                        <button type="button" class="close" onclick="$('#shAlert').hide()" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div style="text-align: center">
+                            <strong>Warning!</strong>
+                            The BGC Self-Homology parameter triggers long running processes.
+                            <br/>
+                            In order to minimise the prioritisation time it's strongly advised to use it in conjunction with the Preferred Cluster
+                            Type parameter.
+                        </div>
+                    </div>
+                    <div id="pdAlert" style="display: none" class="alert alert-warning alert-dismissible" role="alert">
+                        <button type="button" class="close" onclick="$('#pdAlert').hide()" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div style="text-align: center">
+                            <strong>Warning!</strong>
+                            The Phylogenetic Diversity parameter triggers long running processes.
+                            <br/>
+                            In order to minimise the prioritisation time it's strongly advised to use it in conjunction with the Preferred Cluster
+                            Type parameter.
+                        </div>
+                    </div>
 
-						<button id="prioritiseBtn" type="button" class="btn btn-primary btn-lg btn-block" onclick="prioritise()">PRIORITISE</button>
-					</form>
+                    <button id="prioritiseBtn" type="button" class="btn btn-primary btn-lg btn-block" onclick="prioritise()">PRIORITISE</button>
+                </form>
 
-				</div>
+            </div>
 
-				<br />
+            <br/>
 
-				<div id="outputData">
+            <div id="outputData">
 
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>CLUSTER</th>
-								<th>TYPE</th>
-								<th>GENE #</th>
-								<th>CDS LENGTH</th>
-								<th>CODING GC</th>
-								<th>CODON USAGE</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="cluster, iterStat : ${clusterData}">
-								<th th:text="${iterStat.count}"></th>
-								<td th:inline="text">
-                                    <a th:href="@{|/local/${wsName}/${cluster.parent}/index.html#cluster-${cluster.number}|}" th:title="${cluster.species}" target="_blank">[[${cluster.origin}]]
-										- C[[${cluster.number}]]</a>
-								</td>
-								<td th:text="${cluster.clusterType}"></td>
-								<td th:text="${cluster.numberOfGenes}"></td>
-								<td th:inline="text">[[${cluster.cdsLength}]] bp</td>
-								<td th:inline="text">[[${#numbers.formatDecimal(cluster.gcContent, 1, 2)}]]%</td>
-								<td>
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<a th:href="@{|/codonTable/${cluster.name}|}" target="_blank">Open</a>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>CLUSTER</th>
+                        <th>TYPE</th>
+                        <th>GENE #</th>
+                        <th>CDS LENGTH</th>
+                        <th>CODING GC</th>
+                        <th>CODON USAGE</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="cluster, iterStat : ${clusterData}">
+                        <th th:text="${iterStat.count}"></th>
+                        <td th:inline="text">
+                            <a th:href="@{|/local/${wsName}/${cluster.parent}/index.html#cluster-${cluster.number}|}" th:title="${cluster.species}" target="_blank">[[${cluster.origin}]]
+                                - C[[${cluster.number}]]</a>
+                        </td>
+                        <td th:text="${cluster.clusterType}"></td>
+                        <td th:text="${cluster.numberOfGenes}"></td>
+                        <td th:inline="text">[[${cluster.cdsLength}]] bp</td>
+                        <td th:inline="text">[[${#numbers.formatDecimal(cluster.gcContent, 1, 2)}]]%</td>
+                        <td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a th:href="@{|/codonTable/${cluster.name}|}" target="_blank">Open</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
 
-				</div>
+            </div>
 
-			</div>
-		</div>
+        </div>
+    </div>
 
-	</div>
+</div>
 
-	<div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>

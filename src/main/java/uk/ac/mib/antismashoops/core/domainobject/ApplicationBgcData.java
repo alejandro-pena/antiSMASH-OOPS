@@ -1,126 +1,128 @@
 package uk.ac.mib.antismashoops.core.domainobject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import uk.ac.mib.antismashoops.core.services.ExternalDataService;
-import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
+import uk.ac.mib.antismashoops.core.service.ExternalDataService;
+import uk.ac.mib.antismashoops.web.utils.Workspace;
 
+@Slf4j
 @Component
-@Scope("singleton")
-public class ApplicationBgcData {
+public class ApplicationBgcData
+{
+    private ExternalDataService externalDataService;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationBgcData.class);
-    private static final List<BiosyntheticGeneCluster> bgcData;
-	private static List<BiosyntheticGeneCluster> workingDataSet;
+    private final List<BiosyntheticGeneCluster> bgcData;
 
-	static {
-		bgcData = new ArrayList<>();
-		workingDataSet = new ArrayList<>();
-	}
+    @Getter
+    @Setter
+    private List<BiosyntheticGeneCluster> preprocessedBgcData;
 
-	@Autowired
-	private ExternalDataService eds;
+    @Getter
+    @Setter
+    private List<BiosyntheticGeneCluster> preprocessedWorkingDataSet;
+
+    @Getter
+    @Setter
+    private List<BiosyntheticGeneCluster> workingDataSet;
+
 
     @Autowired
-    private WorkspaceManager fm;
+    public ApplicationBgcData(ExternalDataService externalDataService)
+    {
+        this.externalDataService = externalDataService;
+        this.bgcData = new ArrayList<>();
+        this.workingDataSet = new ArrayList<>();
+        this.preprocessedBgcData = new ArrayList<>();
+        this.preprocessedWorkingDataSet = new ArrayList<>();
+    }
 
-	/**
-	 * 
-	 * Provides the BGC Application Data, if the data is in sync with the files
-	 * uploaded the cached version will be provided. If not, a new scan and
-	 * decompression will be done loading the new files or deleting the erased
-	 * ones. This method clones the Application Data into the workingDataSet
-	 * object to keep an intact copy of the data. The workingDataSet is a
-	 * mutable object that changes according to every prioritisation request.
-	 * 
-	 * @return The workingDataSet cloned from the original data
-	 * 
-	 */
 
-	public List<BiosyntheticGeneCluster> getBgcData() {
+    /**
+     * Provides the BGC Application Data, if the data is in sync with the files
+     * uploaded the cached version will be provided. If not, a new scan and
+     * decompression will be done loading the new files or deleting the erased
+     * ones. This method clones the Application Data into the workingDataSet
+     * object to keep an intact copy of the data. The workingDataSet is a
+     * mutable object that changes according to every prioritisation request.
+     *
+     * @return The workingDataSet cloned from the original data
+     */
 
-		if (eds.isBgcDataInSync(bgcData.size())) {
-            //eds.loadBggData(bgcData);
-            ApplicationBgcData.workingDataSet.clear();
-			for (BiosyntheticGeneCluster bgc : bgcData) {
-				ApplicationBgcData.workingDataSet.add(bgc.clone());
-			}
-            LOG.info("Cluster Data in sync...");
+    public List<BiosyntheticGeneCluster> getBgcData(Workspace workspace) throws IOException
+    {
+        if ("antiSMASH_Actinobacterial_BGCs".equals(workspace.getName()))
+        {
+            if (externalDataService.isPreprocessedDataInSync(preprocessedBgcData.size(), workspace))
+            {
+                this.preprocessedWorkingDataSet.clear();
+                this.preprocessedWorkingDataSet.addAll(preprocessedBgcData);
+                log.info("Preprocessed Data in sync...");
+                return preprocessedWorkingDataSet;
+            }
+            else
+            {
+                log.info("Syncing Preprocessed Data...");
+                preprocessedBgcData.clear();
+                preprocessedWorkingDataSet.clear();
+                externalDataService.loadPreprocessedBgcData(preprocessedBgcData, workspace);
+                this.preprocessedWorkingDataSet.addAll(preprocessedBgcData);
+                return preprocessedWorkingDataSet;
+            }
+        }
+
+        if (externalDataService.isBgcDataInSync(bgcData.size(), workspace))
+        {
+            this.workingDataSet.clear();
+            bgcData.forEach(biosyntheticGeneCluster -> this.workingDataSet.add(biosyntheticGeneCluster.clone()));
+            log.info("Cluster Data in sync...");
             return workingDataSet;
-		}
+        }
 
-        LOG.info("Syncing Cluster Data...");
-        eds.decompressLoadedFiles();
-		eds.loadBggData(bgcData);
-		ApplicationBgcData.workingDataSet.clear();
-		for (BiosyntheticGeneCluster bgc : bgcData) {
-			ApplicationBgcData.workingDataSet.add(bgc.clone());
-		}
-		return workingDataSet;
-	}
+        log.info("Syncing Cluster Data...");
+        externalDataService.decompressLoadedFiles(workspace);
+        externalDataService.loadBggData(bgcData, workspace);
+        this.workingDataSet.clear();
+        bgcData.forEach(biosyntheticGeneCluster -> this.workingDataSet.add(biosyntheticGeneCluster.clone()));
+        return workingDataSet;
+    }
 
-	/**
-	 * 
-	 * Loads the BGC Data scores of the GC Content using a reference species and
-	 * the Codon Bias
-	 *
-     * @param gcContentRef
-     *            The Reference Species GC Content Percentage
-     * @param cutRef
-     *            The CodonUsageTable object with the reference species data
+
+    /**
+     * Loads the BGC Data scores of the GC Content using a reference species and
+     * the Codon Bias
      *
-	 */
+     * @param gcContentRef The Reference Species GC Content Percentage
+     * @param cutRef       The CodonUsageTable object with the reference species data
+     */
 
-	public void loadBgcDataWithSpecies(Double gcContentRef, CodonUsageTable cutRef) {
-		eds.populateClusterData(workingDataSet, gcContentRef, cutRef);
-	}
+    public void loadBgcDataWithSpecies(Double gcContentRef, CodonUsageTable cutRef)
+    {
+        externalDataService.populateClusterData(workingDataSet, gcContentRef, cutRef);
+    }
 
-	/**
-	 * 
-	 * Finds a specific BGC Object by the Cluster Id specified.
-	 *
-     * @param clusterId
-     *            The BGC Id to look for in the workingDataSet
+
+    /**
+     * Finds a specific BGC Object by the Cluster Id specified.
      *
-	 * @return The Biosynthetic Gene Cluster requested
-	 * 
-	 */
+     * @param clusterId The BGC Id to look for in the workingDataSet
+     * @return The Biosynthetic Gene Cluster requested
+     */
 
-	public BiosyntheticGeneCluster getCluster(String clusterId) {
-		for (BiosyntheticGeneCluster c : workingDataSet) {
-			if (c.getClusterId().equals(clusterId))
-				return c;
-		}
-		return null;
-	}
-
-	/*
-	 * 
-	 * Getters and setters of the workingDataSet List object
-	 * 
-	 */
-
-	public List<BiosyntheticGeneCluster> getWorkingDataSet() {
-		return ApplicationBgcData.workingDataSet;
-	}
-
-	public void setWorkingDataSet(List<BiosyntheticGeneCluster> workingDataSet) {
-		ApplicationBgcData.workingDataSet = workingDataSet;
-	}
-
-	@ExceptionHandler(Exception.class)
-	public String exceptionHandler(HttpServletRequest req, Exception exception) {
-		req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
-        LOG.error("Exception thrown: " + exception.getClass());
-        LOG.error("Exception message: " + exception.getMessage());
-        exception.printStackTrace();
-		return "error";
-	}
+    public BiosyntheticGeneCluster getCluster(String clusterId)
+    {
+        for (BiosyntheticGeneCluster c : workingDataSet)
+        {
+            if (c.getClusterId().equals(clusterId))
+            {
+                return c;
+            }
+        }
+        return null;
+    }
 }

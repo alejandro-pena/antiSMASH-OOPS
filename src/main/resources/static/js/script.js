@@ -1,50 +1,97 @@
 /* --------------------------------------------------------------------------------------------- */
 /* 								FUNCTIONS FOR THE INDEX VIEW 									 */
+
 /* --------------------------------------------------------------------------------------------- */
 
 function addNewWs() {
 
-    var wsName = prompt("Enter the new Workspace name...", "Workspace name...");
+    swal({
+            title: "New Workspace",
+            text: "Enter the new Workspace name...",
+            type: "input",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            closeOnCancel: true,
+            animation: "slide-from-top",
+            inputPlaceholder: "Workspace name..."
+        },
+        function (inputValue) {
+            if (inputValue === false) {
+                return false;
+            }
 
-    if (wsName === null || wsName.trim() === "") {
-        alert("Please enter a valid Workspace name...");
-        return;
-    }
+            if (inputValue === "") {
+                swal.showInputError("Please enter a valid Workspace name!");
+                return false
+            }
 
-    wsName = wsName.trim().split(" ").join("_");
+            wsName = inputValue.trim().split(" ").join("_");
 
-    var url = "/addWorkspace/" + wsName;
+            var url = "/addWorkspace/" + wsName;
 
-    $.ajax({
-        type: "GET",
-        url: url
-    }).done(function () {
-        location.reload();
-    });
+            $.ajax({
+                type: "GET",
+                url: url
+            }).done(swal({
+                    title: 'Created!',
+                    text: 'The Workspace has been created.',
+                    type: 'success'
+                }
+                , function (isConfirm) {
+                    if (isConfirm) {
+                        location.reload();
+                    }
+                }
+            ));
+        });
 }
 
 function deleteWs() {
 
     var wsName = $("input[name='wsRadio']:checked").val();
     if (wsName) {
-        var flag = confirm("Delete the workspace: " + wsName + " ?");
-        if (!flag) {
-            return;
-        }
-        var url = "/deleteWorkspace/" + wsName;
-        $.ajax({
-            type: "GET",
-            url: url
-        }).done(function () {
-            location.reload();
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Delete',
+            closeOnConfirm: false,
+            closeOnCancel: true
+        }, function (isConfirm) {
+            if (isConfirm) {
+                var url = "/deleteWorkspace/" + wsName;
+                $.ajax({
+                    type: "GET",
+                    url: url
+                }).done(swal({
+                        title: 'Deleted!',
+                        text: 'The Workspace has been deleted.',
+                        type: 'success'
+                    },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    }
+                ));
+            }
         });
-
-    } else {
-        alert("Please select a Workspace to delete.");
+    }
+    else {
+        swal({
+            title: 'Error!',
+            text: 'Please select a Workspace to delete.',
+            type: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
 function continueToFU() {
+
     var wsName = $("input[name='wsRadio']:checked").val();
 
     if (wsName) {
@@ -52,7 +99,13 @@ function continueToFU() {
         $('#ws').submit();
 
     } else {
-        alert("Please select a Workspace or create a new one.");
+        swal({
+            title: 'Error!',
+            text: 'Please select a Workspace or create a new one.',
+            type: 'error',
+            confirmButtonText: 'OK'
+        });
+        ;
     }
 }
 
@@ -69,8 +122,8 @@ $(function () {
     $('#fileupload')
         .fileupload(
             {
-				stop: function () {
-					console.log("I finished...");
+                stop: function () {
+                    console.log("I finished...");
                     location.reload();
                 },
 
@@ -93,9 +146,9 @@ $(function () {
  */
 
 function loading() {
-	var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
-			+ '</span> Decompressing files... Please wait...';
-	$('#submitBtn').html(buttonText);
+    var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
+        + '</span> Decompressing files and processing data... Please wait...';
+    $('#submitBtn').html(buttonText);
 }
 
 /* --------------------------------------------------------------------------------------------- */
@@ -107,39 +160,60 @@ function loading() {
  * the UI. If no tooltips exist nothing it will have no effect.
  */
 
-$(document).ready(function() {
-	if ($('[data-toggle="tooltip"]').length) {
-		$('[data-toggle="tooltip"]').tooltip();
-	}
+$(document).ready(function () {
+    if ($('[data-toggle="tooltip"]').length) {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
 });
+
+function removeSpecies() {
+    $('#results-block').remove();
+    $('#speciesName').val('');
+}
 
 /**
  * This function encapsulates the logic for disabling and enabling the view
  * elements when the Ignore checkbox of each parameter is clicked
  */
 
-function toggleRangeDisabling(itemId, valueOutput) {
-	var element = document.getElementById(itemId);
-	if (element.disabled == true) {
-		element.disabled = false;
-		element.value = 10;
-		if (itemId == 'selfHomology') {
-			$('#shAlert').show();
-			toggleDisabling('minimumMatch');
-		}
-		if (itemId == 'phylogeneticDiversity')
-			$('#pdAlert').show();
-		if (itemId == 'knownClustersSimilarity')
-			toggleDisabling('similarityPercentage');
-	} else {
-		element.disabled = true;
-		element.value = 0;
-		if (itemId == 'selfHomology')
-			toggleDisabling('minimumMatch');
-		if (itemId == 'knownClustersSimilarity')
-			toggleDisabling('similarityPercentage');
-	}
-	$('#' + valueOutput).html(element.value);
+function toggleRangeDisabling(itemId, valueOutput, workspace) {
+    var element = document.getElementById(itemId);
+    if (element.disabled == true) {
+        element.disabled = false;
+        element.value = 10;
+        if (itemId == 'selfHomology') {
+            if (workspace != null && workspace == 'antiSMASH_Actinobacterial_BGCs') {
+                $('#minumumMatch').prop('disabled', true);
+            }
+            else {
+                $('#shAlert').show();
+                toggleDisabling('minimumMatch');
+            }
+        }
+        if (itemId == 'phylogeneticDiversity')
+            if (workspace == null || workspace != 'antiSMASH_Actinobacterial_BGCs') {
+                $('#pdAlert').show();
+            }
+        if (itemId == 'knownClustersSimilarity') {
+            toggleDisabling('similarityPercentage');
+            toggleDisabling('plusMinus');
+        }
+    } else {
+        element.disabled = true;
+        element.value = 0;
+        if (itemId == 'selfHomology')
+            if (workspace != null && workspace == 'antiSMASH_Actinobacterial_BGCs') {
+                $('#minumumMatch').prop('disabled', true);
+            }
+            else {
+                toggleDisabling('minimumMatch');
+            }
+        if (itemId == 'knownClustersSimilarity') {
+            toggleDisabling('similarityPercentage');
+            toggleDisabling('plusMinus');
+        }
+    }
+    $('#' + valueOutput).html(element.value);
 };
 
 /**
@@ -148,9 +222,9 @@ function toggleRangeDisabling(itemId, valueOutput) {
  */
 
 function toggleDisabling(itemId) {
-	$('#' + itemId).prop('disabled', function(i, value) {
-		return !value;
-	});
+    $('#' + itemId).prop('disabled', function (i, value) {
+        return !value;
+    });
 };
 
 /**
@@ -160,16 +234,16 @@ function toggleDisabling(itemId) {
 
 function toggleParameterOrdering(icon) {
 
-	var iconId = '#' + icon;
-	var orderValId = '#' + icon + 'Value';
+    var iconId = '#' + icon;
+    var orderValId = '#' + icon + 'Value';
 
-	if ($(orderValId).attr('value') == 'd') {
-		$(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes');
-		$(orderValId).attr('value', 'a');
-	} else {
-		$(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes-alt');
-		$(orderValId).attr('value', 'd');
-	}
+    if ($(orderValId).attr('value') == 'd') {
+        $(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes');
+        $(orderValId).attr('value', 'a');
+    } else {
+        $(iconId).attr('class', 'glyphicon glyphicon-sort-by-attributes-alt');
+        $(orderValId).attr('value', 'd');
+    }
 
 };
 
@@ -178,7 +252,7 @@ function toggleParameterOrdering(icon) {
  */
 
 function updateRangeValue(rangeElement, itemId) {
-	$('#' + itemId).html(rangeElement.value);
+    $('#' + itemId).html(rangeElement.value);
 };
 
 /**
@@ -188,31 +262,31 @@ function updateRangeValue(rangeElement, itemId) {
 
 function prioritise() {
 
-	// NUMBER OF GENES
+    // NUMBER OF GENES
 
-	var numberOfGenes = $('#numberOfGenes').val();
-	var nogOrderValue = $('#nogOrderValue').val();
+    var numberOfGenes = $('#numberOfGenes').val();
+    var nogOrderValue = $('#nogOrderValue').val();
 
-	// CDS LENGTH
+    // CDS LENGTH
 
-	var sequenceLength = $('#sequenceLength').val();
-	var slOrderValue = $('#slOrderValue').val();
+    var sequenceLength = $('#sequenceLength').val();
+    var slOrderValue = $('#slOrderValue').val();
 
-	// GC CONTENT
+    // GC CONTENT
 
-	var gcContent = $('#gcContent').val();
-	var gccOrderValue = $('#gccOrderValue').val();
+    var gcContent = $('#gcContent').val();
+    var gccOrderValue = $('#gccOrderValue').val();
 
-	// CODON BIAS
+    // CODON BIAS
 
-	var codonBias = $('#codonBias').val();
-	var cbOrderValue = $('#cbOrderValue').val();
+    var codonBias = $('#codonBias').val();
+    var cbOrderValue = $('#cbOrderValue').val();
 
-	// REFERENCE SPECIES
+    // REFERENCE SPECIES
 
-	var refSpecies = $('#selectSpecies').val();
-    if (refSpecies === 'No data found.' || refSpecies === undefined)
-		refSpecies = 'undefined';
+    var refSpecies = $('#selectSpecies').val();
+    if (refSpecies === undefined || refSpecies === 'No data found.')
+        refSpecies = 'undefined';
 
     // CLUSTER TYPE
 
@@ -223,22 +297,23 @@ function prioritise() {
     // KNOWN CLUSTER SIMILARITY
 
     var kcSim = $('#knownClustersSimilarity').val();
-	var pSim = $('#similarityPercentage').val();
-	var kcsOrderValue = $('#kcsOrderValue').val();
+    var pSim = $('#similarityPercentage').val();
+    var plusMinus = $('#plusMinus').val();
+    var kcsOrderValue = $('#kcsOrderValue').val();
 
     // SELF-HOMOLOGY
 
     var sHom = $('#selfHomology').val();
-	var minM = $('#minimumMatch').val();
+    var minM = $('#minimumMatch').val();
     if (minM === "") {
-		minM = 0;
-	}
-	var shOrderValue = $('#shOrderValue').val();
+        minM = 0;
+    }
+    var shOrderValue = $('#shOrderValue').val();
 
     // PHYLOGENETIC DIVERSITY
 
     var pDiv = $('#phylogeneticDiversity').val();
-	var pdOrderValue = $('#pdOrderValue').val();
+    var pdOrderValue = $('#pdOrderValue').val();
 
     // BUILDS THE URL FOR THE AJAX CALL
 
@@ -256,6 +331,7 @@ function prioritise() {
         ipt: ignorePT,
         kcs: kcSim,
         psim: pSim,
+        pm: plusMinus,
         kcso: kcsOrderValue,
         sh: sHom,
         minm: minM,
@@ -264,25 +340,25 @@ function prioritise() {
         pdo: pdOrderValue
     };
 
-	var url = '/dashboardUpdate';
+    var url = '/dashboardUpdate';
 
-	// CHANGES THE PRIORITISE BUTTON INTO AN ANIMATED REFRESH ICON
+    // CHANGES THE PRIORITISE BUTTON INTO AN ANIMATED REFRESH ICON
 
     var buttonText = '<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
-			+ '</span> Prioritising... Please wait...';
+        + '</span> Prioritising... Please wait...';
 
     $('#prioritiseBtn').html(buttonText);
-	$("#outputData").html("");
+    $("#outputData").html("");
 
     // LOADS THE PRIORITISED DATA INTO THE OUTPUT SECTION
 
-	$("#outputData").load(url, data, function(response, status, xhr) {
-		if (xhr.status != '200') {
-			var message = 'The Application cannot fulfill your request.';
-			$('#gaMessage').html(message);
-			$('#genericAlert').show();
-		}
-	});
+    $("#outputData").load(url, data, function (response, status, xhr) {
+        if (xhr.status != '200') {
+            var message = 'The Application cannot fulfill your request.';
+            $('#gaMessage').html(message);
+            $('#genericAlert').show();
+        }
+    });
 }
 
 /**
@@ -291,9 +367,9 @@ function prioritise() {
  * look up.
  */
 
-$(document).ajaxComplete(function() {
-	$('#prioritiseBtn').html('PRIORITISE');
-	$('#sSpinner').addClass('hidden');
+$(document).ajaxComplete(function () {
+    $('#prioritiseBtn').html('PRIORITISE');
+    $('#sSpinner').addClass('hidden');
 });
 
 /**
@@ -303,15 +379,15 @@ $(document).ajaxComplete(function() {
 
 function loadSpecies() {
 
-	var keyword = $('#speciesName').val();
-	if (keyword == '') {
-		$('#speciesName').addClass('error-field');
-		return;
-	}
-	$('#sSpinner').removeClass('hidden');
-	$('#speciesName').removeClass('error-field');
-	keyword = keyword.trim().replace(/\s+/g, '+');
-	url = '/species/' + keyword;
+    var keyword = $('#speciesName').val();
+    if (keyword == '') {
+        $('#speciesName').addClass('error-field');
+        return;
+    }
+    $('#sSpinner').removeClass('hidden');
+    $('#speciesName').removeClass('error-field');
+    keyword = keyword.trim().replace(/\s+/g, '+');
+    url = '/species/' + keyword;
     $("#speciesDD")
         .load(
             url,
@@ -326,6 +402,7 @@ function loadSpecies() {
 
 /* --------------------------------------------------------------------------------------------- */
 /* FUNCTIONS FOR THE CODON USAGE */
+
 /* --------------------------------------------------------------------------------------------- */
 
 /**
@@ -335,21 +412,21 @@ function loadSpecies() {
 
 function getSpecies() {
 
-	var keyword = $('#speciesInput').val();
-	if (keyword == '') {
-		$('#speciesInput').addClass('error-field');
-		return;
-	}
-	$('#speciesInput').removeClass('error-field');
-	keyword = keyword.trim().replace(/\s+/g, '+');
-	url = '/codonUsage/' + keyword;
+    var keyword = $('#speciesInput').val();
+    if (keyword == '') {
+        $('#speciesInput').addClass('error-field');
+        return;
+    }
+    $('#speciesInput').removeClass('error-field');
+    keyword = keyword.trim().replace(/\s+/g, '+');
+    url = '/codonUsage/' + keyword;
 
-	// CHANGES THE SEARCH BUTTON INTO AN ANIMATED REFRESH ICON FOR LOADING
+    // CHANGES THE SEARCH BUTTON INTO AN ANIMATED REFRESH ICON FOR LOADING
 
-	$("#resultsBlock")
-			.html(
-					'<center><h3><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
-							+ '</span> Loading species... Please wait....</h3></center>');
+    $("#resultsBlock")
+        .html(
+            '<center><h3><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">'
+            + '</span> Loading species... Please wait....</h3></center>');
 
     $("#resultsBlock")
         .load(
@@ -369,40 +446,41 @@ function getSpecies() {
  */
 
 function submitEnter(e) {
-	if (e.keyCode == 13) {
-		e.preventDefault();
-		$("#speciesInput").blur();
-		getSpecies();
-	}
+    if (e.keyCode == 13) {
+        e.preventDefault();
+        $("#speciesInput").blur();
+        getSpecies();
+    }
 }
 
 /* --------------------------------------------------------------------------------------------- */
 /* FUNCTIONS FOR THE FEEDBACK VIEW */
+
 /* --------------------------------------------------------------------------------------------- */
 
 function validateAndSend() {
 
     if ($('#name').val().length == 0) {
-		alert("Please enter a name...")
-		return;
-	}
+        alert("Please enter a name...")
+        return;
+    }
     if (!isEmail($('#email').val())) {
-		alert("Please enter a valid email address...")
-		return;
-	}
+        alert("Please enter a valid email address...")
+        return;
+    }
     if ($('#subject').val().length == 0) {
-		alert("Please enter a subject...")
-		return;
-	}
+        alert("Please enter a subject...")
+        return;
+    }
     if ($('#body').val().length == 0) {
-		alert("Please enter some feedback...")
-		return;
-	}
+        alert("Please enter some feedback...")
+        return;
+    }
 
     $('#feedbackForm').submit();
 }
 
 function isEmail(email) {
-	var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-	return regex.test(email);
+    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    return regex.test(email);
 }

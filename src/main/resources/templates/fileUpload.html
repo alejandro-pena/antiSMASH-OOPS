@@ -59,6 +59,7 @@
                     <th class="t-ctr">#</th>
                     <th class="t-ctr">File Name</th>
                     <th class="t-ctr">File Type</th>
+                    <th class="t-ctr">Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -66,6 +67,11 @@
                     <th class="t-ctr" th:text="${iterStat.count}"></th>
                     <td class="t-ctr" th:text="${file.name}"></td>
                     <td class="t-ctr">ZIP File</td>
+                    <td class="t-ctr">
+                        <a th:href="@{'/delete/' + ${file.name}}">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </td>
                 </tr>
                 </tbody>
 

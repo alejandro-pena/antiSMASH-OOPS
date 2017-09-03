@@ -2,4 +2,5 @@ appData
 target
 .idea
 antiSMASH-OOPS.iml
-lifeTreeOutput/
+lifeTreeOutput
+selfhomology

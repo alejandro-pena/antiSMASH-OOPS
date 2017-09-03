@@ -1,29 +1,29 @@
 package uk.ac.mib.antismashoops.web.controller;
 
+import java.io.File;
+import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import uk.ac.mib.antismashoops.web.utils.Workspace;
 import uk.ac.mib.antismashoops.web.utils.WorkspaceManager;
 
+@Slf4j
 @Controller
 public class FileUploadController
 {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FileUploadController.class);
-
-    private final WorkspaceManager fm;
+    private final WorkspaceManager workspaceManager;
 
 
     @Autowired
-    public FileUploadController(WorkspaceManager fm)
+    public FileUploadController(WorkspaceManager workspaceManager)
     {
-        this.fm = fm;
+        this.workspaceManager = workspaceManager;
     }
 
 
@@ -35,13 +35,20 @@ public class FileUploadController
      */
 
     @RequestMapping("/fileUpload")
-    public String fileUplaod(@RequestParam(value = "wsRadio") String workspace, ModelMap model)
+    public String fileUpload(@RequestParam(value = "wsRadio") String workspace, ModelMap model)
     {
-        LOG.info("Loading File Upload View...");
+        File workspaceRoot = new File(workspaceManager.getRootDirectory(), workspace);
+        workspaceManager.setCurrentWorkspace(new Workspace(workspaceRoot, workspace, new Date(workspaceRoot.lastModified())));
 
-        fm.setCurrentWorkspace(workspace);
+        if ("antiSMASH_Actinobacterial_BGCs".equals(workspaceManager.getCurrentWorkspace().getName()))
+        {
+            log.info("This is a read-only workspace. Redirecting to main Dashboard...");
+            return "redirect:/dashboard";
+        }
 
-        model.addAttribute("fileData", fm.getWorkspace(workspace).getWorkspaceFiles());
+        log.info("Loading File Upload View...");
+
+        model.addAttribute("fileData", workspaceManager.getWorkspace(workspace).getWorkspaceFiles());
         model.addAttribute("workspace", workspace);
 
         return "fileUpload";
@@ -49,12 +56,10 @@ public class FileUploadController
 
 
     @ExceptionHandler(Exception.class)
-    public String exceptionHandler(HttpServletRequest req, Exception exception)
+    public String exceptionHandler(HttpServletRequest req, Exception e)
     {
-        req.setAttribute("message", exception.getClass() + " - " + exception.getMessage());
-        LOG.error("Exception thrown: " + exception.getClass());
-        LOG.error("Exception message: " + exception.getMessage());
-        exception.printStackTrace();
+        req.setAttribute("message", e.getClass() + " - " + e.getMessage());
+        log.error("Unexpected exception", e);
         return "error";
     }
 
