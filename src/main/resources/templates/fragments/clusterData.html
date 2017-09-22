@@ -20,7 +20,7 @@
             <th class="t-mid" th:if="${refSpecies == 'undefined'}">CODON USAGE<br/>TABLE</th>
             <th class="t-mid" th:if="${refSpecies != 'undefined'}">CODON USAGE<br/>HEAT MAP</th>
             <th class="t-mid">&Delta; TO KC</th>
-            <th class="t-mid">SELF-H<br/>SCORE</th>
+            <th class="t-mid">SELF-S / <br/> SELF-S MAX</th>
             <th class="t-mid">DIVERSITY<br/>SCORE</th>
         </tr>
         </thead>
@@ -44,7 +44,7 @@
                    target="_blank" th:inline="text">[[${#numbers.formatDecimal(cluster.codonBiasS, 1, 2)}]]</a>
             </td>
             <td th:inline="text">[[${#numbers.formatDecimal(cluster.kcScore, 1, 2)}]]%</td>
-            <td th:if="${cluster.selfHomologyMaximumScore != -1}" th:text="${cluster.selfHomologyMaximumScore}"></td>
+            <td th:if="${cluster.selfHomologyMaximumScore != -1}" th:inline="text">[[${cluster.selfHomologyScore}]] / [[${cluster.selfHomologyMaximumScore}]]</td>
             <td th:if="${cluster.selfHomologyMaximumScore == -1}" th:inline="text">N/A</td>
             <td th:if="${cluster.diversityScore == -1}" th:inline="text">N/A</td>
             <td th:if="${cluster.diversityScore != -1}" th:inline="text">
