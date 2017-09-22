@@ -43,11 +43,13 @@ public class PrioritisationService
         if ("antiSMASH_Actinobacterial_BGCs".equals(workspace.getName()))
         {
             sortedData = new ArrayList<>(appData.getPreprocessedWorkingDataSet());
-            sortedData.forEach(bgc -> bgc.setScore(0.0));
             Collections.sort(sortedData, comparator);
             appData.getPreprocessedWorkingDataSet().forEach(bgc -> {
-                double score = bgc.getScore();
-                bgc.setScore(score += ((sortedData.indexOf(bgc) + 1) * 1.0 * parameterWeight));
+                if (bgc.getSelfHomologyScore() > 0 || (comparator != ClusterSort.SHSORT && comparator != ClusterSort.SHSORTREV))
+                {
+                    double score = bgc.getScore();
+                    bgc.setScore(score += ((sortedData.indexOf(bgc) + 1) * 1.0 * parameterWeight));
+                }
             });
         }
         else
@@ -55,8 +57,11 @@ public class PrioritisationService
             sortedData = new ArrayList<>(appData.getWorkingDataSet());
             Collections.sort(sortedData, comparator);
             appData.getWorkingDataSet().forEach(bgc -> {
-                double score = bgc.getScore();
-                bgc.setScore(score += ((sortedData.indexOf(bgc) + 1) * 1.0 * parameterWeight));
+                if (bgc.getSelfHomologyScore() > 0 || (comparator != ClusterSort.SHSORT && comparator != ClusterSort.SHSORTREV))
+                {
+                    double score = bgc.getScore();
+                    bgc.setScore(score += ((sortedData.indexOf(bgc) + 1) * 1.0 * parameterWeight));
+                }
             });
         }
     }

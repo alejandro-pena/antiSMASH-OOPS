@@ -403,6 +403,10 @@ public class DashboardController
             workingDataSet = applicationBgcData.getPreprocessedWorkingDataSet();
         }
 
+        // RESET THE PREVIOUS SCORE
+
+        workingDataSet.forEach(bgc -> bgc.setScore(0.0));
+
         // SORT USING ALL PARAMETERS AND WITH A REFERENCE SPECIES
 
         if (geneCount > 0)
