@@ -295,6 +295,8 @@ public class DashboardController
 
         Collections.sort(workingDataSet, ClusterSort.SCORESORT);
 
+        // applicationBgcData.getWorkingDataSet().forEach(bgc -> log.info("Cluster: {} Score: {}", bgc.getClusterId(), bgc.getScore()));
+
         log.info("Prioritisation successful!");
 
         model.addAttribute("refSpecies", refSpecies);

@@ -50,6 +50,18 @@ public class PrioritisationService
                     double score = bgc.getScore();
                     bgc.setScore(score += ((sortedData.indexOf(bgc) + 1) * 1.0 * parameterWeight));
                 }
+                else if (bgc.getSelfHomologyScore() == 0)
+                {
+                    if (comparator == ClusterSort.SHSORTREV)
+                    {
+                        double score = bgc.getScore();
+                        bgc.setScore(score += (((sortedData.size()) * 1.0 * parameterWeight) + 1));
+                    }
+                    else if (comparator == ClusterSort.SHSORT)
+                    {
+                        return;
+                    }
+                }
             });
         }
         else
@@ -61,6 +73,18 @@ public class PrioritisationService
                 {
                     double score = bgc.getScore();
                     bgc.setScore(score += ((sortedData.indexOf(bgc) + 1) * 1.0 * parameterWeight));
+                }
+                else if (bgc.getSelfHomologyScore() == 0)
+                {
+                    if (comparator == ClusterSort.SHSORTREV)
+                    {
+                        double score = bgc.getScore();
+                        bgc.setScore(score += (((sortedData.size()) * 1.0 * parameterWeight)) + 1);
+                    }
+                    else if (comparator == ClusterSort.SHSORT)
+                    {
+                        return;
+                    }
                 }
             });
         }
