@@ -62,7 +62,7 @@ public class KnownCluster
 
         if (this.getClusterHits().size() == 0)
         {
-            return 100.0;
+            return Math.abs(preferredSimilarity);
         }
 
         Cluster mostSimilar = getClusterHits().get(0);
