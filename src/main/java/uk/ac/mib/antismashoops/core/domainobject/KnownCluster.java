@@ -69,6 +69,11 @@ public class KnownCluster
         double score = Math.abs(preferredSimilarity - ((mostSimilar.getBlastHits().size() * 100 / getBgcGenes().size())
             * mostSimilar.getBlastHitScore() / 100));
 
+        /*
+
+        This code gets the cluster which with the KC parameter will get the best score according to the preferred
+        similarity of the user. If this is commented then it will only compare to the first one.
+
         for (Cluster c : getClusterHits())
         {
             double newScore = Math.abs(preferredSimilarity
@@ -79,6 +84,8 @@ public class KnownCluster
                 score = newScore;
             }
         }
+        */
+
         return score;
     }
 }
