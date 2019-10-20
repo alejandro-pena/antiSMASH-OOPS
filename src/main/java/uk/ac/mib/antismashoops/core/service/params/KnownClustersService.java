@@ -27,8 +27,8 @@ public class KnownClustersService
     private static final String HITS_TABLE_REGEXP = "Table of Blast hits (query gene, subject gene, %identity, blast score, %coverage, e-value):";
     private static final String GENES_REGEXP = "Table of genes, locations, strands and annotations of query cluster:";
     private static final String FOLDER_NAME_KCB = "knownclusterblast";
-    private static final String FILE_REGEXP = "(cluster)(.*)(\\.txt)";
-    private static final String GBK_FILE_REGEX = "(.+)(cluster)(.*)(\\.gbk)";
+    private static final String FILE_REGEXP = "(.*_c)(.*)(\\.txt)";
+    private static final String GBK_FILE_REGEX = "(.+)(region)(.*)(\\.gbk)";
     private static final String HITS_REGEXP = "Significant hits:";
     private static final String DETAILS_REGEXP = "Details:";
 
@@ -115,7 +115,7 @@ public class KnownClustersService
                         //
                         //						String[] tokens = scanner.nextLine().split(" ");
                         //						String origin = tokens[tokens.length - 1];
-                        String number = file.getName().replaceAll("[^0-9]", "");
+                        String number = file.getName().split("c")[1].replaceAll("[^0-9]", "");
                         knownClusterList.add(new KnownCluster(file, clusterFamily, number));
                     }
                 }
@@ -297,7 +297,7 @@ public class KnownClustersService
         {
             if (f.getName().matches(GBK_FILE_REGEX))
             {
-                return f.getName().replaceAll("\\.(cluster)(.*)(\\.gbk)", "");
+                return f.getName().replaceAll("\\.(region)(.*)(\\.gbk)", "");
             }
         }
         return family;

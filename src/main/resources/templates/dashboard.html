@@ -328,8 +328,8 @@
                     <tr th:each="cluster, iterStat : ${clusterData}">
                         <th th:text="${iterStat.count}"></th>
                         <td th:inline="text">
-                            <a th:href="@{|/local/${wsName}/${cluster.parent}/index.html#cluster-${cluster.number}|}" th:title="${cluster.species}" target="_blank">[[${cluster.origin}]]
-                                - C[[${cluster.number}]]</a>
+                            <a th:href="@{|/local/${wsName}/${cluster.parent}/index.html#r1c${cluster.number}|}" th:title="${cluster.species}" target="_blank">[[${cluster.origin}]]
+                                - R[[${cluster.number}]]</a>
                         </td>
                         <td th:text="${cluster.clusterType}"></td>
                         <td th:text="${cluster.numberOfGenes}"></td>

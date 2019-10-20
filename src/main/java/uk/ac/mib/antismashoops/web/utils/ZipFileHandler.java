@@ -8,7 +8,6 @@ import net.lingala.zip4j.exception.ZipException;
 @Slf4j
 public class ZipFileHandler
 {
-
     /**
      * Decompresses the specified file in the specified location
      *
@@ -26,8 +25,7 @@ public class ZipFileHandler
                 log.info("The file is password protected... Unable to decompress.");
             }
 
-            zipFile.extractAll(uploadPath);
-
+            zipFile.extractAll(uploadPath + "/" + compressedFile.getName().split("\\.")[0]);
         }
         catch (ZipException e)
         {
