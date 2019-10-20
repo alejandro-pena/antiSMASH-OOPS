@@ -32,12 +32,12 @@ import uk.ac.mib.antismashoops.web.utils.ZipFileHandler;
 @Service
 public class ExternalDataService
 {
-    private static final String GBK_FILE_REGEX = "(.+)(cluster)(.*)(\\.gbk)";
+    private static final String GBK_FILE_REGEX = "(.+)(region)(.*)(\\.gbk)";
     private static final String ZIP_FILE_REGEX = "(.+)(\\.zip)";
     private static final String JSON_FILE_REGEX = "(.+)(\\.json)";
 
     private static final String FOLDER_NAME_CB = "clusterblast";
-    private static final String FILE_REGEXP = "(cluster)(.*)(\\.txt)";
+    private static final String FILE_REGEXP = "(.*_c)(.*)(\\.txt)";
 
     private static final String HITS_REGEXP = "Significant hits:";
     private static final String DETAILS_REGEXP = "Details:";
@@ -371,7 +371,7 @@ public class ExternalDataService
 
                         String[] tokens = scanner.nextLine().split(" ");
                         String origin = tokens[tokens.length - 1];
-                        String number = file.getName().replaceAll("[^0-9]", "");
+                        String number = file.getName().split("c")[1].replaceAll("[^0-9]", "");
                         clusterBlastList.add(new ClusterBlast(file, origin, number));
                     }
                 }

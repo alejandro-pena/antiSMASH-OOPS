@@ -42,7 +42,7 @@ public class ClusterBlastLineage
             String[] tokens = accNumber.split("_");
             if (tokens.length == 2)
             {
-                return tokens[0];
+                return tokens[1];
             }
             if (tokens.length == 3)
             {

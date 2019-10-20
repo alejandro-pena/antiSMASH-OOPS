@@ -66,7 +66,7 @@ public class BiosyntheticGeneCluster implements Cloneable
         this.file = file;
         this.name = removeExtension(file.getName());
         this.parent = file.getParentFile().getName();
-        String[] tokens = this.name.split(".c");
+        String[] tokens = this.name.split(".r");
         this.origin = tokens[0];
         Integer clusterNo = Integer.parseInt(tokens[1].replaceAll("\\D+", ""));
         this.number = clusterNo.toString();
